@@ -59,6 +59,7 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 track.Id = Guid.NewGuid();
+                track.Uploaded = DateTime.UtcNow;
                 _context.Add(track);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

@@ -49,7 +49,7 @@
                 @Html.DisplayFor(modelItem => item.CoverPath)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Uploaded)
+                @item.Uploaded.ToLocalTime()
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Duration)

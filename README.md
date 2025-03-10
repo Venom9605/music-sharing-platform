@@ -1,16 +1,6 @@
 Marc Täll
 232696IADB
 
-
-
-
---fixes todo
-Artist table inherits from IdentityUser, but problem is that IdentityUser uses primary key of type string. 
-Database currently works by taking the IdentityUser string PK from the database table and using it as the FK in other tables
-(for example adding a ArtistInTrack, artist FK has to be the string ID taken from the database, no dropdown menu right now.)
-
-
-
 ~~~sh
 
 artist role ID and artist role ID1?

@@ -15,7 +15,12 @@ public class Rating : BaseEntity
     
     [MaxLength(512)]
     public string? Comment { get; set; } = default!;
-    
-    public DateTime Date { get; set; }
+
+    private DateTime _date;
+    public DateTime Date
+    {
+        get => _date;
+        set => _date = DateTime.SpecifyKind(value, DateTimeKind.Utc);
+    }   
     
 }

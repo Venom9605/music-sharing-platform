@@ -64,6 +64,7 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 rating.Id = Guid.NewGuid();
+                rating.Date = DateTime.UtcNow;
                 _context.Add(rating);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

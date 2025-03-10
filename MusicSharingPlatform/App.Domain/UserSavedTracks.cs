@@ -10,5 +10,11 @@ public class UserSavedTracks : BaseEntity
     public string UserId { get; set; } = default!;
     public IdentityUser? User { get; set; } 
 
-    public DateTime SavedAt { get; set; }
+    
+    private DateTime _savedAt;
+    public DateTime SavedAt 
+    {
+        get => _savedAt;
+        set => _savedAt = DateTime.SpecifyKind(value, DateTimeKind.Utc);
+    }
 }

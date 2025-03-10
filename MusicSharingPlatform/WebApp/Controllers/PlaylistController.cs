@@ -62,6 +62,7 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 playlist.Id = Guid.NewGuid();
+                playlist.CreatedAt = DateTime.UtcNow;
                 _context.Add(playlist);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

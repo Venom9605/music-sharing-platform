@@ -64,6 +64,7 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 userSavedTracks.Id = Guid.NewGuid();
+                userSavedTracks.SavedAt = DateTime.UtcNow;
                 _context.Add(userSavedTracks);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

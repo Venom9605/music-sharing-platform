@@ -20,7 +20,13 @@ public class Playlist : BaseEntity
     
     public bool IsPublic { get; set; }
     
-    public DateTime CreatedAt { get; set; }
+    private DateTime _createdAt;
+    
+    public DateTime CreatedAt
+    {
+        get => _createdAt;
+        set => _createdAt = DateTime.SpecifyKind(value, DateTimeKind.Utc);
+    }
     
     public ICollection<TagsInPlaylist>? TagsInPlaylists { get; set; }
     

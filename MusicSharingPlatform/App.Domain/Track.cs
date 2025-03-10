@@ -13,7 +13,13 @@ public class Track : BaseEntity
     [MaxLength(512)]
     public string CoverPath { get; set; } = default!;
     
-    public DateTime Uploaded { get; set; }
+    private DateTime _uploaded;
+    
+    public DateTime Uploaded
+    {
+        get => _uploaded;
+        set => _uploaded = DateTime.SpecifyKind(value, DateTimeKind.Utc);
+    }
     
     public int Duration { get; set; }
     
