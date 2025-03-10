@@ -50,7 +50,7 @@ namespace WebApp.Controllers
         public IActionResult Create()
         {
             ViewData["LinkTypeId"] = new SelectList(_context.LinkTypes, "Id", "Name");
-            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "CoverPath");
+            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title");
             return View();
         }
 
@@ -69,7 +69,7 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["LinkTypeId"] = new SelectList(_context.LinkTypes, "Id", "Name", trackLink.LinkTypeId);
-            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "CoverPath", trackLink.TrackId);
+            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", trackLink.TrackId);
             return View(trackLink);
         }
 
@@ -87,7 +87,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
             ViewData["LinkTypeId"] = new SelectList(_context.LinkTypes, "Id", "Name", trackLink.LinkTypeId);
-            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "CoverPath", trackLink.TrackId);
+            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", trackLink.TrackId);
             return View(trackLink);
         }
 
@@ -124,7 +124,7 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["LinkTypeId"] = new SelectList(_context.LinkTypes, "Id", "Name", trackLink.LinkTypeId);
-            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "CoverPath", trackLink.TrackId);
+            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", trackLink.TrackId);
             return View(trackLink);
         }
 

@@ -1,12 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices.JavaScript;
+using Microsoft.AspNetCore.Identity;
 
 namespace Domain;
 
 public class Playlist : BaseEntity
 {
-    public Guid ArtistId { get; set; }
-    public Artist? Artist { get; set; }
+    public string UserId { get; set; } = default!;
+    public IdentityUser? User { get; set; } 
 
     [MaxLength(100)]
     public string Name { get; set; } = default!;

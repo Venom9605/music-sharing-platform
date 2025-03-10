@@ -57,7 +57,7 @@ dotnet aspnet-codegenerator controller -name TrackLinkController -actions -m Dom
 
 dotnet aspnet-codegenerator controller -name UserLinkController -actions -m Domain.UserLink -dc AppDbContext -outDir Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
 
-dotnet aspnet-codegenerator controller -name UserSavedTrackController -actions -m Domain.UserSavedTrack -dc AppDbContext -outDir Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
+dotnet aspnet-codegenerator controller -name UserSavedTrackController -actions -m Domain.UserSavedTracks -dc AppDbContext -outDir Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
 
 
 

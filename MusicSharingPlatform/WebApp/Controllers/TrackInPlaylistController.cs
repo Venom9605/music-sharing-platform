@@ -49,8 +49,8 @@ namespace WebApp.Controllers
         // GET: TrackInPlaylist/Create
         public IActionResult Create()
         {
-            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Description");
-            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "CoverPath");
+            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Name");
+            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title");
             return View();
         }
 
@@ -68,8 +68,8 @@ namespace WebApp.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Description", trackInPlaylist.PlaylistId);
-            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "CoverPath", trackInPlaylist.TrackId);
+            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Name", trackInPlaylist.PlaylistId);
+            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", trackInPlaylist.TrackId);
             return View(trackInPlaylist);
         }
 
@@ -86,8 +86,8 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Description", trackInPlaylist.PlaylistId);
-            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "CoverPath", trackInPlaylist.TrackId);
+            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Name", trackInPlaylist.PlaylistId);
+            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", trackInPlaylist.TrackId);
             return View(trackInPlaylist);
         }
 
@@ -123,8 +123,8 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Description", trackInPlaylist.PlaylistId);
-            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "CoverPath", trackInPlaylist.TrackId);
+            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Name", trackInPlaylist.PlaylistId);
+            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", trackInPlaylist.TrackId);
             return View(trackInPlaylist);
         }
 

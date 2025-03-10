@@ -22,7 +22,8 @@ namespace WebApp.Controllers
         // GET: Playlist
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Playlists.ToListAsync());
+            var appDbContext = _context.Playlists.Include(p => p.User);
+            return View(await appDbContext.ToListAsync());
         }
 
         // GET: Playlist/Details/5
@@ -34,6 +35,7 @@ namespace WebApp.Controllers
             }
 
             var playlist = await _context.Playlists
+                .Include(p => p.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (playlist == null)
             {
@@ -46,6 +48,7 @@ namespace WebApp.Controllers
         // GET: Playlist/Create
         public IActionResult Create()
         {
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -54,7 +57,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ArtistId,Name,Description,CoverUrl,IsPublic,CreatedAt,Id")] Playlist playlist)
+        public async Task<IActionResult> Create([Bind("UserId,Name,Description,CoverUrl,IsPublic,CreatedAt,Id")] Playlist playlist)
         {
             if (ModelState.IsValid)
             {
@@ -63,6 +66,7 @@ namespace WebApp.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", playlist.UserId);
             return View(playlist);
         }
 
@@ -79,6 +83,7 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", playlist.UserId);
             return View(playlist);
         }
 
@@ -87,7 +92,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("ArtistId,Name,Description,CoverUrl,IsPublic,CreatedAt,Id")] Playlist playlist)
+        public async Task<IActionResult> Edit(Guid id, [Bind("UserId,Name,Description,CoverUrl,IsPublic,CreatedAt,Id")] Playlist playlist)
         {
             if (id != playlist.Id)
             {
@@ -114,6 +119,7 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", playlist.UserId);
             return View(playlist);
         }
 
@@ -126,6 +132,7 @@ namespace WebApp.Controllers
             }
 
             var playlist = await _context.Playlists
+                .Include(p => p.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (playlist == null)
             {

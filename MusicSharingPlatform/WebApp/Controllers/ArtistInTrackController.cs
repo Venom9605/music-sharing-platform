@@ -22,7 +22,7 @@ namespace WebApp.Controllers
         // GET: ArtistInTrack
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.ArtistsInTracks.Include(a => a.ArtistRole).Include(a => a.Track);
+            var appDbContext = _context.ArtistsInTracks.Include(a => a.ArtistRole).Include(a => a.Track).Include(a => a.User);
             return View(await appDbContext.ToListAsync());
         }
 
@@ -37,6 +37,7 @@ namespace WebApp.Controllers
             var artistInTrack = await _context.ArtistsInTracks
                 .Include(a => a.ArtistRole)
                 .Include(a => a.Track)
+                .Include(a => a.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (artistInTrack == null)
             {
@@ -50,7 +51,8 @@ namespace WebApp.Controllers
         public IActionResult Create()
         {
             ViewData["ArtistRoleId"] = new SelectList(_context.ArtistRoles, "Id", "Name");
-            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "CoverPath");
+            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title");
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -59,7 +61,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TrackId,ArtistId,ArtistRoleId,Id")] ArtistInTrack artistInTrack)
+        public async Task<IActionResult> Create([Bind("TrackId,UserId,ArtistRoleId,Id")] ArtistInTrack artistInTrack)
         {
             if (ModelState.IsValid)
             {
@@ -69,7 +71,8 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["ArtistRoleId"] = new SelectList(_context.ArtistRoles, "Id", "Name", artistInTrack.ArtistRoleId);
-            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "CoverPath", artistInTrack.TrackId);
+            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", artistInTrack.TrackId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", artistInTrack.UserId);
             return View(artistInTrack);
         }
 
@@ -87,7 +90,8 @@ namespace WebApp.Controllers
                 return NotFound();
             }
             ViewData["ArtistRoleId"] = new SelectList(_context.ArtistRoles, "Id", "Name", artistInTrack.ArtistRoleId);
-            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "CoverPath", artistInTrack.TrackId);
+            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", artistInTrack.TrackId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", artistInTrack.UserId);
             return View(artistInTrack);
         }
 
@@ -96,7 +100,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("TrackId,ArtistId,ArtistRoleId,Id")] ArtistInTrack artistInTrack)
+        public async Task<IActionResult> Edit(Guid id, [Bind("TrackId,UserId,ArtistRoleId,Id")] ArtistInTrack artistInTrack)
         {
             if (id != artistInTrack.Id)
             {
@@ -124,7 +128,8 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["ArtistRoleId"] = new SelectList(_context.ArtistRoles, "Id", "Name", artistInTrack.ArtistRoleId);
-            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "CoverPath", artistInTrack.TrackId);
+            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", artistInTrack.TrackId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", artistInTrack.UserId);
             return View(artistInTrack);
         }
 
@@ -139,6 +144,7 @@ namespace WebApp.Controllers
             var artistInTrack = await _context.ArtistsInTracks
                 .Include(a => a.ArtistRole)
                 .Include(a => a.Track)
+                .Include(a => a.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (artistInTrack == null)
             {

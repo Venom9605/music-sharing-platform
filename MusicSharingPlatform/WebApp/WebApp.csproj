@@ -29,4 +29,32 @@
       <ProjectReference Include="..\App.DAL.EF\App.DAL.EF.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\ArtistInTrack\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\ArtistInTrack\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\ArtistInTrack\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\ArtistInTrack\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\ArtistInTrack\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Playlist\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Playlist\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Playlist\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Playlist\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Playlist\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Rating\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Rating\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Rating\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Rating\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Rating\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\UserLink\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\UserLink\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\UserLink\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\UserLink\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\UserLink\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\UserSavedTrack\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\UserSavedTrack\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\UserSavedTrack\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\UserSavedTrack\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\UserSavedTrack\Index.cshtml" />
+    </ItemGroup>
+
 </Project>

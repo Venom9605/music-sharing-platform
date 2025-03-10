@@ -16,7 +16,7 @@
                 @Html.DisplayNameFor(model => model.Track)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ArtistId)
+                @Html.DisplayNameFor(model => model.User)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.ArtistRole)
@@ -28,10 +28,10 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Track!.CoverPath)
+                @Html.DisplayFor(modelItem => item.Track!.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ArtistId)
+                @Html.DisplayFor(modelItem => item.User!.Id)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ArtistRole!.Name)

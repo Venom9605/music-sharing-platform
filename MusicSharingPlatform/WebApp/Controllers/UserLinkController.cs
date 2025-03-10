@@ -22,7 +22,7 @@ namespace WebApp.Controllers
         // GET: UserLink
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.UserLinks.Include(u => u.LinkType);
+            var appDbContext = _context.UserLinks.Include(u => u.LinkType).Include(u => u.User);
             return View(await appDbContext.ToListAsync());
         }
 
@@ -36,6 +36,7 @@ namespace WebApp.Controllers
 
             var userLink = await _context.UserLinks
                 .Include(u => u.LinkType)
+                .Include(u => u.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (userLink == null)
             {
@@ -49,6 +50,7 @@ namespace WebApp.Controllers
         public IActionResult Create()
         {
             ViewData["LinkTypeId"] = new SelectList(_context.LinkTypes, "Id", "Name");
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -57,7 +59,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ArtistId,LinkTypeId,Url,Id")] UserLink userLink)
+        public async Task<IActionResult> Create([Bind("UserId,LinkTypeId,Url,Id")] UserLink userLink)
         {
             if (ModelState.IsValid)
             {
@@ -67,6 +69,7 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["LinkTypeId"] = new SelectList(_context.LinkTypes, "Id", "Name", userLink.LinkTypeId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userLink.UserId);
             return View(userLink);
         }
 
@@ -84,6 +87,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
             ViewData["LinkTypeId"] = new SelectList(_context.LinkTypes, "Id", "Name", userLink.LinkTypeId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userLink.UserId);
             return View(userLink);
         }
 
@@ -92,7 +96,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("ArtistId,LinkTypeId,Url,Id")] UserLink userLink)
+        public async Task<IActionResult> Edit(Guid id, [Bind("UserId,LinkTypeId,Url,Id")] UserLink userLink)
         {
             if (id != userLink.Id)
             {
@@ -120,6 +124,7 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["LinkTypeId"] = new SelectList(_context.LinkTypes, "Id", "Name", userLink.LinkTypeId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userLink.UserId);
             return View(userLink);
         }
 
@@ -133,6 +138,7 @@ namespace WebApp.Controllers
 
             var userLink = await _context.UserLinks
                 .Include(u => u.LinkType)
+                .Include(u => u.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (userLink == null)
             {

@@ -5,8 +5,6 @@ namespace Domain;
 
 public class Artist : IdentityUser
 {
-    public new Guid Id { get; set; }
-    
     [MaxLength(50)]
     public string DisplayName { get; set; } = default!;
     

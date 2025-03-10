@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace Domain;
 
 public class UserLink : BaseEntity
 {
-    public Guid ArtistId { get; set; }
-    public Artist? Artist { get; set; }
+    public string UserId { get; set; } = default!;
+    public IdentityUser? User { get; set; } 
     
     public Guid LinkTypeId { get; set; }
     public LinkType? LinkType { get; set; }

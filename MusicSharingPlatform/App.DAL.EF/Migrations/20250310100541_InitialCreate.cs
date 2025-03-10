@@ -232,22 +232,28 @@ namespace App.DAL.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ArtistId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ArtistId1 = table.Column<string>(type: "TEXT", nullable: true),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
                     CoverUrl = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
                     IsPublic = table.Column<bool>(type: "INTEGER", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    ArtistId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Playlists", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Playlists_AspNetUsers_ArtistId1",
-                        column: x => x.ArtistId1,
+                        name: "FK_Playlists_AspNetUsers_ArtistId",
+                        column: x => x.ArtistId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Playlists_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -255,19 +261,25 @@ namespace App.DAL.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ArtistId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ArtistId1 = table.Column<string>(type: "TEXT", nullable: true),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
                     LinkTypeId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Url = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false)
+                    Url = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
+                    ArtistId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserLinks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserLinks_AspNetUsers_ArtistId1",
-                        column: x => x.ArtistId1,
+                        name: "FK_UserLinks_AspNetUsers_ArtistId",
+                        column: x => x.ArtistId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserLinks_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserLinks_LinkTypes_LinkTypeId",
                         column: x => x.LinkTypeId,
@@ -282,9 +294,9 @@ namespace App.DAL.EF.Migrations
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     TrackId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ArtistId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ArtistId1 = table.Column<string>(type: "TEXT", nullable: true),
-                    ArtistRoleId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    ArtistRoleId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    ArtistId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -296,10 +308,16 @@ namespace App.DAL.EF.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ArtistsInTracks_AspNetUsers_ArtistId1",
-                        column: x => x.ArtistId1,
+                        name: "FK_ArtistsInTracks_AspNetUsers_ArtistId",
+                        column: x => x.ArtistId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ArtistsInTracks_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ArtistsInTracks_Tracks_TrackId",
                         column: x => x.TrackId,
@@ -339,20 +357,26 @@ namespace App.DAL.EF.Migrations
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     TrackId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ArtistId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ArtistId1 = table.Column<string>(type: "TEXT", nullable: true),
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
                     Score = table.Column<int>(type: "INTEGER", nullable: false),
                     Comment = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true),
-                    Date = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    Date = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    ArtistId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Ratings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Ratings_AspNetUsers_ArtistId1",
-                        column: x => x.ArtistId1,
+                        name: "FK_Ratings_AspNetUsers_ArtistId",
+                        column: x => x.ArtistId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Ratings_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Ratings_Tracks_TrackId",
                         column: x => x.TrackId,
@@ -418,18 +442,24 @@ namespace App.DAL.EF.Migrations
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     TrackId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ArtistId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ArtistId1 = table.Column<string>(type: "TEXT", nullable: true),
-                    SavedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    SavedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    ArtistId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserSavedTracks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserSavedTracks_AspNetUsers_ArtistId1",
-                        column: x => x.ArtistId1,
+                        name: "FK_UserSavedTracks_AspNetUsers_ArtistId",
+                        column: x => x.ArtistId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserSavedTracks_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserSavedTracks_Tracks_TrackId",
                         column: x => x.TrackId,
@@ -514,9 +544,9 @@ namespace App.DAL.EF.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ArtistsInTracks_ArtistId1",
+                name: "IX_ArtistsInTracks_ArtistId",
                 table: "ArtistsInTracks",
-                column: "ArtistId1");
+                column: "ArtistId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ArtistsInTracks_ArtistRoleId",
@@ -527,6 +557,11 @@ namespace App.DAL.EF.Migrations
                 name: "IX_ArtistsInTracks_TrackId",
                 table: "ArtistsInTracks",
                 column: "TrackId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ArtistsInTracks_UserId",
+                table: "ArtistsInTracks",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -586,19 +621,29 @@ namespace App.DAL.EF.Migrations
                 column: "TrackId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Playlists_ArtistId1",
+                name: "IX_Playlists_ArtistId",
                 table: "Playlists",
-                column: "ArtistId1");
+                column: "ArtistId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Ratings_ArtistId1",
+                name: "IX_Playlists_UserId",
+                table: "Playlists",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ratings_ArtistId",
                 table: "Ratings",
-                column: "ArtistId1");
+                column: "ArtistId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ratings_TrackId",
                 table: "Ratings",
                 column: "TrackId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ratings_UserId",
+                table: "Ratings",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TagsInPlaylists_PlaylistId",
@@ -641,9 +686,9 @@ namespace App.DAL.EF.Migrations
                 column: "TrackId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserLinks_ArtistId1",
+                name: "IX_UserLinks_ArtistId",
                 table: "UserLinks",
-                column: "ArtistId1");
+                column: "ArtistId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserLinks_LinkTypeId",
@@ -651,14 +696,24 @@ namespace App.DAL.EF.Migrations
                 column: "LinkTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserSavedTracks_ArtistId1",
+                name: "IX_UserLinks_UserId",
+                table: "UserLinks",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserSavedTracks_ArtistId",
                 table: "UserSavedTracks",
-                column: "ArtistId1");
+                column: "ArtistId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserSavedTracks_TrackId",
                 table: "UserSavedTracks",
                 column: "TrackId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserSavedTracks_UserId",
+                table: "UserSavedTracks",
+                column: "UserId");
         }
 
         /// <inheritdoc />

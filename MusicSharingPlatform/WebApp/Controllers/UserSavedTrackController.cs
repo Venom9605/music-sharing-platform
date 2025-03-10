@@ -22,7 +22,7 @@ namespace WebApp.Controllers
         // GET: UserSavedTrack
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.UserSavedTracks.Include(u => u.Track);
+            var appDbContext = _context.UserSavedTracks.Include(u => u.Track).Include(u => u.User);
             return View(await appDbContext.ToListAsync());
         }
 
@@ -36,6 +36,7 @@ namespace WebApp.Controllers
 
             var userSavedTracks = await _context.UserSavedTracks
                 .Include(u => u.Track)
+                .Include(u => u.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (userSavedTracks == null)
             {
@@ -48,7 +49,8 @@ namespace WebApp.Controllers
         // GET: UserSavedTrack/Create
         public IActionResult Create()
         {
-            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "CoverPath");
+            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title");
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -57,7 +59,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TrackId,ArtistId,SavedAt,Id")] UserSavedTracks userSavedTracks)
+        public async Task<IActionResult> Create([Bind("TrackId,UserId,SavedAt,Id")] UserSavedTracks userSavedTracks)
         {
             if (ModelState.IsValid)
             {
@@ -66,7 +68,8 @@ namespace WebApp.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "CoverPath", userSavedTracks.TrackId);
+            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", userSavedTracks.TrackId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userSavedTracks.UserId);
             return View(userSavedTracks);
         }
 
@@ -83,7 +86,8 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "CoverPath", userSavedTracks.TrackId);
+            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", userSavedTracks.TrackId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userSavedTracks.UserId);
             return View(userSavedTracks);
         }
 
@@ -92,7 +96,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("TrackId,ArtistId,SavedAt,Id")] UserSavedTracks userSavedTracks)
+        public async Task<IActionResult> Edit(Guid id, [Bind("TrackId,UserId,SavedAt,Id")] UserSavedTracks userSavedTracks)
         {
             if (id != userSavedTracks.Id)
             {
@@ -119,7 +123,8 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "CoverPath", userSavedTracks.TrackId);
+            ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", userSavedTracks.TrackId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userSavedTracks.UserId);
             return View(userSavedTracks);
         }
 
@@ -133,6 +138,7 @@ namespace WebApp.Controllers
 
             var userSavedTracks = await _context.UserSavedTracks
                 .Include(u => u.Track)
+                .Include(u => u.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (userSavedTracks == null)
             {

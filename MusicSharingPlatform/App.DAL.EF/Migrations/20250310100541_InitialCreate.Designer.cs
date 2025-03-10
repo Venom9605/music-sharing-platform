@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace App.DAL.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250302135409_InitialCreate")]
+    [Migration("20250310100541_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -26,10 +26,7 @@ namespace App.DAL.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("ArtistId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ArtistId1")
+                    b.Property<string>("ArtistId")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("ArtistRoleId")
@@ -38,13 +35,19 @@ namespace App.DAL.EF.Migrations
                     b.Property<Guid>("TrackId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ArtistId1");
+                    b.HasIndex("ArtistId");
 
                     b.HasIndex("ArtistRoleId");
 
                     b.HasIndex("TrackId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("ArtistsInTracks");
                 });
@@ -145,10 +148,7 @@ namespace App.DAL.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("ArtistId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ArtistId1")
+                    b.Property<string>("ArtistId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CoverUrl")
@@ -171,9 +171,15 @@ namespace App.DAL.EF.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ArtistId1");
+                    b.HasIndex("ArtistId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Playlists");
                 });
@@ -184,10 +190,7 @@ namespace App.DAL.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("ArtistId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ArtistId1")
+                    b.Property<string>("ArtistId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Comment")
@@ -203,11 +206,17 @@ namespace App.DAL.EF.Migrations
                     b.Property<Guid>("TrackId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ArtistId1");
+                    b.HasIndex("ArtistId");
 
                     b.HasIndex("TrackId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Ratings");
                 });
@@ -361,10 +370,7 @@ namespace App.DAL.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("ArtistId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ArtistId1")
+                    b.Property<string>("ArtistId")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("LinkTypeId")
@@ -375,11 +381,17 @@ namespace App.DAL.EF.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ArtistId1");
+                    b.HasIndex("ArtistId");
 
                     b.HasIndex("LinkTypeId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserLinks");
                 });
@@ -390,10 +402,7 @@ namespace App.DAL.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("ArtistId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ArtistId1")
+                    b.Property<string>("ArtistId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("SavedAt")
@@ -402,11 +411,17 @@ namespace App.DAL.EF.Migrations
                     b.Property<Guid>("TrackId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ArtistId1");
+                    b.HasIndex("ArtistId");
 
                     b.HasIndex("TrackId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserSavedTracks");
                 });
@@ -643,9 +658,9 @@ namespace App.DAL.EF.Migrations
 
             modelBuilder.Entity("Domain.ArtistInTrack", b =>
                 {
-                    b.HasOne("Domain.Artist", "Artist")
+                    b.HasOne("Domain.Artist", null)
                         .WithMany("ArtistInTracks")
-                        .HasForeignKey("ArtistId1");
+                        .HasForeignKey("ArtistId");
 
                     b.HasOne("Domain.ArtistRole", "ArtistRole")
                         .WithMany("ArtistInTracks")
@@ -659,11 +674,17 @@ namespace App.DAL.EF.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Artist");
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ArtistRole");
 
                     b.Navigation("Track");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.MoodsInPlaylist", b =>
@@ -706,18 +727,24 @@ namespace App.DAL.EF.Migrations
 
             modelBuilder.Entity("Domain.Playlist", b =>
                 {
-                    b.HasOne("Domain.Artist", "Artist")
+                    b.HasOne("Domain.Artist", null)
                         .WithMany("Playlists")
-                        .HasForeignKey("ArtistId1");
+                        .HasForeignKey("ArtistId");
 
-                    b.Navigation("Artist");
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Rating", b =>
                 {
-                    b.HasOne("Domain.Artist", "Artist")
+                    b.HasOne("Domain.Artist", null)
                         .WithMany("Ratings")
-                        .HasForeignKey("ArtistId1");
+                        .HasForeignKey("ArtistId");
 
                     b.HasOne("Domain.Track", "Track")
                         .WithMany("Rating")
@@ -725,9 +752,15 @@ namespace App.DAL.EF.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Artist");
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Track");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.TagsInPlaylist", b =>
@@ -808,9 +841,9 @@ namespace App.DAL.EF.Migrations
 
             modelBuilder.Entity("Domain.UserLink", b =>
                 {
-                    b.HasOne("Domain.Artist", "Artist")
+                    b.HasOne("Domain.Artist", null)
                         .WithMany("UserLinks")
-                        .HasForeignKey("ArtistId1");
+                        .HasForeignKey("ArtistId");
 
                     b.HasOne("Domain.LinkType", "LinkType")
                         .WithMany("UserLinks")
@@ -818,16 +851,22 @@ namespace App.DAL.EF.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Artist");
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("LinkType");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.UserSavedTracks", b =>
                 {
-                    b.HasOne("Domain.Artist", "Artist")
+                    b.HasOne("Domain.Artist", null)
                         .WithMany("SavedTracks")
-                        .HasForeignKey("ArtistId1");
+                        .HasForeignKey("ArtistId");
 
                     b.HasOne("Domain.Track", "Track")
                         .WithMany("SavedByUsers")
@@ -835,9 +874,15 @@ namespace App.DAL.EF.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Artist");
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Track");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

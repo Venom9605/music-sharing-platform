@@ -49,7 +49,7 @@ namespace WebApp.Controllers
         // GET: TagsInPlaylist/Create
         public IActionResult Create()
         {
-            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Description");
+            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Name");
             ViewData["TagId"] = new SelectList(_context.Tags, "Id", "Name");
             return View();
         }
@@ -68,7 +68,7 @@ namespace WebApp.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Description", tagsInPlaylist.PlaylistId);
+            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Name", tagsInPlaylist.PlaylistId);
             ViewData["TagId"] = new SelectList(_context.Tags, "Id", "Name", tagsInPlaylist.TagId);
             return View(tagsInPlaylist);
         }
@@ -86,7 +86,7 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Description", tagsInPlaylist.PlaylistId);
+            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Name", tagsInPlaylist.PlaylistId);
             ViewData["TagId"] = new SelectList(_context.Tags, "Id", "Name", tagsInPlaylist.TagId);
             return View(tagsInPlaylist);
         }
@@ -123,7 +123,7 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Description", tagsInPlaylist.PlaylistId);
+            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Name", tagsInPlaylist.PlaylistId);
             ViewData["TagId"] = new SelectList(_context.Tags, "Id", "Name", tagsInPlaylist.TagId);
             return View(tagsInPlaylist);
         }

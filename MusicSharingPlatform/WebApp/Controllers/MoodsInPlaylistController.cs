@@ -50,7 +50,7 @@ namespace WebApp.Controllers
         public IActionResult Create()
         {
             ViewData["MoodId"] = new SelectList(_context.Moods, "Id", "Name");
-            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Description");
+            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Name");
             return View();
         }
 
@@ -69,7 +69,7 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["MoodId"] = new SelectList(_context.Moods, "Id", "Name", moodsInPlaylist.MoodId);
-            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Description", moodsInPlaylist.PlaylistId);
+            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Name", moodsInPlaylist.PlaylistId);
             return View(moodsInPlaylist);
         }
 
@@ -87,7 +87,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
             ViewData["MoodId"] = new SelectList(_context.Moods, "Id", "Name", moodsInPlaylist.MoodId);
-            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Description", moodsInPlaylist.PlaylistId);
+            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Name", moodsInPlaylist.PlaylistId);
             return View(moodsInPlaylist);
         }
 
@@ -124,7 +124,7 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["MoodId"] = new SelectList(_context.Moods, "Id", "Name", moodsInPlaylist.MoodId);
-            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Description", moodsInPlaylist.PlaylistId);
+            ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Name", moodsInPlaylist.PlaylistId);
             return View(moodsInPlaylist);
         }
 

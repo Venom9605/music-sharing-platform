@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace Domain;
 
@@ -7,8 +8,8 @@ public class Rating : BaseEntity
     public Guid TrackId { get; set; }
     public Track? Track { get; set; }
     
-    public Guid ArtistId { get; set; }
-    public Artist? Artist { get; set; }
+    public string UserId { get; set; } = default!;
+    public IdentityUser? User { get; set; } 
     
     public int Score { get; set; }
     
