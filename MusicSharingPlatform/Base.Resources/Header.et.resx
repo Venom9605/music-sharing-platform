@@ -1,0 +1,68 @@
+﻿<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="ArtistRoles" xml:space="preserve">
+        <value>Artisti Rollid</value>
+    </data>
+    <data name="ArtistsInTracks" xml:space="preserve">
+        <value>Artistid Lugudes</value>
+    </data>
+    <data name="Home" xml:space="preserve">
+        <value>Pealeht</value>
+    </data>
+    <data name="LinkTypes" xml:space="preserve">
+        <value>Lingi Tüübid</value>
+    </data>
+    <data name="Moods" xml:space="preserve">
+        <value>Meeleolud</value>
+    </data>
+    <data name="MoodsInPlaylists" xml:space="preserve">
+        <value>Meeleolud Esitlusloendites</value>
+    </data>
+    <data name="MoodsInTracks" xml:space="preserve">
+        <value>Meeleolud Lugudes</value>
+    </data>
+    <data name="Playlists" xml:space="preserve">
+        <value>Esitlusloendid</value>
+    </data>
+    <data name="Privacy" xml:space="preserve">
+        <value>Privaatsus</value>
+    </data>
+    <data name="Ratings" xml:space="preserve">
+        <value>Hinnangud</value>
+    </data>
+    <data name="SavedTracks" xml:space="preserve">
+        <value>Salvestatud Lood</value>
+    </data>
+    <data name="Tags" xml:space="preserve">
+        <value>Tunnused</value>
+    </data>
+    <data name="TagsInPlaylists" xml:space="preserve">
+        <value>Tunnused Esitlusloendites</value>
+    </data>
+    <data name="TagsInTracks" xml:space="preserve">
+        <value>Tunnused Lugudes</value>
+    </data>
+    <data name="TrackLinks" xml:space="preserve">
+        <value>Lugude Lingid</value>
+    </data>
+    <data name="Tracks" xml:space="preserve">
+        <value>Lood</value>
+    </data>
+    <data name="TracksInPlaylists" xml:space="preserve">
+        <value>Lood Esitlusloendites</value>
+    </data>
+    <data name="UserLinks" xml:space="preserve">
+        <value>Kasutaja Lingid</value>
+    </data>
+</root>

@@ -21,59 +21,61 @@
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">@Base.Resources.Header.Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Track" asp-action="Index">Tracks</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Track" asp-action="Index">@Base.Resources.Header.Tracks</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="ArtistInTrack" asp-action="Index">Artists in Tracks</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="ArtistInTrack" asp-action="Index">@Base.Resources.Header.ArtistsInTracks</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="ArtistRole" asp-action="Index">Artist Roles</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="ArtistRole" asp-action="Index">@Base.Resources.Header.ArtistRoles</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="LinkType" asp-action="Index">Link Types</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="LinkType" asp-action="Index">@Base.Resources.Header.LinkTypes</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Mood" asp-action="Index">Moods</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Mood" asp-action="Index">@Base.Resources.Header.Moods</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="MoodsInPlaylist" asp-action="Index">Moods in Playlists</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="MoodsInPlaylist" asp-action="Index">@Base.Resources.Header.MoodsInPlaylists</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="MoodsInTrack" asp-action="Index">Moods in Tracks</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="MoodsInTrack" asp-action="Index">@Base.Resources.Header.MoodsInTracks</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Playlist" asp-action="Index">Playlists</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Playlist" asp-action="Index">@Base.Resources.Header.Playlists</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Rating" asp-action="Index">Ratings</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Rating" asp-action="Index">@Base.Resources.Header.Ratings</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Tag" asp-action="Index">Tags</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Tag" asp-action="Index">@Base.Resources.Header.Tags</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="TagsInPlaylist" asp-action="Index">Tags in Playlists</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="TagsInPlaylist" asp-action="Index">@Base.Resources.Header.TagsInPlaylists</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="TagsInTrack" asp-action="Index">Tags in Tracks</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="TagsInTrack" asp-action="Index">@Base.Resources.Header.TagsInTracks</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="TrackInPlaylist" asp-action="Index">Tracks in Playlists</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="TrackInPlaylist" asp-action="Index">@Base.Resources.Header.TracksInPlaylists</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="TrackLink" asp-action="Index">Track Links</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="TrackLink" asp-action="Index">@Base.Resources.Header.TrackLinks</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="UserLink" asp-action="Index">User Links</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="UserLink" asp-action="Index">@Base.Resources.Header.UserLinks</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="UserSavedTrack" asp-action="Index">Saved Tracks</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="UserSavedTrack" asp-action="Index">@Base.Resources.Header.SavedTracks</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">@Base.Resources.Header.Privacy</a>
                     </li>
+
+                    <partial name="_LanguageSelection"/>
                 </ul>
                 <partial name="_LoginPartial"/>
             </div>
@@ -88,7 +90,8 @@
 
 <footer class="border-top footer text-muted">
     <div class="container">
-        &copy; 2025 - WebApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        &copy; 2025 - WebApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">@Base.Resources.Header.Privacy</a> |
+        @Thread.CurrentThread.CurrentCulture.Name | @Thread.CurrentThread.CurrentUICulture.Name
     </div>
 </footer>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>

@@ -1,0 +1,168 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Domain\Artist.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Artist.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Domain\ArtistRole.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>ArtistRole.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Domain\LinkType.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>LinkType.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Domain\MoodsInPlaylist.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>MoodsInPlaylist.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Domain\MoodsInTrack.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>MoodsInTrack.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Domain\Playlist.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Playlist.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Domain\Rating.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Rating.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Domain\Tag.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Tag.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Domain\TagsInPlaylist.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>TagsInPlaylist.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Domain\TagsInTrack.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>TagsInTrack.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Domain\Track.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Track.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Domain\TrackInPlaylist.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>TrackInPlaylist.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Domain\TrackLink.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>TrackLink.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Domain\UserLink.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>UserLink.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Domain\UserSavedTracks.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>UserSavedTracks.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Domain\ArtistInTrack.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>ArtistInTrack.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Domain\Mood.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Mood.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Domain\Artist.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Artist.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Domain\ArtistRole.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ArtistRole.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Domain\LinkType.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>LinkType.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Domain\MoodsInPlaylist.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>MoodsInPlaylist.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Domain\MoodsInTrack.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>MoodsInTrack.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Domain\Playlist.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Playlist.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Domain\Rating.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Rating.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Domain\Tag.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Tag.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Domain\TagsInPlaylist.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>TagsInPlaylist.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Domain\TagsInTrack.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>TagsInTrack.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Domain\Track.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Track.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Domain\TrackInPlaylist.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>TrackInPlaylist.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Domain\TrackLink.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>TrackLink.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Domain\UserLink.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>UserLink.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Domain\UserSavedTracks.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>UserSavedTracks.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Domain\ArtistInTrack.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ArtistInTrack.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Domain\Mood.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Mood.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+</Project>
