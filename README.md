@@ -11,6 +11,14 @@ dotnet ef database --project App.DAL.EF --startup-project WebApp update
 
 dotnet ef database --project App.DAL.EF --startup-project WebApp drop
 
+
+Artist Discriminator:
+
+dotnet ef migrations add SetArtistDiscriminator --project App.DAL.EF --startup-project WebApp
+dotnet ef database update --project App.DAL.EF --startup-project WebApp
+
+
+
 ~~~
 
 ~~~sh

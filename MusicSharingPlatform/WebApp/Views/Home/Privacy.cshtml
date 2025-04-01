@@ -7,3 +7,14 @@
 
 
 @DateTime.Now.ToLongDateString()
+
+
+<table class="table">
+    @foreach (var claim in User.Claims)
+    {
+        <tr>
+            <td>@claim.Type</td>
+            <td>@claim.Value</td>
+        </tr>
+    }
+</table>

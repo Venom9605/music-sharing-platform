@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Base.Domain;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domain;
@@ -14,7 +15,7 @@ public class UserSavedTracks : BaseEntity
     [Display(Name = nameof(User), Prompt = nameof(User), ResourceType = typeof(App.Resources.Domain.UserSavedTracks))]
     public string UserId { get; set; } = default!;
     [Display(Name = nameof(User), Prompt = nameof(User), ResourceType = typeof(App.Resources.Domain.UserSavedTracks))]
-    public IdentityUser? User { get; set; } 
+    public Artist? User { get; set; } 
 
     
     private DateTime _savedAt;

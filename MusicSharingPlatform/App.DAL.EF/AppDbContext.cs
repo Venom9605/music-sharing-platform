@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace App.DAL.EF;
 
-public class AppDbContext : IdentityDbContext
+public class AppDbContext : IdentityDbContext<Artist>
 {
     public DbSet<Artist> Artists { get; set; } = default!;
     public DbSet<ArtistRole> ArtistRoles { get; set; } = default!;

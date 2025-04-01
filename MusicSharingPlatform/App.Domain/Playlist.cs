@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices.JavaScript;
+using Base.Domain;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domain;
@@ -9,7 +10,7 @@ public class Playlist : BaseEntity
     [Display(Name = nameof(User), Prompt = nameof(User), ResourceType = typeof(App.Resources.Domain.Playlist))]
     public string UserId { get; set; } = default!;
     [Display(Name = nameof(User), Prompt = nameof(User), ResourceType = typeof(App.Resources.Domain.Playlist))]
-    public IdentityUser? User { get; set; } 
+    public Artist? User { get; set; } 
 
     
     [MaxLength(100)]

@@ -7,160 +7,162 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using Domain;
+using Microsoft.AspNetCore.Authorization;
 
-namespace WebApp.Controllers
+namespace WebApp.Controllers;
+
+[Authorize]
+
+public class PlaylistController : Controller
 {
-    public class PlaylistController : Controller
+    private readonly AppDbContext _context;
+
+    public PlaylistController(AppDbContext context)
     {
-        private readonly AppDbContext _context;
+        _context = context;
+    }
 
-        public PlaylistController(AppDbContext context)
+    // GET: Playlist
+    public async Task<IActionResult> Index()
+    {
+        var appDbContext = _context.Playlists.Include(p => p.User);
+        return View(await appDbContext.ToListAsync());
+    }
+
+    // GET: Playlist/Details/5
+    public async Task<IActionResult> Details(Guid? id)
+    {
+        if (id == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        // GET: Playlist
-        public async Task<IActionResult> Index()
+        var playlist = await _context.Playlists
+            .Include(p => p.User)
+            .FirstOrDefaultAsync(m => m.Id == id);
+        if (playlist == null)
         {
-            var appDbContext = _context.Playlists.Include(p => p.User);
-            return View(await appDbContext.ToListAsync());
+            return NotFound();
         }
 
-        // GET: Playlist/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        return View(playlist);
+    }
+
+    // GET: Playlist/Create
+    public IActionResult Create()
+    {
+        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
+        return View();
+    }
+
+    // POST: Playlist/Create
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create([Bind("UserId,Name,Description,CoverUrl,IsPublic,CreatedAt,Id")] Playlist playlist)
+    {
+        if (ModelState.IsValid)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var playlist = await _context.Playlists
-                .Include(p => p.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (playlist == null)
-            {
-                return NotFound();
-            }
-
-            return View(playlist);
-        }
-
-        // GET: Playlist/Create
-        public IActionResult Create()
-        {
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
-            return View();
-        }
-
-        // POST: Playlist/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserId,Name,Description,CoverUrl,IsPublic,CreatedAt,Id")] Playlist playlist)
-        {
-            if (ModelState.IsValid)
-            {
-                playlist.Id = Guid.NewGuid();
-                playlist.CreatedAt = DateTime.UtcNow;
-                _context.Add(playlist);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", playlist.UserId);
-            return View(playlist);
-        }
-
-        // GET: Playlist/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var playlist = await _context.Playlists.FindAsync(id);
-            if (playlist == null)
-            {
-                return NotFound();
-            }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", playlist.UserId);
-            return View(playlist);
-        }
-
-        // POST: Playlist/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("UserId,Name,Description,CoverUrl,IsPublic,CreatedAt,Id")] Playlist playlist)
-        {
-            if (id != playlist.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(playlist);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PlaylistExists(playlist.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", playlist.UserId);
-            return View(playlist);
-        }
-
-        // GET: Playlist/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var playlist = await _context.Playlists
-                .Include(p => p.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (playlist == null)
-            {
-                return NotFound();
-            }
-
-            return View(playlist);
-        }
-
-        // POST: Playlist/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            var playlist = await _context.Playlists.FindAsync(id);
-            if (playlist != null)
-            {
-                _context.Playlists.Remove(playlist);
-            }
-
+            playlist.Id = Guid.NewGuid();
+            playlist.CreatedAt = DateTime.UtcNow;
+            _context.Add(playlist);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", playlist.UserId);
+        return View(playlist);
+    }
 
-        private bool PlaylistExists(Guid id)
+    // GET: Playlist/Edit/5
+    public async Task<IActionResult> Edit(Guid? id)
+    {
+        if (id == null)
         {
-            return _context.Playlists.Any(e => e.Id == id);
+            return NotFound();
         }
+
+        var playlist = await _context.Playlists.FindAsync(id);
+        if (playlist == null)
+        {
+            return NotFound();
+        }
+        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", playlist.UserId);
+        return View(playlist);
+    }
+
+    // POST: Playlist/Edit/5
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(Guid id, [Bind("UserId,Name,Description,CoverUrl,IsPublic,CreatedAt,Id")] Playlist playlist)
+    {
+        if (id != playlist.Id)
+        {
+            return NotFound();
+        }
+
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                _context.Update(playlist);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PlaylistExists(playlist.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(Index));
+        }
+        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", playlist.UserId);
+        return View(playlist);
+    }
+
+    // GET: Playlist/Delete/5
+    public async Task<IActionResult> Delete(Guid? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        var playlist = await _context.Playlists
+            .Include(p => p.User)
+            .FirstOrDefaultAsync(m => m.Id == id);
+        if (playlist == null)
+        {
+            return NotFound();
+        }
+
+        return View(playlist);
+    }
+
+    // POST: Playlist/Delete/5
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(Guid id)
+    {
+        var playlist = await _context.Playlists.FindAsync(id);
+        if (playlist != null)
+        {
+            _context.Playlists.Remove(playlist);
+        }
+
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
+
+    private bool PlaylistExists(Guid id)
+    {
+        return _context.Playlists.Any(e => e.Id == id);
     }
 }

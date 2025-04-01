@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -23,6 +25,9 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">@Base.Resources.Header.Home</a>
                     </li>
+                    
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Track" asp-action="Index">@Base.Resources.Header.Tracks</a>
                     </li>
@@ -71,6 +76,8 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="UserSavedTrack" asp-action="Index">@Base.Resources.Header.SavedTracks</a>
                     </li>
+                    }
+                    
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">@Base.Resources.Header.Privacy</a>
                     </li>

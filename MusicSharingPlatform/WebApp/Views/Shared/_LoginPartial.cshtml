@@ -1,6 +1,7 @@
-﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+﻿@using App.Resources.Domain
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<Domain.Artist> SignInManager
+@inject UserManager<Domain.Artist> UserManager
 
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))

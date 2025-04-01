@@ -5,16 +5,18 @@ namespace Domain;
 
 public class Artist : IdentityUser
 {
+    
+    // currently nullable, add UI for adding values
     [MaxLength(50)]
     public string DisplayName { get; set; } = default!;
     
     [MaxLength(1000)]
-    public string Bio { get; set; } = default!;
+    public string? Bio { get; set; } = default!;
     
     [MaxLength(512)]
-    public string ProfilePicture { get; set; } = default!;
+    public string? ProfilePicture { get; set; } = default!;
 
-    public DateTime JoinDate { get; set; }
+    public DateTime? JoinDate { get; set; }
     
     public ICollection<ArtistInTrack>? ArtistInTracks { get; set; }
     

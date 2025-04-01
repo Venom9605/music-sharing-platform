@@ -22,14 +22,91 @@ namespace App.DAL.EF.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Domain.Artist", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Bio")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("JoinDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ProfilePicture")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
             modelBuilder.Entity("Domain.ArtistInTrack", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<string>("ArtistId")
-                        .HasColumnType("text");
 
                     b.Property<Guid>("ArtistRoleId")
                         .HasColumnType("uuid");
@@ -42,8 +119,6 @@ namespace App.DAL.EF.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ArtistId");
 
                     b.HasIndex("ArtistRoleId");
 
@@ -150,9 +225,6 @@ namespace App.DAL.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ArtistId")
-                        .HasColumnType("text");
-
                     b.Property<string>("CoverUrl")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
@@ -179,8 +251,6 @@ namespace App.DAL.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ArtistId");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("Playlists");
@@ -191,9 +261,6 @@ namespace App.DAL.EF.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<string>("ArtistId")
-                        .HasColumnType("text");
 
                     b.Property<string>("Comment")
                         .HasMaxLength(512)
@@ -213,8 +280,6 @@ namespace App.DAL.EF.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ArtistId");
 
                     b.HasIndex("TrackId");
 
@@ -372,9 +437,6 @@ namespace App.DAL.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ArtistId")
-                        .HasColumnType("text");
-
                     b.Property<Guid>("LinkTypeId")
                         .HasColumnType("uuid");
 
@@ -389,8 +451,6 @@ namespace App.DAL.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ArtistId");
-
                     b.HasIndex("LinkTypeId");
 
                     b.HasIndex("UserId");
@@ -404,9 +464,6 @@ namespace App.DAL.EF.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ArtistId")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("SavedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -418,8 +475,6 @@ namespace App.DAL.EF.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ArtistId");
 
                     b.HasIndex("TrackId");
 
@@ -477,79 +532,6 @@ namespace App.DAL.EF.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("character varying(13)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
-
-                    b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasDiscriminator().HasValue("IdentityUser");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -637,37 +619,8 @@ namespace App.DAL.EF.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Artist", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
-
-                    b.Property<string>("Bio")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<DateTime>("JoinDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ProfilePicture")
-                        .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)");
-
-                    b.HasDiscriminator().HasValue("Artist");
-                });
-
             modelBuilder.Entity("Domain.ArtistInTrack", b =>
                 {
-                    b.HasOne("Domain.Artist", null)
-                        .WithMany("ArtistInTracks")
-                        .HasForeignKey("ArtistId");
-
                     b.HasOne("Domain.ArtistRole", "ArtistRole")
                         .WithMany("ArtistInTracks")
                         .HasForeignKey("ArtistRoleId")
@@ -680,8 +633,8 @@ namespace App.DAL.EF.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
-                        .WithMany()
+                    b.HasOne("Domain.Artist", "User")
+                        .WithMany("ArtistInTracks")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -733,12 +686,8 @@ namespace App.DAL.EF.Migrations
 
             modelBuilder.Entity("Domain.Playlist", b =>
                 {
-                    b.HasOne("Domain.Artist", null)
+                    b.HasOne("Domain.Artist", "User")
                         .WithMany("Playlists")
-                        .HasForeignKey("ArtistId");
-
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
-                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -748,18 +697,14 @@ namespace App.DAL.EF.Migrations
 
             modelBuilder.Entity("Domain.Rating", b =>
                 {
-                    b.HasOne("Domain.Artist", null)
-                        .WithMany("Ratings")
-                        .HasForeignKey("ArtistId");
-
                     b.HasOne("Domain.Track", "Track")
                         .WithMany("Rating")
                         .HasForeignKey("TrackId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
-                        .WithMany()
+                    b.HasOne("Domain.Artist", "User")
+                        .WithMany("Ratings")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -847,18 +792,14 @@ namespace App.DAL.EF.Migrations
 
             modelBuilder.Entity("Domain.UserLink", b =>
                 {
-                    b.HasOne("Domain.Artist", null)
-                        .WithMany("UserLinks")
-                        .HasForeignKey("ArtistId");
-
                     b.HasOne("Domain.LinkType", "LinkType")
                         .WithMany("UserLinks")
                         .HasForeignKey("LinkTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
-                        .WithMany()
+                    b.HasOne("Domain.Artist", "User")
+                        .WithMany("UserLinks")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -870,18 +811,14 @@ namespace App.DAL.EF.Migrations
 
             modelBuilder.Entity("Domain.UserSavedTracks", b =>
                 {
-                    b.HasOne("Domain.Artist", null)
-                        .WithMany("SavedTracks")
-                        .HasForeignKey("ArtistId");
-
                     b.HasOne("Domain.Track", "Track")
                         .WithMany("SavedByUsers")
                         .HasForeignKey("TrackId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
-                        .WithMany()
+                    b.HasOne("Domain.Artist", "User")
+                        .WithMany("SavedTracks")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -902,7 +839,7 @@ namespace App.DAL.EF.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("Domain.Artist", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -911,7 +848,7 @@ namespace App.DAL.EF.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("Domain.Artist", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -926,7 +863,7 @@ namespace App.DAL.EF.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("Domain.Artist", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -935,11 +872,24 @@ namespace App.DAL.EF.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("Domain.Artist", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Artist", b =>
+                {
+                    b.Navigation("ArtistInTracks");
+
+                    b.Navigation("Playlists");
+
+                    b.Navigation("Ratings");
+
+                    b.Navigation("SavedTracks");
+
+                    b.Navigation("UserLinks");
                 });
 
             modelBuilder.Entity("Domain.ArtistRole", b =>
@@ -992,19 +942,6 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("TrackInPlaylists");
 
                     b.Navigation("TrackLinks");
-                });
-
-            modelBuilder.Entity("Domain.Artist", b =>
-                {
-                    b.Navigation("ArtistInTracks");
-
-                    b.Navigation("Playlists");
-
-                    b.Navigation("Ratings");
-
-                    b.Navigation("SavedTracks");
-
-                    b.Navigation("UserLinks");
                 });
 #pragma warning restore 612, 618
         }

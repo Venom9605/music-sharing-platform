@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Base.Domain;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domain;
@@ -13,7 +14,7 @@ public class Rating : BaseEntity
     
     [Display(Name = nameof(User), Prompt = nameof(User), ResourceType = typeof(App.Resources.Domain.Rating))]
     public string UserId { get; set; } = default!;
-    public IdentityUser? User { get; set; } 
+    public Artist? User { get; set; } 
     
     
     [Display(Name = nameof(Score), Prompt = nameof(Score), ResourceType = typeof(App.Resources.Domain.Rating))]
