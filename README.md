@@ -1,6 +1,16 @@
 Marc Täll
 232696IADB
 
+
+
+# TODO
+- make repositories and interfaces for all tables.
+- change index in every controller to use BaseRepository methods. Override methods in the repository if needed to add Include().
+- implement all BaseRepository methods, make other crud operations in controllers use BaseRepository methods. 
+  When making for example Create methods in controllers, might need to add all the required repositories into the file, also immplement
+  savechanges method in the repository first, later move it using UOW. Start with one controller and one repository (Track and then ait), then move on to the next one.
+- implement UOW pattern.
+
 ~~~sh
 
 artist role ID and artist role ID1?

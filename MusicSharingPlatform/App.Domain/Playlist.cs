@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices.JavaScript;
 using Base.Domain;
+using Base.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domain;
 
-public class Playlist : BaseEntity
+public class Playlist : BaseEntity, IDomainUserId
 {
     [Display(Name = nameof(User), Prompt = nameof(User), ResourceType = typeof(App.Resources.Domain.Playlist))]
     public string UserId { get; set; } = default!;

@@ -17,7 +17,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\App.DAL.Interfaces\App.DAL.Interfaces.csproj" />
       <ProjectReference Include="..\App.Domain\App.Domain.csproj" />
+      <ProjectReference Include="..\Base.Dal.EF\Base.Dal.EF.csproj" />
     </ItemGroup>
 
 </Project>

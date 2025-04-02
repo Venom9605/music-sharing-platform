@@ -1,11 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
+using App.DAL.EF.Repositories;
+using App.DAL.Interfaces;
+using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 
@@ -14,22 +13,23 @@ namespace WebApp.Controllers;
 [Authorize]
 public class ArtistInTrackController : Controller
 {
-    private readonly AppDbContext _context;
+    private readonly AppDbContext _context; // remove this in the future
+    private readonly IArtistInTrackRepository _artistInTrackRepository;
+    private readonly ITrackRepository _trackRepository;
 
-    public ArtistInTrackController(AppDbContext context)
+    public ArtistInTrackController(AppDbContext context, IArtistInTrackRepository artistInTrackRepository, ITrackRepository trackRepository)
     {
         _context = context;
+        _artistInTrackRepository = artistInTrackRepository;
+        _trackRepository = trackRepository;
     }
 
     // GET: ArtistInTrack
     public async Task<IActionResult> Index()
     {
-        var appDbContext = _context
-            .ArtistsInTracks
-            .Include(a => a.ArtistRole)
-            .Include(a => a.Track)
-            .Include(a => a.User);
-        return View(await appDbContext.ToListAsync());
+        
+        var res = await _artistInTrackRepository.AllAsync(User.GetUserId());
+        return View(res);
     }
 
     // GET: ArtistInTrack/Details/5

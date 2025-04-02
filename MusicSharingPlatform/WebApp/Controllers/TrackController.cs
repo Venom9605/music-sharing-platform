@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
+using App.DAL.Interfaces;
+using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 
@@ -16,16 +18,19 @@ namespace WebApp.Controllers;
 public class TrackController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly ITrackRepository _trackRepository;
 
-    public TrackController(AppDbContext context)
+    public TrackController(AppDbContext context, ITrackRepository trackRepository)
     {
         _context = context;
+        _trackRepository = trackRepository;
     }
 
     // GET: Track
     public async Task<IActionResult> Index()
     {
-        return View(await _context.Tracks.ToListAsync());
+        var res = await _trackRepository.AllAsync();
+        return View(res);
     }
 
     // GET: Track/Details/5

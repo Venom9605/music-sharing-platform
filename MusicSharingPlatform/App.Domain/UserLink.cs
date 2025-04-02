@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Base.Domain;
+using Base.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domain;
 
-public class UserLink : BaseEntity
+public class UserLink : BaseEntity, IDomainUserId
 {
     [Display(Name = nameof(User), Prompt = nameof(User), ResourceType = typeof(App.Resources.Domain.UserLink))]
     public string UserId { get; set; } = default!;

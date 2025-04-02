@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Base.Domain;
+using Base.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domain;
 
-public class UserSavedTracks : BaseEntity
+public class UserSavedTracks : BaseEntity, IDomainUserId
 {
     [Display(Name = nameof(Track), Prompt = nameof(Track), ResourceType = typeof(App.Resources.Domain.UserSavedTracks))]
     public Guid TrackId { get; set; }

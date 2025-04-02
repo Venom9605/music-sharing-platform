@@ -1,7 +1,8 @@
 using System.Globalization;
 using App.DAL.EF;
+using App.DAL.EF.Repositories;
+using App.DAL.Interfaces;
 using Domain;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -22,6 +23,7 @@ if (builder.Environment.IsProduction())
                 connectionString, 
                 o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
             )
+            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution)
     );
 }
 else
@@ -32,6 +34,7 @@ else
                 connectionString, 
                 o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
             )
+            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution)
             .ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))
             .EnableDetailedErrors()
             .EnableSensitiveDataLogging()
@@ -39,6 +42,11 @@ else
 }
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+
+builder.Services.AddScoped<IArtistInTrackRepository, ArtistInTrackRepository>();
+builder.Services.AddScoped<ITrackRepository, TrackRepository>();
+
 
 builder.Services.AddDefaultIdentity<Artist>(
         options => options.SignIn.RequireConfirmedAccount = false)
