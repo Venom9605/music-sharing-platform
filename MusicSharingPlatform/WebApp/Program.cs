@@ -46,6 +46,20 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddScoped<IArtistInTrackRepository, ArtistInTrackRepository>();
 builder.Services.AddScoped<ITrackRepository, TrackRepository>();
+builder.Services.AddScoped<IArtistRoleRepository, ArtistRoleRepository>();
+builder.Services.AddScoped<ILinkTypeRepository, LinkTypeRepository>();
+builder.Services.AddScoped<IMoodRepository, MoodRepository>();
+builder.Services.AddScoped<IMoodsInPlaylistRepository, MoodsInPlaylistRepository>();
+builder.Services.AddScoped<IMoodsInTrackRepository, MoodsInTrackRepository>();
+builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
+builder.Services.AddScoped<IRatingRepository, RatingRepository>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<ITagsInPlaylistRepository, TagsInPlaylistRepository>();
+builder.Services.AddScoped<ITagsInTrackRepository, TagsInTrackRepository>();
+builder.Services.AddScoped<ITrackInPlaylistRepository, TrackInPlaylistRepository>();
+builder.Services.AddScoped<ITrackLinkRepository, TrackLinkRepository>();
+builder.Services.AddScoped<IUserLinkRepository, UserLinkRepository>();
+builder.Services.AddScoped<IUserSavedTracksRepository, UserSavedTracksRepository>();
 
 
 builder.Services.AddDefaultIdentity<Artist>(

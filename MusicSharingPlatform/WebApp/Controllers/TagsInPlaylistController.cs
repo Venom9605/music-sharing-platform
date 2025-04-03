@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
+using App.DAL.Interfaces;
+using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 
@@ -16,17 +18,18 @@ namespace WebApp.Controllers;
 public class TagsInPlaylistController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly ITagsInPlaylistRepository _tagsInPlaylistRepository;
 
-    public TagsInPlaylistController(AppDbContext context)
+    public TagsInPlaylistController(AppDbContext context, ITagsInPlaylistRepository tagsInPlaylistRepository)
     {
         _context = context;
+        _tagsInPlaylistRepository = tagsInPlaylistRepository;
     }
 
     // GET: TagsInPlaylist
     public async Task<IActionResult> Index()
     {
-        var appDbContext = _context.TagsInPlaylists.Include(t => t.Playlist).Include(t => t.Tag);
-        return View(await appDbContext.ToListAsync());
+        return View(await _tagsInPlaylistRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: TagsInPlaylist/Details/5

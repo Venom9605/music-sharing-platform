@@ -69,7 +69,7 @@ namespace App.Resources.Domain {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Mood.
+        ///   Looks up a localized string similar to Track.
         /// </summary>
         public static string Track {
             get {

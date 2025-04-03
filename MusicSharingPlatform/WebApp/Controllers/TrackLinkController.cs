@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
+using App.DAL.Interfaces;
+using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 
@@ -16,17 +18,18 @@ namespace WebApp.Controllers;
 public class TrackLinkController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly ITrackLinkRepository _trackLinkRepository;
 
-    public TrackLinkController(AppDbContext context)
+    public TrackLinkController(AppDbContext context, ITrackLinkRepository trackLinkRepository)
     {
         _context = context;
+        _trackLinkRepository = trackLinkRepository;
     }
 
     // GET: TrackLink
     public async Task<IActionResult> Index()
     {
-        var appDbContext = _context.TrackLinks.Include(t => t.LinkType).Include(t => t.Track);
-        return View(await appDbContext.ToListAsync());
+        return View(await _trackLinkRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: TrackLink/Details/5

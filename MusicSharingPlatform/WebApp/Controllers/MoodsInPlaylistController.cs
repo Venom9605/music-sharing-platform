@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
+using App.DAL.Interfaces;
+using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 
@@ -16,17 +18,18 @@ namespace WebApp.Controllers;
 public class MoodsInPlaylistController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly IMoodsInPlaylistRepository _moodsInPlaylistRepository;
 
-    public MoodsInPlaylistController(AppDbContext context)
+    public MoodsInPlaylistController(AppDbContext context, IMoodsInPlaylistRepository moodsInPlaylistRepository)
     {
         _context = context;
+        _moodsInPlaylistRepository = moodsInPlaylistRepository;
     }
 
     // GET: MoodsInPlaylist
     public async Task<IActionResult> Index()
     {
-        var appDbContext = _context.MoodsInPlaylists.Include(m => m.Mood).Include(m => m.Playlist);
-        return View(await appDbContext.ToListAsync());
+        return View(await _moodsInPlaylistRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: MoodsInPlaylist/Details/5

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
+using App.DAL.Interfaces;
+using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 
@@ -16,16 +18,18 @@ namespace WebApp.Controllers;
 public class LinkTypeController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly ILinkTypeRepository _linkTypeRepository;
 
-    public LinkTypeController(AppDbContext context)
+    public LinkTypeController(AppDbContext context, ILinkTypeRepository linkTypeRepository)
     {
         _context = context;
+        _linkTypeRepository = linkTypeRepository;
     }
 
     // GET: LinkType
     public async Task<IActionResult> Index()
     {
-        return View(await _context.LinkTypes.ToListAsync());
+        return View(await _linkTypeRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: LinkType/Details/5

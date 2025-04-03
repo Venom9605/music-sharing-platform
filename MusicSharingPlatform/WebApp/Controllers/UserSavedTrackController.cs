@@ -6,8 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
+using App.DAL.Interfaces;
+using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Identity.Client;
 
 namespace WebApp.Controllers;
 
@@ -16,17 +19,18 @@ namespace WebApp.Controllers;
 public class UserSavedTrackController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly IUserSavedTracksRepository _userSavedTracksRepository;
 
-    public UserSavedTrackController(AppDbContext context)
+    public UserSavedTrackController(AppDbContext context, IUserSavedTracksRepository userSavedTracksRepository)
     {
         _context = context;
+        _userSavedTracksRepository = userSavedTracksRepository;
     }
 
     // GET: UserSavedTrack
     public async Task<IActionResult> Index()
     {
-        var appDbContext = _context.UserSavedTracks.Include(u => u.Track).Include(u => u.User);
-        return View(await appDbContext.ToListAsync());
+        return View(await _userSavedTracksRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: UserSavedTrack/Details/5

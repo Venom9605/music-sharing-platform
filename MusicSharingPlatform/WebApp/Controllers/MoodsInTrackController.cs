@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
+using App.DAL.Interfaces;
+using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 
@@ -16,17 +18,18 @@ namespace WebApp.Controllers;
 public class MoodsInTrackController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly IMoodsInTrackRepository _moodsInTrackRepository;
 
-    public MoodsInTrackController(AppDbContext context)
+    public MoodsInTrackController(AppDbContext context, IMoodsInTrackRepository moodsInTrackRepository)
     {
         _context = context;
+        _moodsInTrackRepository = moodsInTrackRepository;
     }
 
     // GET: MoodsInTrack
     public async Task<IActionResult> Index()
     {
-        var appDbContext = _context.MoodsInTracks.Include(m => m.Mood).Include(m => m.Track);
-        return View(await appDbContext.ToListAsync());
+        return View(await _moodsInTrackRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: MoodsInTrack/Details/5

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
+using App.DAL.Interfaces;
+using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 
@@ -16,16 +18,18 @@ namespace WebApp.Controllers;
 public class ArtistRoleController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly IArtistRoleRepository _artistRoleRepository;
 
-    public ArtistRoleController(AppDbContext context)
+    public ArtistRoleController(AppDbContext context, IArtistRoleRepository artistRoleRepository)
     {
         _context = context;
+        _artistRoleRepository = artistRoleRepository;
     }
 
     // GET: ArtistRole
     public async Task<IActionResult> Index()
     {
-        return View(await _context.ArtistRoles.ToListAsync());
+        return View(await _artistRoleRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: ArtistRole/Details/5

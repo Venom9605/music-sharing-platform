@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
+using App.DAL.Interfaces;
+using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 
@@ -16,17 +18,18 @@ namespace WebApp.Controllers;
 public class TagsInTrackController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly ITagsInTrackRepository _tagsInTrackRepository;
 
-    public TagsInTrackController(AppDbContext context)
+    public TagsInTrackController(AppDbContext context, ITagsInTrackRepository tagsInTrackRepository)
     {
         _context = context;
+        _tagsInTrackRepository = tagsInTrackRepository;
     }
 
     // GET: TagsInTrack
     public async Task<IActionResult> Index()
     {
-        var appDbContext = _context.TagsInTracks.Include(t => t.Tag).Include(t => t.Track);
-        return View(await appDbContext.ToListAsync());
+        return View(await _tagsInTrackRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: TagsInTrack/Details/5

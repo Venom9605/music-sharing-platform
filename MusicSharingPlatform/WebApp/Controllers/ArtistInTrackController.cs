@@ -27,9 +27,7 @@ public class ArtistInTrackController : Controller
     // GET: ArtistInTrack
     public async Task<IActionResult> Index()
     {
-        
-        var res = await _artistInTrackRepository.AllAsync(User.GetUserId());
-        return View(res);
+        return View(await _artistInTrackRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: ArtistInTrack/Details/5

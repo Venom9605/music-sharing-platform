@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
+using App.DAL.Interfaces;
+using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 
@@ -16,17 +18,18 @@ namespace WebApp.Controllers;
 public class RatingController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly IRatingRepository _ratingRepository;
 
-    public RatingController(AppDbContext context)
+    public RatingController(AppDbContext context, IRatingRepository ratingRepository)
     {
         _context = context;
+        _ratingRepository = ratingRepository;
     }
 
     // GET: Rating
     public async Task<IActionResult> Index()
     {
-        var appDbContext = _context.Ratings.Include(r => r.Track).Include(r => r.User);
-        return View(await appDbContext.ToListAsync());
+        return View(await _ratingRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: Rating/Details/5

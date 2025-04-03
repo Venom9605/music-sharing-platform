@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
+using App.DAL.Interfaces;
+using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 
@@ -16,16 +18,18 @@ namespace WebApp.Controllers;
 public class MoodController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly IMoodRepository _moodRepository;
 
-    public MoodController(AppDbContext context)
+    public MoodController(AppDbContext context, IMoodRepository moodRepository)
     {
         _context = context;
+        _moodRepository = moodRepository;
     }
 
     // GET: Mood
     public async Task<IActionResult> Index()
     {
-        return View(await _context.Moods.ToListAsync());
+        return View(await _moodRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: Mood/Details/5

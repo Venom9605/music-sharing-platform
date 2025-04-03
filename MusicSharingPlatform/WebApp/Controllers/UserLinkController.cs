@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
+using App.DAL.Interfaces;
+using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 
@@ -16,17 +18,18 @@ namespace WebApp.Controllers;
 public class UserLinkController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly IUserLinkRepository _userLinkRepository;
 
-    public UserLinkController(AppDbContext context)
+    public UserLinkController(AppDbContext context, IUserLinkRepository userLinkRepository)
     {
         _context = context;
+        _userLinkRepository = userLinkRepository;
     }
 
     // GET: UserLink
     public async Task<IActionResult> Index()
     {
-        var appDbContext = _context.UserLinks.Include(u => u.LinkType).Include(u => u.User);
-        return View(await appDbContext.ToListAsync());
+        return View(await _userLinkRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: UserLink/Details/5

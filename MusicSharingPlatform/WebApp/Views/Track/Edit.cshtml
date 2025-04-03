@@ -1,4 +1,4 @@
-@model Domain.Track
+@model WebApp.ViewModels.TrackEditViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -28,24 +28,9 @@
                 <span asp-validation-for="CoverPath" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Uploaded" class="control-label"></label>
-                <input asp-for="Uploaded" class="form-control" />
-                <span asp-validation-for="Uploaded" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="Duration" class="control-label"></label>
                 <input asp-for="Duration" class="form-control" />
                 <span asp-validation-for="Duration" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TimesPlayed" class="control-label"></label>
-                <input asp-for="TimesPlayed" class="form-control" />
-                <span asp-validation-for="TimesPlayed" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TimesSaved" class="control-label"></label>
-                <input asp-for="TimesSaved" class="form-control" />
-                <span asp-validation-for="TimesSaved" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">

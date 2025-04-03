@@ -1,15 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using App.DAL.EF;
 using App.DAL.Interfaces;
 using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
@@ -17,20 +11,17 @@ namespace WebApp.Controllers;
 
 public class TrackController : Controller
 {
-    private readonly AppDbContext _context;
     private readonly ITrackRepository _trackRepository;
 
-    public TrackController(AppDbContext context, ITrackRepository trackRepository)
+    public TrackController(ITrackRepository trackRepository)
     {
-        _context = context;
         _trackRepository = trackRepository;
     }
 
     // GET: Track
     public async Task<IActionResult> Index()
     {
-        var res = await _trackRepository.AllAsync();
-        return View(res);
+        return View(await _trackRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: Track/Details/5
@@ -41,8 +32,8 @@ public class TrackController : Controller
             return NotFound();
         }
 
-        var track = await _context.Tracks
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var track = await _trackRepository.FindAsync(id.Value, User.GetUserId());
+
         if (track == null)
         {
             return NotFound();
@@ -62,17 +53,27 @@ public class TrackController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Title,FilePath,CoverPath,Uploaded,Duration,TimesPlayed,TimesSaved,Id")] Track track)
+    public async Task<IActionResult> Create(TrackCreateViewModel vm)
     {
         if (ModelState.IsValid)
         {
-            track.Id = Guid.NewGuid();
-            track.Uploaded = DateTime.UtcNow;
-            _context.Add(track);
-            await _context.SaveChangesAsync();
+            var entity = new Track
+            {
+                Title = vm.Title,
+                FilePath = vm.FilePath,
+                CoverPath = vm.CoverPath,
+                Duration = vm.Duration,
+                Uploaded = DateTime.UtcNow,
+                TimesPlayed = 0,
+                TimesSaved = 0
+                
+            };
+
+            _trackRepository.Add(entity);
+            await _trackRepository.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        return View(track);
+        return View(vm);
     }
 
     // GET: Track/Edit/5
@@ -83,12 +84,23 @@ public class TrackController : Controller
             return NotFound();
         }
 
-        var track = await _context.Tracks.FindAsync(id);
+        var track = await _trackRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (track == null)
         {
             return NotFound();
         }
-        return View(track);
+        
+        var vm = new TrackEditViewModel
+        {
+            Id = track.Id,
+            Title = track.Title,
+            FilePath = track.FilePath,
+            CoverPath = track.CoverPath,
+            Duration = track.Duration
+        };
+        
+        return View(vm);
     }
 
     // POST: Track/Edit/5
@@ -96,34 +108,33 @@ public class TrackController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("Title,FilePath,CoverPath,Uploaded,Duration,TimesPlayed,TimesSaved,Id")] Track track)
+    public async Task<IActionResult> Edit(Guid id, TrackEditViewModel vm)
     {
-        if (id != track.Id)
+        if (id != vm.Id)
         {
             return NotFound();
         }
 
         if (ModelState.IsValid)
         {
-            try
+            var track = await _trackRepository.FindAsync(vm.Id, User.GetUserId());
+            
+            if (track == null)
             {
-                _context.Update(track);
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TrackExists(track.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            
+            track.Title = vm.Title;
+            track.FilePath = vm.FilePath;
+            track.CoverPath = vm.CoverPath;
+            track.Duration = vm.Duration;
+            
+            _trackRepository.Update(track);
+            await _trackRepository.SaveChangesAsync();
+            
             return RedirectToAction(nameof(Index));
         }
-        return View(track);
+        return View(vm);
     }
 
     // GET: Track/Delete/5
@@ -134,13 +145,13 @@ public class TrackController : Controller
             return NotFound();
         }
 
-        var track = await _context.Tracks
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var track = await _trackRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (track == null)
         {
             return NotFound();
         }
-
+        
         return View(track);
     }
 
@@ -149,18 +160,9 @@ public class TrackController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        var track = await _context.Tracks.FindAsync(id);
-        if (track != null)
-        {
-            _context.Tracks.Remove(track);
-        }
-
-        await _context.SaveChangesAsync();
+        await _trackRepository.RemoveAsync(id, User.GetUserId());
+        await _trackRepository.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
-
-    private bool TrackExists(Guid id)
-    {
-        return _context.Tracks.Any(e => e.Id == id);
-    }
+    
 }

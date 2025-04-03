@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
+using App.DAL.Interfaces;
+using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 
@@ -16,17 +18,18 @@ namespace WebApp.Controllers;
 public class TrackInPlaylistController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly ITrackInPlaylistRepository _trackInPlaylistRepository;
 
-    public TrackInPlaylistController(AppDbContext context)
+    public TrackInPlaylistController(AppDbContext context, ITrackInPlaylistRepository trackInPlaylistRepository)
     {
         _context = context;
+        _trackInPlaylistRepository = trackInPlaylistRepository;
     }
 
     // GET: TrackInPlaylist
     public async Task<IActionResult> Index()
     {
-        var appDbContext = _context.TracksInPlaylists.Include(t => t.Playlist).Include(t => t.Track);
-        return View(await appDbContext.ToListAsync());
+        return View(await _trackInPlaylistRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: TrackInPlaylist/Details/5

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
+using App.DAL.Interfaces;
+using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
 
@@ -15,16 +17,18 @@ namespace WebApp.Controllers;
 public class TagController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly ITagRepository _tagRepository;
 
-    public TagController(AppDbContext context)
+    public TagController(AppDbContext context, ITagRepository tagRepository)
     {
         _context = context;
+        _tagRepository = tagRepository;
     }
 
     // GET: Tag
     public async Task<IActionResult> Index()
     {
-        return View(await _context.Tags.ToListAsync());
+        return View(await _tagRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: Tag/Details/5

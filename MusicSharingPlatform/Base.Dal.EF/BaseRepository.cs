@@ -27,7 +27,7 @@ public class BaseRepository<TEntity, TKey> : IRepository<TEntity, TKey>
         RepositoryDbSet = RepositoryDbContext.Set<TEntity>();
     }
 
-    protected IQueryable<TEntity> GetQuery(string? userId)
+    protected virtual IQueryable<TEntity> GetQuery(string? userId)
     {
         var query = RepositoryDbSet.AsQueryable();
         
@@ -39,7 +39,13 @@ public class BaseRepository<TEntity, TKey> : IRepository<TEntity, TKey>
         return query;
     }
     
-    public IEnumerable<TEntity> All(string? userId = null)
+    // TODO: remove and use UOW
+    public async Task<int> SaveChangesAsync()
+    {
+        return await RepositoryDbContext.SaveChangesAsync();
+    }
+    
+    public virtual IEnumerable<TEntity> All(string? userId = null)
     {
         return GetQuery(userId)
             .ToList();
@@ -51,42 +57,69 @@ public class BaseRepository<TEntity, TKey> : IRepository<TEntity, TKey>
             .ToListAsync();
     }
 
-    public TEntity? Find(TKey id, string? userId)
+    public virtual TEntity? Find(TKey id, string? userId)
     {
         var query = GetQuery(userId);
 
         return query.FirstOrDefault(e => e.Id.Equals(id));
     }
 
-    public async Task<TEntity?> FindAsync(TKey id, string? userId)
+    public virtual async Task<TEntity?> FindAsync(TKey id, string? userId)
     {
         var query = GetQuery(userId);
 
         return await query.FirstOrDefaultAsync(e => e.Id.Equals(id));
     }
 
-    public void Add(TEntity entity)
+    public virtual void Add(TEntity entity)
     {
         RepositoryDbSet.Add(entity);
     }
 
-    public TEntity Update(TEntity entity)
+    public virtual TEntity Update(TEntity entity)
     {
         return RepositoryDbSet.Update(entity).Entity;
     }
 
-    public void Remove(TEntity entity, string? userId)
+    public virtual void Remove(TEntity entity, string? userId)
     {
-        throw new NotImplementedException();
+        Remove(entity.Id, userId);
     }
 
-    public void Remove(TKey id, string? userId)
+    public virtual void Remove(TKey id, string? userId)
     {
-        throw new NotImplementedException();
+        var query = GetQuery(userId);
+        
+        var entity = query.FirstOrDefault(e => e.Id.Equals(id));
+        
+        if (entity != null)
+        {
+            RepositoryDbSet.Remove(entity);
+        }
     }
 
-    public void RemoveAsync(TKey id, string? userId)
+    public virtual async Task RemoveAsync(TKey id, string? userId)
     {
-        throw new NotImplementedException();
+        var query = GetQuery(userId);
+        
+        var entity = await query.FirstOrDefaultAsync(e => e.Id.Equals(id));
+        
+        if (entity != null)
+        {
+            RepositoryDbSet.Remove(entity);
+        }
+    }
+
+    public virtual bool Exists(TKey id, string? userId = null)
+    {
+        var query = GetQuery(userId);
+        
+        return query.Any(e => e.Id.Equals(id));
+    }
+
+    public virtual async Task<bool> ExistsAsync(TKey id, string? userId = null)
+    {
+        var query = GetQuery(userId);
+        return await query.AnyAsync(e => e.Id.Equals(id));
     }
 }

@@ -11,6 +11,8 @@ public interface IRepository<TEntity, TKey>
     where TEntity : BaseEntity<TKey>
     where TKey : IEquatable<TKey>
 {
+    // TODO: remove and use UOW
+    Task<int> SaveChangesAsync();
     IEnumerable<TEntity> All(string? userId = null);
     Task<IEnumerable<TEntity>> AllAsync(string? userId = null);
 
@@ -21,8 +23,11 @@ public interface IRepository<TEntity, TKey>
     
     TEntity Update(TEntity entity);
     
-    void Remove(TEntity entity, string? userId);
-
-    void Remove(TKey id, string? userId);
-    void RemoveAsync(TKey id, string? userId);
+    void Remove(TEntity entity, string? userId = null);
+    void Remove(TKey id, string? userId = null);
+    
+    Task RemoveAsync(TKey id, string? userId = null);
+    
+    bool Exists(TKey id, string? userId = null);
+    Task<bool> ExistsAsync(TKey id, string? userId = null);
 }
