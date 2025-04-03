@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Base.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domain;
 
-public class Artist : IdentityUser
+public class Artist : IdentityUser, IBaseEntityId<string>
 {
     
     // currently nullable, add UI for adding values

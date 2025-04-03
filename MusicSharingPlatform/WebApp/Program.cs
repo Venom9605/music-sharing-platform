@@ -44,6 +44,7 @@ else
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 
+builder.Services.AddScoped<IArtistRepository, ArtistRepository>();
 builder.Services.AddScoped<IArtistInTrackRepository, ArtistInTrackRepository>();
 builder.Services.AddScoped<ITrackRepository, TrackRepository>();
 builder.Services.AddScoped<IArtistRoleRepository, ArtistRoleRepository>();

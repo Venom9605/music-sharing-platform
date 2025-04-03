@@ -7,29 +7,37 @@ using App.DAL.Interfaces;
 using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.ViewModels;
+
 
 namespace WebApp.Controllers;
 
 [Authorize]
 public class ArtistInTrackController : Controller
 {
-    private readonly AppDbContext _context; // remove this in the future
     private readonly IArtistInTrackRepository _artistInTrackRepository;
     private readonly ITrackRepository _trackRepository;
+    private readonly IArtistRoleRepository _artistRoleRepository;
+    private readonly IArtistRepository _artistRepository;
 
-    public ArtistInTrackController(AppDbContext context, IArtistInTrackRepository artistInTrackRepository, ITrackRepository trackRepository)
+
+    public ArtistInTrackController(IArtistInTrackRepository artistInTrackRepository, ITrackRepository trackRepository, IArtistRoleRepository artistRoleRepository, IArtistRepository artistRepository)
     {
-        _context = context;
         _artistInTrackRepository = artistInTrackRepository;
         _trackRepository = trackRepository;
+        _artistRoleRepository = artistRoleRepository;
+        _artistRepository = artistRepository;
     }
 
+    
     // GET: ArtistInTrack
     public async Task<IActionResult> Index()
     {
         return View(await _artistInTrackRepository.AllAsync(User.GetUserId()));
     }
 
+    
+    
     // GET: ArtistInTrack/Details/5
     public async Task<IActionResult> Details(Guid? id)
     {
@@ -38,11 +46,8 @@ public class ArtistInTrackController : Controller
             return NotFound();
         }
 
-        var artistInTrack = await _context.ArtistsInTracks
-            .Include(a => a.ArtistRole)
-            .Include(a => a.Track)
-            .Include(a => a.User)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var artistInTrack = await _artistInTrackRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (artistInTrack == null)
         {
             return NotFound();
@@ -52,12 +57,12 @@ public class ArtistInTrackController : Controller
     }
 
     // GET: ArtistInTrack/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        ViewData["ArtistRoleId"] = new SelectList(_context.ArtistRoles, "Id", "Name");
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title");
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
-        return View();
+        var vm = new ArtistInTrackViewModel { ArtistInTrack = new ArtistInTrack() };
+        await PopulateSelectListsAsync(vm);
+        
+        return View(vm);
     }
 
     // POST: ArtistInTrack/Create
@@ -65,20 +70,20 @@ public class ArtistInTrackController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("TrackId,UserId,ArtistRoleId,Id")] ArtistInTrack artistInTrack)
+    public async Task<IActionResult> Create(ArtistInTrackViewModel vm)
     {
         if (ModelState.IsValid)
         {
-            artistInTrack.Id = Guid.NewGuid();
-            _context.Add(artistInTrack);
-            await _context.SaveChangesAsync();
+            _artistInTrackRepository.Add(vm.ArtistInTrack);
+            await _artistInTrackRepository.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["ArtistRoleId"] = new SelectList(_context.ArtistRoles, "Id", "Name", artistInTrack.ArtistRoleId);
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", artistInTrack.TrackId);
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", artistInTrack.UserId);
-        return View(artistInTrack);
+        
+        await PopulateSelectListsAsync(vm);
+
+        return View(vm);
     }
+
 
     // GET: ArtistInTrack/Edit/5
     public async Task<IActionResult> Edit(Guid? id)
@@ -88,15 +93,17 @@ public class ArtistInTrackController : Controller
             return NotFound();
         }
 
-        var artistInTrack = await _context.ArtistsInTracks.FindAsync(id);
+        var artistInTrack = await _artistInTrackRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (artistInTrack == null)
         {
             return NotFound();
         }
-        ViewData["ArtistRoleId"] = new SelectList(_context.ArtistRoles, "Id", "Name", artistInTrack.ArtistRoleId);
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", artistInTrack.TrackId);
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", artistInTrack.UserId);
-        return View(artistInTrack);
+        
+        var vm = new ArtistInTrackViewModel { ArtistInTrack = artistInTrack };
+        await PopulateSelectListsAsync(vm);
+
+        return View(vm);
     }
 
     // POST: ArtistInTrack/Edit/5
@@ -104,37 +111,23 @@ public class ArtistInTrackController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("TrackId,UserId,ArtistRoleId,Id")] ArtistInTrack artistInTrack)
+    public async Task<IActionResult> Edit(Guid id, ArtistInTrackViewModel vm)
     {
-        if (id != artistInTrack.Id)
+        if (id != vm.ArtistInTrack.Id)
         {
             return NotFound();
         }
 
         if (ModelState.IsValid)
         {
-            try
-            {
-                _context.Update(artistInTrack);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ArtistInTrackExists(artistInTrack.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _artistInTrackRepository.Update(vm.ArtistInTrack);
+            await _artistInTrackRepository.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["ArtistRoleId"] = new SelectList(_context.ArtistRoles, "Id", "Name", artistInTrack.ArtistRoleId);
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", artistInTrack.TrackId);
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", artistInTrack.UserId);
-        return View(artistInTrack);
+        
+        await PopulateSelectListsAsync(vm);
+
+        return View(vm);
     }
 
     // GET: ArtistInTrack/Delete/5
@@ -145,11 +138,8 @@ public class ArtistInTrackController : Controller
             return NotFound();
         }
 
-        var artistInTrack = await _context.ArtistsInTracks
-            .Include(a => a.ArtistRole)
-            .Include(a => a.Track)
-            .Include(a => a.User)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var artistInTrack = await _artistInTrackRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (artistInTrack == null)
         {
             return NotFound();
@@ -163,18 +153,34 @@ public class ArtistInTrackController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        var artistInTrack = await _context.ArtistsInTracks.FindAsync(id);
-        if (artistInTrack != null)
-        {
-            _context.ArtistsInTracks.Remove(artistInTrack);
-        }
-
-        await _context.SaveChangesAsync();
+        await _artistInTrackRepository.RemoveAsync(id, User.GetUserId());
+        await _artistInTrackRepository.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
-
-    private bool ArtistInTrackExists(Guid id)
+    
+    private async Task PopulateSelectListsAsync(ArtistInTrackViewModel vm)
     {
-        return _context.ArtistsInTracks.Any(e => e.Id == id);
+        var userId = User.GetUserId();
+
+        vm.TracksList = new SelectList(
+            await _trackRepository.AllAsync(userId),
+            nameof(Track.Id),
+            nameof(Track.Title),
+            vm.ArtistInTrack.TrackId
+        );
+
+        vm.ArtistRolesList = new SelectList(
+            await _artistRoleRepository.AllAsync(userId),
+            nameof(ArtistRole.Id),
+            nameof(ArtistRole.Name),
+            vm.ArtistInTrack.ArtistRoleId
+        );
+
+        vm.ArtistsList = new SelectList(
+            await _artistRepository.AllAsync(userId),
+            nameof(Artist.Id),
+            nameof(Artist.DisplayName),
+            vm.ArtistInTrack.UserId
+        );
     }
 }

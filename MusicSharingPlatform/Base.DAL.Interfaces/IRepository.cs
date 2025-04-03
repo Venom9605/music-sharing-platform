@@ -1,14 +1,15 @@
 ﻿using Base.Domain;
+using Base.Interfaces;
 
 namespace Base.DAL.Interfaces;
 
 public interface IRepository<TEntity> : IRepository<TEntity, Guid>
-    where TEntity : BaseEntity
+    where TEntity : IBaseEntityId<Guid>
 {
 }
 
 public interface IRepository<TEntity, TKey>
-    where TEntity : BaseEntity<TKey>
+    where TEntity : IBaseEntityId<TKey>
     where TKey : IEquatable<TKey>
 {
     // TODO: remove and use UOW

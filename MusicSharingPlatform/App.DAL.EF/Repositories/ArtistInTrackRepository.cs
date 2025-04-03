@@ -19,4 +19,13 @@ public class ArtistInTrackRepository : BaseRepository<ArtistInTrack>, IArtistInT
             .Include(a => a.ArtistRole)
             .ToListAsync();
     }
+
+    public override async Task<ArtistInTrack?> FindAsync(Guid id, string? userId)
+    {
+        return await GetQuery(userId)
+            .Include(a => a.Track)
+            .Include(a => a.User)
+            .Include(a => a.ArtistRole)
+            .FirstOrDefaultAsync(e => e.Id.Equals(id));
+    }
 }

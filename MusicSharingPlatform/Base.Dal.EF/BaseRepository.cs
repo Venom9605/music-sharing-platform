@@ -14,7 +14,7 @@ public class BaseRepository<TEntity>: BaseRepository<TEntity, Guid>, IRepository
 }
 
 public class BaseRepository<TEntity, TKey> : IRepository<TEntity, TKey>
-    where TEntity : BaseEntity<TKey>
+    where TEntity : class, IBaseEntityId<TKey>
     where TKey : IEquatable<TKey>
 {
     

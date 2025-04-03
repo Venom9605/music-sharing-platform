@@ -1,4 +1,4 @@
-@model Domain.ArtistInTrack
+@model WebApp.ViewModels.ArtistInTrackViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -12,18 +12,26 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
             <div class="form-group">
-                <label asp-for="TrackId" class="control-label"></label>
-                <select asp-for="TrackId" class ="form-control" asp-items="ViewBag.TrackId"></select>
+                <label asp-for="ArtistInTrack.TrackId" class="control-label"></label>
+                <select asp-for="ArtistInTrack.TrackId" class ="form-control" asp-items="Model.TracksList"></select>
+                <span asp-validation-for="ArtistInTrack.TrackId" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
+                <label asp-for="ArtistInTrack.UserId" class="control-label"></label>
+                <select asp-for="ArtistInTrack.UserId" class="form-control" asp-items="Model.ArtistsList"></select>
+                <span asp-validation-for="ArtistInTrack.UserId" class="text-danger"></span>
             </div>
+
+
             <div class="form-group">
-                <label asp-for="ArtistRoleId" class="control-label"></label>
-                <select asp-for="ArtistRoleId" class ="form-control" asp-items="ViewBag.ArtistRoleId"></select>
+                <label asp-for="ArtistInTrack.ArtistRoleId" class="control-label"></label>
+                <select asp-for="ArtistInTrack.ArtistRoleId" class="form-control" asp-items="Model.ArtistRolesList"></select>
+                <span asp-validation-for="ArtistInTrack.ArtistRoleId" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
