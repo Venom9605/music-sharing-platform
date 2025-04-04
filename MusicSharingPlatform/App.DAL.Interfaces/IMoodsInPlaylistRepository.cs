@@ -3,7 +3,7 @@ using Domain;
 
 namespace App.DAL.Interfaces;
 
-public interface IMoodsInPlaylistRepository : IRepository<MoodsInPlaylist>
+public interface IMoodsInPlaylistRepository : IBaseRepository<MoodsInPlaylist>
 {
     
 }

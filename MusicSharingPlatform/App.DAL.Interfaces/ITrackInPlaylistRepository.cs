@@ -3,7 +3,7 @@ using Domain;
 
 namespace App.DAL.Interfaces;
 
-public interface ITrackInPlaylistRepository : IRepository<TrackInPlaylist>
+public interface ITrackInPlaylistRepository : IBaseRepository<TrackInPlaylist>
 {
     
 }

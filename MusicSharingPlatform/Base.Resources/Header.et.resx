@@ -65,4 +65,7 @@
     <data name="UserLinks" xml:space="preserve">
         <value>Kasutaja Lingid</value>
     </data>
+    <data name="Profile" xml:space="preserve">
+        <value>Profiil</value>
+    </data>
 </root>

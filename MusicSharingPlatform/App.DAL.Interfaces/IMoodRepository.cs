@@ -3,7 +3,7 @@ using Domain;
 
 namespace App.DAL.Interfaces;
 
-public interface IMoodRepository : IRepository<Mood>
+public interface IMoodRepository : IBaseRepository<Mood>
 {
     
 }

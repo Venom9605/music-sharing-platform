@@ -3,7 +3,7 @@ using Base.Interfaces;
 
 namespace Base.DAL.Interfaces;
 
-public interface IRepository<TEntity> : IRepository<TEntity, Guid>
+public interface IBaseRepository<TEntity> : IRepository<TEntity, Guid>
     where TEntity : IBaseEntityId<Guid>
 {
 }
@@ -12,8 +12,6 @@ public interface IRepository<TEntity, TKey>
     where TEntity : IBaseEntityId<TKey>
     where TKey : IEquatable<TKey>
 {
-    // TODO: remove and use UOW
-    Task<int> SaveChangesAsync();
     IEnumerable<TEntity> All(string? userId = null);
     Task<IEnumerable<TEntity>> AllAsync(string? userId = null);
 

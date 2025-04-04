@@ -1,4 +1,4 @@
-@model Domain.Rating
+@model WebApp.ViewModels.RatingsViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -13,28 +13,23 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="TrackId" class="control-label"></label>
-                <select asp-for="TrackId" class ="form-control" asp-items="ViewBag.TrackId"></select>
+                <label asp-for="Rating.TrackId"></label>
+                <select asp-for="Rating.TrackId" class="form-control" asp-items="Model.TracksList"></select>
+                <span asp-validation-for="Rating.TrackId" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
+                <label asp-for="Rating.Score"></label>
+                <input asp-for="Rating.Score" class="form-control" />
+                <span asp-validation-for="Rating.Score" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Score" class="control-label"></label>
-                <input asp-for="Score" class="form-control" />
-                <span asp-validation-for="Score" class="text-danger"></span>
+                <label asp-for="Rating.Comment"></label>
+                <input asp-for="Rating.Comment" class="form-control" />
+                <span asp-validation-for="Rating.Comment" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Comment" class="control-label"></label>
-                <input asp-for="Comment" class="form-control" />
-                <span asp-validation-for="Comment" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Date" class="control-label"></label>
-                <input asp-for="Date" class="form-control" />
-                <span asp-validation-for="Date" class="text-danger"></span>
-            </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

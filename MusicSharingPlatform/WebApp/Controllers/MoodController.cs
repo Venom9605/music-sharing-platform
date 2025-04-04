@@ -10,6 +10,7 @@ using App.DAL.Interfaces;
 using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
@@ -17,19 +18,17 @@ namespace WebApp.Controllers;
 
 public class MoodController : Controller
 {
-    private readonly AppDbContext _context;
-    private readonly IMoodRepository _moodRepository;
+    private readonly IAppUOW _uow;
 
-    public MoodController(AppDbContext context, IMoodRepository moodRepository)
+    public MoodController(IAppUOW uow)
     {
-        _context = context;
-        _moodRepository = moodRepository;
+        _uow = uow;
     }
 
     // GET: Mood
     public async Task<IActionResult> Index()
     {
-        return View(await _moodRepository.AllAsync(User.GetUserId()));
+        return View(await _uow.MoodRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: Mood/Details/5
@@ -40,8 +39,8 @@ public class MoodController : Controller
             return NotFound();
         }
 
-        var mood = await _context.Moods
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var mood = await _uow.MoodRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (mood == null)
         {
             return NotFound();
@@ -61,16 +60,21 @@ public class MoodController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Name,Id")] Mood mood)
+    public async Task<IActionResult> Create(MoodCreateViewModel vm)
     {
         if (ModelState.IsValid)
         {
-            mood.Id = Guid.NewGuid();
-            _context.Add(mood);
-            await _context.SaveChangesAsync();
+            var mood = new Mood
+            {
+                Name = vm.Name
+            };
+            
+            _uow.MoodRepository.Add(mood);
+            await _uow.SaveChangesAsync();
+            
             return RedirectToAction(nameof(Index));
         }
-        return View(mood);
+        return View(vm);
     }
 
     // GET: Mood/Edit/5
@@ -81,12 +85,20 @@ public class MoodController : Controller
             return NotFound();
         }
 
-        var mood = await _context.Moods.FindAsync(id);
+        var mood = await _uow.MoodRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (mood == null)
         {
             return NotFound();
         }
-        return View(mood);
+        
+        var vm = new MoodEditViewModel
+        {
+            Id = mood.Id,
+            Name = mood.Name
+        };
+        
+        return View(vm);
     }
 
     // POST: Mood/Edit/5
@@ -94,34 +106,29 @@ public class MoodController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("Name,Id")] Mood mood)
+    public async Task<IActionResult> Edit(Guid id, MoodEditViewModel vm)
     {
-        if (id != mood.Id)
+        if (id != vm.Id)
         {
             return NotFound();
         }
 
         if (ModelState.IsValid)
         {
-            try
+            var mood = await _uow.MoodRepository.FindAsync(vm.Id, User.GetUserId());
+            
+            if (mood == null)
             {
-                _context.Update(mood);
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MoodExists(mood.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            
+            mood.Name = vm.Name;
+            _uow.MoodRepository.Update(mood);
+            await _uow.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
-        return View(mood);
+        return View(vm);
     }
 
     // GET: Mood/Delete/5
@@ -132,8 +139,8 @@ public class MoodController : Controller
             return NotFound();
         }
 
-        var mood = await _context.Moods
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var mood = await _uow.MoodRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (mood == null)
         {
             return NotFound();
@@ -147,18 +154,8 @@ public class MoodController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        var mood = await _context.Moods.FindAsync(id);
-        if (mood != null)
-        {
-            _context.Moods.Remove(mood);
-        }
-
-        await _context.SaveChangesAsync();
+        await _uow.MoodRepository.RemoveAsync(id, User.GetUserId());
+        await _uow.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
-    }
-
-    private bool MoodExists(Guid id)
-    {
-        return _context.Moods.Any(e => e.Id == id);
     }
 }

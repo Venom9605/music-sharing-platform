@@ -3,7 +3,7 @@ using Domain;
 
 namespace App.DAL.Interfaces;
 
-public interface IArtistRoleRepository : IRepository<ArtistRole>
+public interface IArtistRoleRepository : IBaseRepository<ArtistRole>
 {
     
 }

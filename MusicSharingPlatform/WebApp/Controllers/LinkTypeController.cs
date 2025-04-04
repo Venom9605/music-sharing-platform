@@ -10,6 +10,7 @@ using App.DAL.Interfaces;
 using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
@@ -17,19 +18,17 @@ namespace WebApp.Controllers;
 
 public class LinkTypeController : Controller
 {
-    private readonly AppDbContext _context;
-    private readonly ILinkTypeRepository _linkTypeRepository;
+    private readonly IAppUOW _uow;
 
-    public LinkTypeController(AppDbContext context, ILinkTypeRepository linkTypeRepository)
+    public LinkTypeController(IAppUOW uow)
     {
-        _context = context;
-        _linkTypeRepository = linkTypeRepository;
+        _uow = uow;
     }
 
     // GET: LinkType
     public async Task<IActionResult> Index()
     {
-        return View(await _linkTypeRepository.AllAsync(User.GetUserId()));
+        return View(await _uow.LinkTypeRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: LinkType/Details/5
@@ -40,8 +39,8 @@ public class LinkTypeController : Controller
             return NotFound();
         }
 
-        var linkType = await _context.LinkTypes
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var linkType = await _uow.LinkTypeRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (linkType == null)
         {
             return NotFound();
@@ -61,16 +60,21 @@ public class LinkTypeController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Name,Id")] LinkType linkType)
+    public async Task<IActionResult> Create(LinkTypeCreateViewModel vm)
     {
         if (ModelState.IsValid)
         {
-            linkType.Id = Guid.NewGuid();
-            _context.Add(linkType);
-            await _context.SaveChangesAsync();
+            var linkType = new LinkType
+            {
+                Name = vm.Name
+            };
+
+            _uow.LinkTypeRepository.Add(linkType);
+            await _uow.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
-        return View(linkType);
+        return View(vm);
     }
 
     // GET: LinkType/Edit/5
@@ -81,12 +85,20 @@ public class LinkTypeController : Controller
             return NotFound();
         }
 
-        var linkType = await _context.LinkTypes.FindAsync(id);
+        var linkType = await _uow.LinkTypeRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (linkType == null)
         {
             return NotFound();
         }
-        return View(linkType);
+
+        var vm = new LinkTypeEditViewModel()
+        {
+            Id = linkType.Id,
+            Name = linkType.Name
+        };
+        
+        return View(vm);
     }
 
     // POST: LinkType/Edit/5
@@ -94,34 +106,31 @@ public class LinkTypeController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("Name,Id")] LinkType linkType)
+    public async Task<IActionResult> Edit(Guid id, LinkTypeEditViewModel vm)
     {
-        if (id != linkType.Id)
+        if (id != vm.Id)
         {
             return NotFound();
         }
 
         if (ModelState.IsValid)
         {
-            try
+            var linkType = await _uow.LinkTypeRepository.FindAsync(vm.Id, User.GetUserId());
+            
+            if (linkType == null)
             {
-                _context.Update(linkType);
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!LinkTypeExists(linkType.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            
+            linkType.Name = vm.Name;
+            
+            _uow.LinkTypeRepository.Update(linkType);
+            await _uow.SaveChangesAsync();
+            
+            
             return RedirectToAction(nameof(Index));
         }
-        return View(linkType);
+        return View(vm);
     }
 
     // GET: LinkType/Delete/5
@@ -132,8 +141,8 @@ public class LinkTypeController : Controller
             return NotFound();
         }
 
-        var linkType = await _context.LinkTypes
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var linkType = await _uow.LinkTypeRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (linkType == null)
         {
             return NotFound();
@@ -147,18 +156,8 @@ public class LinkTypeController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        var linkType = await _context.LinkTypes.FindAsync(id);
-        if (linkType != null)
-        {
-            _context.LinkTypes.Remove(linkType);
-        }
-
-        await _context.SaveChangesAsync();
+        await _uow.LinkTypeRepository.RemoveAsync(id, User.GetUserId());
+        await _uow.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
-    }
-
-    private bool LinkTypeExists(Guid id)
-    {
-        return _context.LinkTypes.Any(e => e.Id == id);
     }
 }

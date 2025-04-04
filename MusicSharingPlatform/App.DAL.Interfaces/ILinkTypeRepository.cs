@@ -3,7 +3,7 @@ using Domain;
 
 namespace App.DAL.Interfaces;
 
-public interface ILinkTypeRepository: IRepository<LinkType>
+public interface ILinkTypeRepository: IBaseRepository<LinkType>
 {
     
 }

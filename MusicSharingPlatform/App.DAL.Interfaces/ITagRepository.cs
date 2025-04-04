@@ -3,7 +3,7 @@ using Domain;
 
 namespace App.DAL.Interfaces;
 
-public interface ITagRepository : IRepository<Tag>
+public interface ITagRepository : IBaseRepository<Tag>
 {
     
 }

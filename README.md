@@ -1,10 +1,11 @@
 Marc Täll
 232696IADB
 
+# MusicApp
+## Uow and Repository pattern is currently only used in a few controllers, because there are so many scaffolded CRUD controllers and many of them will be deleted.
 
-
-# TODO
-- implement UOW pattern.
+### FIX:
+- Rating controller is broken 
 
 ~~~sh
 

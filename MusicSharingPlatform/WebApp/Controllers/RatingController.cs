@@ -10,6 +10,7 @@ using App.DAL.Interfaces;
 using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
@@ -17,19 +18,17 @@ namespace WebApp.Controllers;
 
 public class RatingController : Controller
 {
-    private readonly AppDbContext _context;
-    private readonly IRatingRepository _ratingRepository;
+    private readonly IAppUOW _uow;
 
-    public RatingController(AppDbContext context, IRatingRepository ratingRepository)
+    public RatingController(IAppUOW uow)
     {
-        _context = context;
-        _ratingRepository = ratingRepository;
+        _uow = uow;
     }
 
     // GET: Rating
     public async Task<IActionResult> Index()
     {
-        return View(await _ratingRepository.AllAsync(User.GetUserId()));
+        return View(await _uow.RatingRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: Rating/Details/5
@@ -40,10 +39,8 @@ public class RatingController : Controller
             return NotFound();
         }
 
-        var rating = await _context.Ratings
-            .Include(r => r.Track)
-            .Include(r => r.User)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var rating = await _uow.RatingRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (rating == null)
         {
             return NotFound();
@@ -53,11 +50,19 @@ public class RatingController : Controller
     }
 
     // GET: Rating/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title");
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
-        return View();
+        var vm = new RatingsViewModel
+        {
+            Rating = new Rating(),
+            TracksList = new SelectList(
+                await _uow.TrackRepository.AllAsync(User.GetUserId()),
+                nameof(Track.Id),
+                nameof(Track.Title)
+            )
+        };
+        
+        return View(vm);
     }
 
     // POST: Rating/Create
@@ -65,19 +70,27 @@ public class RatingController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("TrackId,UserId,Score,Comment,Date,Id")] Rating rating)
+    public async Task<IActionResult> Create(RatingsViewModel vm)
     {
         if (ModelState.IsValid)
         {
-            rating.Id = Guid.NewGuid();
-            rating.Date = DateTime.UtcNow;
-            _context.Add(rating);
-            await _context.SaveChangesAsync();
+            vm.Rating.UserId = User.GetUserId();
+            vm.Rating.Date = DateTime.UtcNow;
+
+            _uow.RatingRepository.Add(vm.Rating);
+            await _uow.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", rating.TrackId);
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", rating.UserId);
-        return View(rating);
+        
+        vm.TracksList = new SelectList(
+            await _uow.TrackRepository.AllAsync(User.GetUserId()),
+            nameof(Track.Id),
+            nameof(Track.Title),
+            vm.Rating.TrackId
+        );
+        
+        return View(vm);
     }
 
     // GET: Rating/Edit/5
@@ -88,13 +101,13 @@ public class RatingController : Controller
             return NotFound();
         }
 
-        var rating = await _context.Ratings.FindAsync(id);
+        var rating = await _uow.RatingRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (rating == null)
         {
             return NotFound();
         }
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", rating.TrackId);
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", rating.UserId);
+        
         return View(rating);
     }
 
@@ -103,7 +116,7 @@ public class RatingController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("TrackId,UserId,Score,Comment,Date,Id")] Rating rating)
+    public async Task<IActionResult> Edit(Guid id, Rating rating)
     {
         if (id != rating.Id)
         {
@@ -112,26 +125,18 @@ public class RatingController : Controller
 
         if (ModelState.IsValid)
         {
-            try
-            {
-                _context.Update(rating);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RatingExists(rating.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            var dbEntity = await _uow.RatingRepository.FindAsync(id, User.GetUserId());
+            if (dbEntity == null) return NotFound();
+
+            dbEntity.Score = rating.Score;
+            dbEntity.Comment = rating.Comment;
+
+            _uow.RatingRepository.Update(dbEntity);
+            await _uow.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", rating.TrackId);
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", rating.UserId);
+        
         return View(rating);
     }
 
@@ -143,10 +148,8 @@ public class RatingController : Controller
             return NotFound();
         }
 
-        var rating = await _context.Ratings
-            .Include(r => r.Track)
-            .Include(r => r.User)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var rating = await _uow.RatingRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (rating == null)
         {
             return NotFound();
@@ -160,18 +163,8 @@ public class RatingController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        var rating = await _context.Ratings.FindAsync(id);
-        if (rating != null)
-        {
-            _context.Ratings.Remove(rating);
-        }
-
-        await _context.SaveChangesAsync();
+        await _uow.RatingRepository.RemoveAsync(id, User.GetUserId());
+        await _uow.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
-    }
-
-    private bool RatingExists(Guid id)
-    {
-        return _context.Ratings.Any(e => e.Id == id);
     }
 }

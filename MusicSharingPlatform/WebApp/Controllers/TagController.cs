@@ -10,25 +10,24 @@ using App.DAL.Interfaces;
 using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 [Authorize]
 
 public class TagController : Controller
 {
-    private readonly AppDbContext _context;
-    private readonly ITagRepository _tagRepository;
+    private readonly IAppUOW _uow;
 
-    public TagController(AppDbContext context, ITagRepository tagRepository)
+    public TagController(IAppUOW uow)
     {
-        _context = context;
-        _tagRepository = tagRepository;
+        _uow = uow;
     }
 
     // GET: Tag
     public async Task<IActionResult> Index()
     {
-        return View(await _tagRepository.AllAsync(User.GetUserId()));
+        return View(await _uow.TagRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: Tag/Details/5
@@ -39,8 +38,8 @@ public class TagController : Controller
             return NotFound();
         }
 
-        var tag = await _context.Tags
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var tag = await _uow.TagRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (tag == null)
         {
             return NotFound();
@@ -60,16 +59,20 @@ public class TagController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Name,Id")] Tag tag)
+    public async Task<IActionResult> Create(TagCreateViewModel vm)
     {
         if (ModelState.IsValid)
         {
-            tag.Id = Guid.NewGuid();
-            _context.Add(tag);
-            await _context.SaveChangesAsync();
+            var tag = new Tag
+            {
+                Name = vm.Name
+            };
+            
+            _uow.TagRepository.Add(tag);
+            await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        return View(tag);
+        return View(vm);
     }
 
     // GET: Tag/Edit/5
@@ -80,12 +83,20 @@ public class TagController : Controller
             return NotFound();
         }
 
-        var tag = await _context.Tags.FindAsync(id);
+        var tag = await _uow.TagRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (tag == null)
         {
             return NotFound();
         }
-        return View(tag);
+        
+        var vm = new TagEditViewModel
+        {
+            Id = tag.Id,
+            Name = tag.Name
+        };
+        
+        return View(vm);
     }
 
     // POST: Tag/Edit/5
@@ -93,34 +104,30 @@ public class TagController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("Name,Id")] Tag tag)
+    public async Task<IActionResult> Edit(Guid id, TagEditViewModel vm)
     {
-        if (id != tag.Id)
+        if (id != vm.Id)
         {
             return NotFound();
         }
 
         if (ModelState.IsValid)
         {
-            try
+            var tag = await _uow.TagRepository.FindAsync(vm.Id, User.GetUserId());
+            
+            if (tag == null)
             {
-                _context.Update(tag);
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TagExists(tag.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            
+            tag.Name = vm.Name;
+            
+            _uow.TagRepository.Update(tag);
+            await _uow.SaveChangesAsync();
+            
             return RedirectToAction(nameof(Index));
         }
-        return View(tag);
+        return View(vm);
     }
 
     // GET: Tag/Delete/5
@@ -131,8 +138,8 @@ public class TagController : Controller
             return NotFound();
         }
 
-        var tag = await _context.Tags
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var tag = await _uow.TagRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (tag == null)
         {
             return NotFound();
@@ -146,18 +153,9 @@ public class TagController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        var tag = await _context.Tags.FindAsync(id);
-        if (tag != null)
-        {
-            _context.Tags.Remove(tag);
-        }
-
-        await _context.SaveChangesAsync();
+        await _uow.TagRepository.RemoveAsync(id, User.GetUserId());
+        await _uow.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
-
-    private bool TagExists(Guid id)
-    {
-        return _context.Tags.Any(e => e.Id == id);
-    }
+    
 }

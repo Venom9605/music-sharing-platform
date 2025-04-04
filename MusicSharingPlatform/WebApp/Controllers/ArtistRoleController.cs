@@ -10,6 +10,7 @@ using App.DAL.Interfaces;
 using Base.Helpers;
 using Domain;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
@@ -17,19 +18,18 @@ namespace WebApp.Controllers;
 
 public class ArtistRoleController : Controller
 {
-    private readonly AppDbContext _context;
-    private readonly IArtistRoleRepository _artistRoleRepository;
+    
+    private readonly IAppUOW _uow;
 
-    public ArtistRoleController(AppDbContext context, IArtistRoleRepository artistRoleRepository)
+    public ArtistRoleController(IAppUOW uow)
     {
-        _context = context;
-        _artistRoleRepository = artistRoleRepository;
+        _uow = uow;
     }
 
     // GET: ArtistRole
     public async Task<IActionResult> Index()
     {
-        return View(await _artistRoleRepository.AllAsync(User.GetUserId()));
+        return View(await _uow.ArtistRoleRepository.AllAsync(User.GetUserId()));
     }
 
     // GET: ArtistRole/Details/5
@@ -40,8 +40,8 @@ public class ArtistRoleController : Controller
             return NotFound();
         }
 
-        var artistRole = await _context.ArtistRoles
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var artistRole = await _uow.ArtistRoleRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (artistRole == null)
         {
             return NotFound();
@@ -61,16 +61,21 @@ public class ArtistRoleController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Name,Id")] ArtistRole artistRole)
+    public async Task<IActionResult> Create(ArtistRoleCreateViewModel vm)
     {
         if (ModelState.IsValid)
         {
-            artistRole.Id = Guid.NewGuid();
-            _context.Add(artistRole);
-            await _context.SaveChangesAsync();
+            var artistRole = new ArtistRole
+            {
+                Name = vm.Name
+            };
+            
+            _uow.ArtistRoleRepository.Add(artistRole);
+            await _uow.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+
         }
-        return View(artistRole);
+        return View(vm);
     }
 
     // GET: ArtistRole/Edit/5
@@ -81,12 +86,20 @@ public class ArtistRoleController : Controller
             return NotFound();
         }
 
-        var artistRole = await _context.ArtistRoles.FindAsync(id);
+        var artistRole = await _uow.ArtistRoleRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (artistRole == null)
         {
             return NotFound();
         }
-        return View(artistRole);
+        
+        var vm = new ArtistRoleEditViewModel
+        {
+            Id = artistRole.Id,
+            Name = artistRole.Name
+        };
+        
+        return View(vm);
     }
 
     // POST: ArtistRole/Edit/5
@@ -94,34 +107,30 @@ public class ArtistRoleController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("Name,Id")] ArtistRole artistRole)
+    public async Task<IActionResult> Edit(Guid id, ArtistRoleEditViewModel vm)
     {
-        if (id != artistRole.Id)
+        if (id != vm.Id)
         {
             return NotFound();
         }
 
         if (ModelState.IsValid)
         {
-            try
+            var artistRole = await _uow.ArtistRoleRepository.FindAsync(vm.Id, User.GetUserId());
+            
+            if (artistRole == null)
             {
-                _context.Update(artistRole);
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ArtistRoleExists(artistRole.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            
+            artistRole.Name = vm.Name;
+            
+            _uow.ArtistRoleRepository.Update(artistRole);
+            await _uow.SaveChangesAsync();
+            
             return RedirectToAction(nameof(Index));
         }
-        return View(artistRole);
+        return View(vm);
     }
 
     // GET: ArtistRole/Delete/5
@@ -132,8 +141,8 @@ public class ArtistRoleController : Controller
             return NotFound();
         }
 
-        var artistRole = await _context.ArtistRoles
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var artistRole = await _uow.ArtistRoleRepository.FindAsync(id.Value, User.GetUserId());
+        
         if (artistRole == null)
         {
             return NotFound();
@@ -147,18 +156,8 @@ public class ArtistRoleController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        var artistRole = await _context.ArtistRoles.FindAsync(id);
-        if (artistRole != null)
-        {
-            _context.ArtistRoles.Remove(artistRole);
-        }
-
-        await _context.SaveChangesAsync();
+        await _uow.ArtistRoleRepository.RemoveAsync(id, User.GetUserId());
+        await _uow.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
-    }
-
-    private bool ArtistRoleExists(Guid id)
-    {
-        return _context.ArtistRoles.Any(e => e.Id == id);
     }
 }

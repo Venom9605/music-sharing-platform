@@ -3,7 +3,7 @@ using Domain;
 
 namespace App.DAL.Interfaces;
 
-public interface IRatingRepository : IRepository<Rating>
+public interface IRatingRepository : IBaseRepository<Rating>
 {
     
 }

@@ -7,7 +7,6 @@ namespace Domain;
 public class Artist : IdentityUser, IBaseEntityId<string>
 {
     
-    // currently nullable, add UI for adding values
     [MaxLength(50)]
     public string DisplayName { get; set; } = default!;
     

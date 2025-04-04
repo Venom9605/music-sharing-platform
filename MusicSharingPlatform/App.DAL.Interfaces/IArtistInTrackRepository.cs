@@ -3,6 +3,6 @@ using Domain;
 
 namespace App.DAL.Interfaces;
 
-public interface IArtistInTrackRepository : IRepository<ArtistInTrack>
+public interface IArtistInTrackRepository : IBaseRepository<ArtistInTrack>
 {
 }

@@ -3,7 +3,7 @@ using Domain;
 
 namespace App.DAL.Interfaces;
 
-public interface IUserLinkRepository : IRepository<UserLink>
+public interface IUserLinkRepository : IBaseRepository<UserLink>
 {
     
 }

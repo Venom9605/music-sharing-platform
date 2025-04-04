@@ -3,7 +3,7 @@ using Domain;
 
 namespace App.DAL.Interfaces;
 
-public interface IMoodsInTrackRepository : IRepository<MoodsInTrack>
+public interface IMoodsInTrackRepository : IBaseRepository<MoodsInTrack>
 {
     
 }

@@ -19,6 +19,8 @@ public class Rating : BaseEntity, IDomainUserId
     
     
     [Display(Name = nameof(Score), Prompt = nameof(Score), ResourceType = typeof(App.Resources.Domain.Rating))]
+    [Required]
+    [Range(1, 5)]
     public int Score { get; set; }
     
     

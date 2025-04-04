@@ -3,7 +3,7 @@ using Domain;
 
 namespace App.DAL.Interfaces;
 
-public interface IUserSavedTracksRepository : IRepository<UserSavedTracks>
+public interface IUserSavedTracksRepository : IBaseRepository<UserSavedTracks>
 {
     
 }

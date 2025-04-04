@@ -29,4 +29,11 @@ public class ArtistRepository : BaseRepository<Artist, string>, IArtistRepositor
         return await GetQuery(userId)
             .ToListAsync();
     }
+
+    public override async Task<Artist?> FindAsync(string id, string? userId)
+    {
+        var query = GetQuery(userId);
+
+        return await query.FirstOrDefaultAsync(e => e.Id.Equals(id));
+    }
 }

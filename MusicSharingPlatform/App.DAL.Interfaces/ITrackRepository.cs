@@ -3,7 +3,7 @@ using Domain;
 
 namespace App.DAL.Interfaces;
 
-public interface ITrackRepository : IRepository<Track>
+public interface ITrackRepository : IBaseRepository<Track>
 {
     
 }

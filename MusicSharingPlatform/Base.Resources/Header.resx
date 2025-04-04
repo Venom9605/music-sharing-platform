@@ -72,4 +72,7 @@
     <data name="Privacy" xml:space="preserve">
         <value>Privacy</value>
     </data>
+    <data name="Profile" xml:space="preserve">
+        <value>Profile</value>
+    </data>
 </root>

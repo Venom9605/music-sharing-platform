@@ -3,7 +3,7 @@ using Domain;
 
 namespace App.DAL.Interfaces;
 
-public interface IPlaylistRepository : IRepository<Playlist>
+public interface IPlaylistRepository : IBaseRepository<Playlist>
 {
     
 }

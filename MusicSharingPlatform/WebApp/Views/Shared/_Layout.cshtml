@@ -28,6 +28,10 @@
                     
                     @if (User.Identity?.IsAuthenticated ?? false)
                     {
+
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Artist" asp-action="Index">@Base.Resources.Header.Profile</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Track" asp-action="Index">@Base.Resources.Header.Tracks</a>
                     </li>
