@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Domain.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,6 +28,9 @@ public class AppDbContext : IdentityDbContext<Artist>
     public DbSet<TrackLink> TrackLinks { get; set; } = default!;
     public DbSet<UserLink> UserLinks { get; set; } = default!;
     public DbSet<UserSavedTracks> UserSavedTracks { get; set; } = default!;
+    
+    
+    public DbSet<AppRefreshToken> RefreshTokens { get; set; } = default!;
     
     
     public AppDbContext(DbContextOptions<AppDbContext> options)

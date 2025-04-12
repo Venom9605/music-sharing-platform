@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Base.Interfaces;
+using Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 
 namespace Domain;
@@ -27,4 +28,6 @@ public class Artist : IdentityUser, IBaseEntityId<string>
     public ICollection<UserLink>? UserLinks { get; set; }
     
     public ICollection<Playlist>? Playlists { get; set; }
+    
+    public ICollection<AppRefreshToken>? RefreshTokens { get; set; }
 }

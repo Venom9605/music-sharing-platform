@@ -43,8 +43,7 @@ namespace App.DAL.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    Discriminator = table.Column<string>(type: "character varying(13)", maxLength: 13, nullable: false),
-                    DisplayName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    DisplayName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Bio = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     ProfilePicture = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
                     JoinDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -238,19 +237,35 @@ namespace App.DAL.EF.Migrations
                     Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     CoverUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     IsPublic = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ArtistId = table.Column<string>(type: "text", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Playlists", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Playlists_AspNetUsers_ArtistId",
-                        column: x => x.ArtistId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_Playlists_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    RefreshToken = table.Column<string>(type: "text", nullable: false),
+                    Expiration = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PreviousRefreshToken = table.Column<string>(type: "text", nullable: true),
+                    PreviousExpiration = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -264,17 +279,11 @@ namespace App.DAL.EF.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false),
                     LinkTypeId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    ArtistId = table.Column<string>(type: "text", nullable: true)
+                    Url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserLinks", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserLinks_AspNetUsers_ArtistId",
-                        column: x => x.ArtistId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserLinks_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -296,8 +305,7 @@ namespace App.DAL.EF.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     TrackId = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false),
-                    ArtistRoleId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ArtistId = table.Column<string>(type: "text", nullable: true)
+                    ArtistRoleId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -308,11 +316,6 @@ namespace App.DAL.EF.Migrations
                         principalTable: "ArtistRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ArtistsInTracks_AspNetUsers_ArtistId",
-                        column: x => x.ArtistId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ArtistsInTracks_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -361,17 +364,11 @@ namespace App.DAL.EF.Migrations
                     UserId = table.Column<string>(type: "text", nullable: false),
                     Score = table.Column<int>(type: "integer", nullable: false),
                     Comment = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ArtistId = table.Column<string>(type: "text", nullable: true)
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Ratings", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Ratings_AspNetUsers_ArtistId",
-                        column: x => x.ArtistId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Ratings_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -444,17 +441,11 @@ namespace App.DAL.EF.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     TrackId = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false),
-                    SavedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ArtistId = table.Column<string>(type: "text", nullable: true)
+                    SavedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserSavedTracks", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserSavedTracks_AspNetUsers_ArtistId",
-                        column: x => x.ArtistId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserSavedTracks_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -545,11 +536,6 @@ namespace App.DAL.EF.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ArtistsInTracks_ArtistId",
-                table: "ArtistsInTracks",
-                column: "ArtistId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ArtistsInTracks_ArtistRoleId",
                 table: "ArtistsInTracks",
                 column: "ArtistRoleId");
@@ -622,19 +608,9 @@ namespace App.DAL.EF.Migrations
                 column: "TrackId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Playlists_ArtistId",
-                table: "Playlists",
-                column: "ArtistId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Playlists_UserId",
                 table: "Playlists",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Ratings_ArtistId",
-                table: "Ratings",
-                column: "ArtistId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ratings_TrackId",
@@ -644,6 +620,11 @@ namespace App.DAL.EF.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Ratings_UserId",
                 table: "Ratings",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_UserId",
+                table: "RefreshTokens",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -687,11 +668,6 @@ namespace App.DAL.EF.Migrations
                 column: "TrackId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserLinks_ArtistId",
-                table: "UserLinks",
-                column: "ArtistId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserLinks_LinkTypeId",
                 table: "UserLinks",
                 column: "LinkTypeId");
@@ -700,11 +676,6 @@ namespace App.DAL.EF.Migrations
                 name: "IX_UserLinks_UserId",
                 table: "UserLinks",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserSavedTracks_ArtistId",
-                table: "UserSavedTracks",
-                column: "ArtistId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserSavedTracks_TrackId",
@@ -746,6 +717,9 @@ namespace App.DAL.EF.Migrations
 
             migrationBuilder.DropTable(
                 name: "Ratings");
+
+            migrationBuilder.DropTable(
+                name: "RefreshTokens");
 
             migrationBuilder.DropTable(
                 name: "TagsInPlaylists");

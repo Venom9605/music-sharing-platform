@@ -145,6 +145,36 @@ namespace App.DAL.EF.Migrations
                     b.ToTable("ArtistRoles");
                 });
 
+            modelBuilder.Entity("Domain.Identity.AppRefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Expiration")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("PreviousExpiration")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PreviousRefreshToken")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("Domain.LinkType", b =>
                 {
                     b.Property<Guid>("Id")
@@ -646,6 +676,17 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Identity.AppRefreshToken", b =>
+                {
+                    b.HasOne("Domain.Artist", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.MoodsInPlaylist", b =>
                 {
                     b.HasOne("Domain.Mood", "Mood")
@@ -886,6 +927,8 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("Playlists");
 
                     b.Navigation("Ratings");
+
+                    b.Navigation("RefreshTokens");
 
                     b.Navigation("SavedTracks");
 
