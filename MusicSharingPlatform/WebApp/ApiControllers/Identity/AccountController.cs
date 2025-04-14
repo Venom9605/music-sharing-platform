@@ -160,9 +160,13 @@ public class AccountController : ControllerBase
         {
             _logger.LogWarning("WebApi login failed, email {} not found", loginInfo.Email);
 
-            await Task.Delay(_random.Next(1000, 5000));
+            await Task.Delay(_random.Next(500, 1000));
             
-            return NotFound("User/Password problem");
+            return Unauthorized(new RestApiErrorResponse
+            {
+                Status = HttpStatusCode.Unauthorized,
+                Error = "Invalid credentials"
+            });
         }
         
         var result = await _signInManager.CheckPasswordSignInAsync(appUser, loginInfo.Password, false);
@@ -171,9 +175,13 @@ public class AccountController : ControllerBase
             _logger.LogWarning("WebApi login failed, password {} for email {} was wrong", loginInfo.Password,
                 loginInfo.Email);
             
-            await Task.Delay(_random.Next(1000, 5000));
+            await Task.Delay(_random.Next(500, 1000));
             
-            return NotFound("User/Password problem");
+            return Unauthorized(new RestApiErrorResponse
+            {
+                Status = HttpStatusCode.Unauthorized,
+                Error = "Invalid credentials"
+            });
         }
         
         var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(appUser);
@@ -285,32 +293,23 @@ public class AccountController : ControllerBase
         
         
         // load and compare refresh tokens
-        var matchingTokens = await _context.Entry(appUser).Collection(u => u.RefreshTokens!)
-            .Query()
-            .Where(x =>
+        var refreshToken = await _context.RefreshTokens
+            .Where(x => x.UserId == appUser.Id)
+            .FirstOrDefaultAsync(x =>
                 (x.RefreshToken == tokenRefreshInfo.RefreshToken && x.Expiration > DateTime.UtcNow) ||
                 (x.PreviousRefreshToken == tokenRefreshInfo.RefreshToken && x.PreviousExpiration > DateTime.UtcNow)
-            )
-            .ToListAsync();
+            );
 
-        appUser.RefreshTokens = matchingTokens;
-
-        if (appUser.RefreshTokens == null || appUser.RefreshTokens.Count == 0)
+        if (refreshToken == null)
         {
             return NotFound(
                 new RestApiErrorResponse()
                 {
                     Status = HttpStatusCode.NotFound,
-                    Error = $"RefreshTokens collection is null or empty - {appUser.RefreshTokens?.Count}"
+                    Error = "No valid refresh token found"
                 }
             );
         }
-
-        if (appUser.RefreshTokens.Count != 1)
-        {
-            return NotFound("More than one valid refresh token found");
-        }
-        
         
         // get claims based user
         var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(appUser);
@@ -323,28 +322,23 @@ public class AccountController : ControllerBase
             _configuration.GetValue<string>("JWTSecurity:Audience")!,
             expiresInSeconds
         );
-
         
-        // make new refresh token, keep old one still valid for some time
-        var refreshToken = appUser.RefreshTokens.First();
-        if (refreshToken.RefreshToken == tokenRefreshInfo.RefreshToken)
-        {
-            refreshToken.PreviousRefreshToken = refreshToken.RefreshToken;
-            refreshToken.PreviousExpiration = DateTime.UtcNow.AddMinutes(1);
+        refreshToken.PreviousRefreshToken = refreshToken.RefreshToken;
+        refreshToken.PreviousExpiration = DateTime.UtcNow.AddMinutes(1);
+        refreshToken.RefreshToken = Guid.NewGuid().ToString();
+        refreshToken.Expiration = DateTime.UtcNow.AddDays(7);
+        
+        _context.RefreshTokens.Update(refreshToken);
 
-            refreshToken.RefreshToken = Guid.NewGuid().ToString();
-            refreshToken.Expiration = DateTime.UtcNow.AddDays(7);
+        await _context.SaveChangesAsync();
+        
+        _logger.LogInformation("New refresh token: {Token}", refreshToken.RefreshToken);
 
-            await _context.SaveChangesAsync();
-        }
-
-        var res = new JWTResponse()
+        return Ok(new JWTResponse
         {
             JWT = jwtResponseStr,
-            RefreshToken = refreshToken.RefreshToken,
-        };
-
-        return Ok(res);
+            RefreshToken = refreshToken.RefreshToken
+        });
     }
     
     
@@ -368,11 +362,6 @@ public class AccountController : ControllerBase
                     Error = "Invalid refresh token"
                 }
             );
-        }
-
-        if (!Guid.TryParse(userIdStr, out var userId))
-        {
-            return BadRequest("Deserialization error");
         }
 
         var appUser = await _context.Users
