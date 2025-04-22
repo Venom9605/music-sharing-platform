@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using Domain;
+using App.DAL.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Identity.Client;
 
@@ -71,7 +71,6 @@ public class UserSavedTrackController : Controller
         if (ModelState.IsValid)
         {
             userSavedTracks.Id = Guid.NewGuid();
-            userSavedTracks.SavedAt = DateTime.UtcNow;
             _context.Add(userSavedTracks);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -82,22 +81,6 @@ public class UserSavedTrackController : Controller
     }
 
     // GET: UserSavedTrack/Edit/5
-    public async Task<IActionResult> Edit(Guid? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var userSavedTracks = await _context.UserSavedTracks.FindAsync(id);
-        if (userSavedTracks == null)
-        {
-            return NotFound();
-        }
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", userSavedTracks.TrackId);
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userSavedTracks.UserId);
-        return View(userSavedTracks);
-    }
 
     // POST: UserSavedTrack/Edit/5
     // To protect from overposting attacks, enable the specific properties you want to bind to.

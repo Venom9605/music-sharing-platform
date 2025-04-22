@@ -1,9 +1,8 @@
 ﻿using Base.DAL.Interfaces;
-using Domain;
 
 namespace App.DAL.Interfaces;
 
-public interface IArtistRoleRepository : IBaseRepository<ArtistRole>
+public interface IArtistRoleRepository : IBaseRepository<DTO.ArtistRole>
 {
     
 }

@@ -1,12 +1,14 @@
-﻿using App.DAL.Interfaces;
+﻿using App.DAL.EF.Mappers;
+using App.DAL.Interfaces;
 using Base.Dal.EF;
 using Domain;
 
 namespace App.DAL.EF.Repositories;
 
-public class TrackRepository : BaseRepository<Track>, ITrackRepository
+public class TrackRepository : BaseRepository<DTO.Track, Domain.Track>, ITrackRepository
 {
-    public TrackRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext)
+    private readonly TrackMapper _mapper = new TrackMapper();
+    public TrackRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new TrackMapper())
     {
     }
     

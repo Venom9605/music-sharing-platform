@@ -27,15 +27,5 @@ public class Rating : BaseEntity, IDomainUserId
     [MaxLength(512)]
     [Display(Name = nameof(Comment), Prompt = nameof(Comment), ResourceType = typeof(App.Resources.Domain.Rating))]
     public string? Comment { get; set; } = default!;
-
-    
-    private DateTime _date;
-    
-    [Display(Name = nameof(Date), Prompt = nameof(Date), ResourceType = typeof(App.Resources.Domain.Rating))]
-    public DateTime Date
-    {
-        get => _date;
-        set => _date = DateTime.SpecifyKind(value, DateTimeKind.Utc);
-    }   
     
 }

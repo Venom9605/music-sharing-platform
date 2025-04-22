@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using Domain;
+using App.DAL.DTO;
 using Microsoft.AspNetCore.Authorization;
 
 namespace WebApp.Controllers;
@@ -80,22 +80,7 @@ public class UserLinkController : Controller
     }
 
     // GET: UserLink/Edit/5
-    public async Task<IActionResult> Edit(Guid? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var userLink = await _context.UserLinks.FindAsync(id);
-        if (userLink == null)
-        {
-            return NotFound();
-        }
-        ViewData["LinkTypeId"] = new SelectList(_context.LinkTypes, "Id", "Name", userLink.LinkTypeId);
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userLink.UserId);
-        return View(userLink);
-    }
+    
 
     // POST: UserLink/Edit/5
     // To protect from overposting attacks, enable the specific properties you want to bind to.

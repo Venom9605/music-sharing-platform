@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using Base.Interfaces;
+using Domain;
 using Domain.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -36,5 +37,35 @@ public class AppDbContext : IdentityDbContext<Artist>
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
     {
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+    {
+        
+        
+        var entries = ChangeTracker.Entries()
+            .Where(e => e is {Entity: IDomainMeta});
+        
+        foreach (var entry in entries) 
+        {
+            if (entry.State == EntityState.Added)
+            {
+                (entry.Entity as IDomainMeta)!.CreatedAt = DateTime.UtcNow;
+                (entry.Entity as IDomainMeta)!.CreatedBy = "System";
+            }
+            
+            else if (entry.State == EntityState.Modified)
+            {
+                (entry.Entity as IDomainMeta)!.ChangedAt = DateTime.UtcNow;
+                (entry.Entity as IDomainMeta)!.ChangedBy = "System";
+                
+                entry.Property("CreatedAt").IsModified = false;
+                entry.Property("CreatedBy").IsModified = false;
+                
+            }
+
+        }
+        
+        return base.SaveChangesAsync(cancellationToken);
     }
 }

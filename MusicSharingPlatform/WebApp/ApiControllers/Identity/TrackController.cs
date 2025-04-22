@@ -1,9 +1,9 @@
 ﻿using App.DAL.Interfaces;
 using Base.Helpers;
-using Domain;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using App.DAL.DTO;
 
 namespace WebApp.ApiControllers.Identity;
 
@@ -38,13 +38,23 @@ public class TrackController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<ActionResult<Track>> CreateTrack([FromBody] Track track)
+    public async Task<ActionResult<Track>> CreateTrack([FromBody] Track dto)
     {
-        track.Id = Guid.NewGuid();
-        track.Uploaded = DateTime.UtcNow;
-        track.TimesPlayed = 0;
-        track.TimesSaved = 0;
-        track.Duration = 200;
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        
+        var track = new Track
+        {
+            Id = Guid.NewGuid(),
+            Title = dto.Title,
+            FilePath = dto.FilePath,
+            CoverPath = dto.CoverPath,
+            Duration = 200,
+            TimesPlayed = 0,
+            TimesSaved = 0
+        };
 
         _uow.TrackRepository.Add(track);
         await _uow.SaveChangesAsync();
@@ -59,6 +69,11 @@ public class TrackController : ControllerBase
         {
             return BadRequest();
         }
+        
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
 
         var existing = await _uow.TrackRepository.FindAsync(id, User.GetUserId());
         if (existing == null)
@@ -68,7 +83,6 @@ public class TrackController : ControllerBase
 
         existing.Title = track.Title;
         existing.CoverPath = track.CoverPath;
-        existing.FilePath = track.FilePath;
 
         _uow.TrackRepository.Update(existing);
         await _uow.SaveChangesAsync();

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using Domain;
+using App.DAL.DTO;
 using Microsoft.AspNetCore.Authorization;
 using WebApp.ViewModels;
 
@@ -75,7 +75,6 @@ public class RatingController : Controller
         if (ModelState.IsValid)
         {
             vm.Rating.UserId = User.GetUserId();
-            vm.Rating.Date = DateTime.UtcNow;
 
             _uow.RatingRepository.Add(vm.Rating);
             await _uow.SaveChangesAsync();

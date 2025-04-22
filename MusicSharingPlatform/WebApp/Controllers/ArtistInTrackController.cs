@@ -5,7 +5,7 @@ using App.DAL.EF;
 using App.DAL.EF.Repositories;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using Domain;
+using App.DAL.DTO;
 using Microsoft.AspNetCore.Authorization;
 using WebApp.ViewModels;
 

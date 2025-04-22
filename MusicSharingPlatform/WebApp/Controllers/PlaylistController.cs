@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using Domain;
+using App.DAL.DTO;
 using Microsoft.AspNetCore.Authorization;
 
 namespace WebApp.Controllers;
@@ -68,7 +68,6 @@ public class PlaylistController : Controller
         if (ModelState.IsValid)
         {
             playlist.Id = Guid.NewGuid();
-            playlist.CreatedAt = DateTime.UtcNow;
             _context.Add(playlist);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -78,21 +77,6 @@ public class PlaylistController : Controller
     }
 
     // GET: Playlist/Edit/5
-    public async Task<IActionResult> Edit(Guid? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var playlist = await _context.Playlists.FindAsync(id);
-        if (playlist == null)
-        {
-            return NotFound();
-        }
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", playlist.UserId);
-        return View(playlist);
-    }
 
     // POST: Playlist/Edit/5
     // To protect from overposting attacks, enable the specific properties you want to bind to.

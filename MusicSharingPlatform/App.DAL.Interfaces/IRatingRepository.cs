@@ -1,9 +1,8 @@
 ﻿using Base.DAL.Interfaces;
-using Domain;
 
 namespace App.DAL.Interfaces;
 
-public interface IRatingRepository : IBaseRepository<Rating>
+public interface IRatingRepository : IBaseRepository<DTO.Rating>
 {
     
 }

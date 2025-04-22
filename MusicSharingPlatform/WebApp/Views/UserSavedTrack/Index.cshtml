@@ -1,4 +1,4 @@
-@model IEnumerable<Domain.UserSavedTracks>
+@model IEnumerable<App.DAL.DTO.UserSavedTracks>
 
 @{
     ViewData["Title"] = "Index";
@@ -18,9 +18,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.User)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SavedAt)
-            </th>
+
             <th></th>
         </tr>
     </thead>
@@ -32,9 +30,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.User!.Id)
-            </td>
-            <td>
-                @item.SavedAt.ToLocalTime()
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Domain;
+﻿using App.DAL.DTO;
 
 namespace WebApp.ViewModels;
 

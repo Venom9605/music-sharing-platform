@@ -1,4 +1,5 @@
-﻿using App.DAL.Interfaces;
+﻿using App.DAL.EF.Mappers;
+using App.DAL.Interfaces;
 using Base.Dal.EF;
 using Base.Interfaces;
 using Domain;
@@ -6,9 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace App.DAL.EF.Repositories;
 
-public class ArtistRepository : BaseRepository<Artist, string>, IArtistRepository
+public class ArtistRepository : BaseRepository<DTO.Artist, Domain.Artist, string>, IArtistRepository
 {
-    public ArtistRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext)
+    private readonly ArtistMapper _mapper = new ArtistMapper();
+    public ArtistRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new ArtistMapper())
     {
     }
 
@@ -24,16 +26,19 @@ public class ArtistRepository : BaseRepository<Artist, string>, IArtistRepositor
         return query;
     }
 
-    public override async Task<IEnumerable<Artist>> AllAsync(string? userId = null)
+    public override async Task<IEnumerable<DTO.Artist>> AllAsync(string? userId = null)
     {
-        return await GetQuery(userId)
-            .ToListAsync();
+        return (await GetQuery(userId)
+            .ToListAsync())
+            .Select(e => _mapper.Map(e)!);
     }
 
-    public override async Task<Artist?> FindAsync(string id, string? userId)
+    public override async Task<DTO.Artist?> FindAsync(string id, string? userId)
     {
         var query = GetQuery(userId);
 
-        return await query.FirstOrDefaultAsync(e => e.Id.Equals(id));
+        var res = await query.FirstOrDefaultAsync(e => e.Id.Equals(id));
+
+        return _mapper.Map(res);
     }
 }

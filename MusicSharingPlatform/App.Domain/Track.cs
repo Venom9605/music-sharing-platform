@@ -20,16 +20,6 @@ public class Track : BaseEntity
     public string CoverPath { get; set; } = default!;
     
     
-    private DateTime _uploaded;
-    
-    [Display(Name = nameof(Uploaded), Prompt = nameof(Uploaded), ResourceType = typeof(App.Resources.Domain.Track))]
-    public DateTime Uploaded
-    {
-        get => _uploaded;
-        set => _uploaded = DateTime.SpecifyKind(value, DateTimeKind.Utc);
-    }
-    
-    
     [Display(Name = nameof(Duration), Prompt = nameof(Duration), ResourceType = typeof(App.Resources.Domain.Track))]
     public int Duration { get; set; }
     

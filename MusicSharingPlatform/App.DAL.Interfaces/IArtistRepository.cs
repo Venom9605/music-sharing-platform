@@ -1,9 +1,8 @@
 ﻿using Base.DAL.Interfaces;
-using Domain;
 
 namespace App.DAL.Interfaces;
 
-public interface IArtistRepository : IRepository<Artist, string>
+public interface IArtistRepository : IRepository<DTO.Artist, string>
 {
     
 }

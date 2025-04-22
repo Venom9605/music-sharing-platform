@@ -9,8 +9,6 @@ Marc Täll
 
 ~~~sh
 
-artist role ID and artist role ID1?
-
 dotnet ef migrations add --project App.DAL.EF --startup-project WebApp --context AppDbContext InitialCreate
 
 dotnet ef database --project App.DAL.EF --startup-project WebApp update

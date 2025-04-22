@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using Domain;
+using App.DAL.DTO;
 using Microsoft.AspNetCore.Authorization;
 using WebApp.ViewModels;
 
@@ -64,7 +64,6 @@ public class TrackController : Controller
                 FilePath = vm.FilePath,
                 CoverPath = vm.CoverPath,
                 Duration = vm.Duration,
-                Uploaded = DateTime.UtcNow,
                 TimesPlayed = 0,
                 TimesSaved = 0
                 

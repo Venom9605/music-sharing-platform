@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using Domain;
+using App.DAL.DTO;
 using Microsoft.AspNetCore.Authorization;
 
 namespace WebApp.Controllers;
@@ -80,22 +80,7 @@ public class TagsInPlaylistController : Controller
     }
 
     // GET: TagsInPlaylist/Edit/5
-    public async Task<IActionResult> Edit(Guid? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
 
-        var tagsInPlaylist = await _context.TagsInPlaylists.FindAsync(id);
-        if (tagsInPlaylist == null)
-        {
-            return NotFound();
-        }
-        ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Name", tagsInPlaylist.PlaylistId);
-        ViewData["TagId"] = new SelectList(_context.Tags, "Id", "Name", tagsInPlaylist.TagId);
-        return View(tagsInPlaylist);
-    }
 
     // POST: TagsInPlaylist/Edit/5
     // To protect from overposting attacks, enable the specific properties you want to bind to.

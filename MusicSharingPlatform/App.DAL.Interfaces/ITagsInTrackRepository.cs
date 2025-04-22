@@ -1,9 +1,8 @@
 ﻿using Base.DAL.Interfaces;
-using Domain;
 
 namespace App.DAL.Interfaces;
 
-public interface ITagsInTrackRepository : IBaseRepository<TagsInTrack>
+public interface ITagsInTrackRepository : IBaseRepository<DTO.TagsInTrack>
 {
     
 }

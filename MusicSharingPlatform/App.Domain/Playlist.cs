@@ -32,16 +32,6 @@ public class Playlist : BaseEntity, IDomainUserId
     [Display(Name = nameof(IsPublic), Prompt = nameof(IsPublic), ResourceType = typeof(App.Resources.Domain.Playlist))]
     public bool IsPublic { get; set; }
     
-    private DateTime _createdAt;
-    
-    
-    [Display(Name = nameof(CreatedAt), Prompt = nameof(CreatedAt), ResourceType = typeof(App.Resources.Domain.Playlist))]
-    public DateTime CreatedAt
-    {
-        get => _createdAt;
-        set => _createdAt = DateTime.SpecifyKind(value, DateTimeKind.Utc);
-    }
-    
     public ICollection<TagsInPlaylist>? TagsInPlaylists { get; set; }
     
     public ICollection<MoodsInPlaylist>? MoodsInPlaylists { get; set; }

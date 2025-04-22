@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using Domain;
+using App.DAL.DTO;
 using Microsoft.AspNetCore.Authorization;
 
 namespace WebApp.Controllers;
@@ -80,22 +80,6 @@ public class TrackLinkController : Controller
     }
 
     // GET: TrackLink/Edit/5
-    public async Task<IActionResult> Edit(Guid? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var trackLink = await _context.TrackLinks.FindAsync(id);
-        if (trackLink == null)
-        {
-            return NotFound();
-        }
-        ViewData["LinkTypeId"] = new SelectList(_context.LinkTypes, "Id", "Name", trackLink.LinkTypeId);
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", trackLink.TrackId);
-        return View(trackLink);
-    }
 
     // POST: TrackLink/Edit/5
     // To protect from overposting attacks, enable the specific properties you want to bind to.
