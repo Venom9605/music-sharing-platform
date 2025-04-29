@@ -8,8 +8,8 @@ namespace App.DAL.EF.Repositories;
 
 public class UserLinkRepository : BaseRepository<DTO.UserLink, Domain.UserLink>, IUserLinkRepository
 {
-    private readonly UserLinkMapper _mapper = new UserLinkMapper();
-    public UserLinkRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new UserLinkMapper())
+    private readonly UserLinkUOWMapper _iuowMapper = new UserLinkUOWMapper();
+    public UserLinkRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new UserLinkUOWMapper())
     {
     }
     
@@ -19,6 +19,6 @@ public class UserLinkRepository : BaseRepository<DTO.UserLink, Domain.UserLink>,
             .Include(u => u.User)
             .Include(u => u.LinkType)
             .ToListAsync())
-            .Select(e => _mapper.Map(e)!);
+            .Select(e => _iuowMapper.Map(e)!);
     }
 }

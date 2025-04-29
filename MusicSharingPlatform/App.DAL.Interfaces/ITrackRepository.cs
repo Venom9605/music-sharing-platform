@@ -2,7 +2,11 @@
 
 namespace App.DAL.Interfaces;
 
-public interface ITrackRepository : IBaseRepository<DTO.Track>
+public interface ITrackRepository : IBaseRepository<DTO.Track>, ITrackRepositoryCustom
 {
-    
+}
+
+public interface ITrackRepositoryCustom
+{
+    void CustomMethodTest();
 }

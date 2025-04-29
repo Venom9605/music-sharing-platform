@@ -2,7 +2,11 @@
 
 namespace App.DAL.Interfaces;
 
-public interface ITagsInPlaylistRepository : IBaseRepository<DTO.TagsInPlaylist>
+public interface ITagsInPlaylistRepository : IBaseRepository<DTO.TagsInPlaylist>, ITagsInPlaylistRepositoryCustom
 {
     
+}
+
+public interface ITagsInPlaylistRepositoryCustom
+{
 }

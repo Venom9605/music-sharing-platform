@@ -2,7 +2,11 @@
 
 namespace App.DAL.Interfaces;
 
-public interface IUserLinkRepository : IBaseRepository<DTO.UserLink>
+public interface IUserLinkRepository : IBaseRepository<DTO.UserLink>, IUserLinkRepositoryCustom
 {
     
+}
+
+public interface IUserLinkRepositoryCustom
+{
 }

@@ -8,8 +8,8 @@ namespace App.DAL.EF.Repositories;
 
 public class TrackLinkRepository : BaseRepository<DTO.TrackLink, Domain.TrackLink>, ITrackLinkRepository
 {
-    private readonly TrackLinkMapper _mapper = new TrackLinkMapper();
-    public TrackLinkRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new TrackLinkMapper())
+    private readonly TrackLinkUOWMapper _iuowMapper = new TrackLinkUOWMapper();
+    public TrackLinkRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new TrackLinkUOWMapper())
     {
     }
     
@@ -19,6 +19,6 @@ public class TrackLinkRepository : BaseRepository<DTO.TrackLink, Domain.TrackLin
             .Include(t => t.Track)
             .Include(t => t.LinkType)
             .ToListAsync())
-            .Select(e => _mapper.Map(e)!);
+            .Select(e => _iuowMapper.Map(e)!);
     }
 }

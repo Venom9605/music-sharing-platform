@@ -8,8 +8,8 @@ namespace App.DAL.EF.Repositories;
 
 public class MoodsInTrackRepository : BaseRepository<DTO.MoodsInTrack, Domain.MoodsInTrack>, IMoodsInTrackRepository
 {
-    private readonly MoodsInTrackMapper _mapper = new MoodsInTrackMapper();
-    public MoodsInTrackRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new MoodsInTrackMapper())
+    private readonly MoodsInTrackUOWMapper _iuowMapper = new MoodsInTrackUOWMapper();
+    public MoodsInTrackRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new MoodsInTrackUOWMapper())
     {
     }
     
@@ -19,6 +19,6 @@ public class MoodsInTrackRepository : BaseRepository<DTO.MoodsInTrack, Domain.Mo
             .Include(m => m.Mood)
             .Include(m => m.Track)
             .ToListAsync())
-            .Select(e => _mapper.Map(e)!);
+            .Select(e => _iuowMapper.Map(e)!);
     }
 }

@@ -1,6 +1,8 @@
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using App.BLL;
+using App.BLL.Interfaces;
 using App.DAL.EF;
 using App.DAL.EF.Repositories;
 using App.DAL.Interfaces;
@@ -48,6 +50,8 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 
 builder.Services.AddScoped<IAppUOW, AppUOW>();
+builder.Services.AddScoped<IAppBLL, AppBLL>();
+
 
 builder.Services.AddDefaultIdentity<Artist>(
         options => options.SignIn.RequireConfirmedAccount = false)

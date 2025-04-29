@@ -8,8 +8,8 @@ namespace App.DAL.EF.Repositories;
 
 public class TagsInTrackRepository : BaseRepository<DTO.TagsInTrack, Domain.TagsInTrack>, ITagsInTrackRepository
 {
-    private readonly TagsInTrackMapper _mapper = new TagsInTrackMapper();
-    public TagsInTrackRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new TagsInTrackMapper())
+    private readonly TagsInTrackUOWMapper _iuowMapper = new TagsInTrackUOWMapper();
+    public TagsInTrackRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new TagsInTrackUOWMapper())
     {
     }
     
@@ -19,6 +19,6 @@ public class TagsInTrackRepository : BaseRepository<DTO.TagsInTrack, Domain.Tags
             .Include(t => t.Track)
             .Include(t => t.Tag)
             .ToListAsync())
-            .Select(e => _mapper.Map(e)!);
+            .Select(e => _iuowMapper.Map(e)!);
     }
 }

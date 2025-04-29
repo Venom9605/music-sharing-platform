@@ -8,8 +8,8 @@ namespace App.DAL.EF.Repositories;
 
 public class MoodsInPlaylistRepository : BaseRepository<DTO.MoodsInPlaylist, Domain.MoodsInPlaylist>, IMoodsInPlaylistRepository
 {
-    private readonly MoodsInPlaylistMapper _mapper = new MoodsInPlaylistMapper();
-    public MoodsInPlaylistRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new MoodsInPlaylistMapper())
+    private readonly MoodsInPlaylistUOWMapper _iuowMapper = new MoodsInPlaylistUOWMapper();
+    public MoodsInPlaylistRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new MoodsInPlaylistUOWMapper())
     {
     }
     
@@ -19,6 +19,6 @@ public class MoodsInPlaylistRepository : BaseRepository<DTO.MoodsInPlaylist, Dom
             .Include(m => m.Mood)
             .Include(m => m.Playlist)
             .ToListAsync())
-            .Select(e => _mapper.Map(e)!);
+            .Select(e => _iuowMapper.Map(e)!);
     }
 }

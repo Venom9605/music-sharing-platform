@@ -1,11 +1,12 @@
-﻿using App.DAL.DTO;
-using Base.DAL.Interfaces;
+﻿
+using App.DAL.DTO;
+using Base.BLL.Interfaces;
 
-namespace App.DAL.EF.Mappers;
+namespace App.BLL.Mappers;
 
-public class TrackMapper : IMapper<DTO.Track, Domain.Track>
+public class TrackBLLMapper : IBLLMapper<App.BLL.DTO.Track, App.DAL.DTO.Track>
 {
-    public Track? Map(Domain.Track? entity)
+    public Track? Map(DTO.Track? entity)
     {
         if (entity == null) return null;
         var res = new Track()
@@ -28,11 +29,11 @@ public class TrackMapper : IMapper<DTO.Track, Domain.Track>
         return res;
     }
 
-    public Domain.Track? Map(Track? entity)
+    public DTO.Track? Map(Track? entity)
     {
         if (entity == null) return null;
         
-        var res = new Domain.Track()
+        var res = new DTO.Track()
         {
             Id = entity.Id,
             Title = entity.Title,

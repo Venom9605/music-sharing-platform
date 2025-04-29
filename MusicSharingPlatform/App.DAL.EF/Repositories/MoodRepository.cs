@@ -8,8 +8,8 @@ namespace App.DAL.EF.Repositories;
 
 public class MoodRepository : BaseRepository<DTO.Mood, Domain.Mood>, IMoodRepository
 {
-    private readonly MoodMapper _mapper = new MoodMapper();
-    public MoodRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new MoodMapper())
+    private readonly MoodUOWMapper _iuowMapper = new MoodUOWMapper();
+    public MoodRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new MoodUOWMapper())
     {
     }
 }

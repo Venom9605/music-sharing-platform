@@ -8,8 +8,8 @@ namespace App.DAL.EF.Repositories;
 
 public class TrackInPlaylistRepository : BaseRepository<DTO.TrackInPlaylist, Domain.TrackInPlaylist>, ITrackInPlaylistRepository
 {
-    private readonly TrackInPlaylistMapper _mapper = new TrackInPlaylistMapper();
-    public TrackInPlaylistRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new TrackInPlaylistMapper())
+    private readonly TrackInPlaylistUOWMapper _iuowMapper = new TrackInPlaylistUOWMapper();
+    public TrackInPlaylistRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new TrackInPlaylistUOWMapper())
     {
     }
     
@@ -19,6 +19,6 @@ public class TrackInPlaylistRepository : BaseRepository<DTO.TrackInPlaylist, Dom
             .Include(t => t.Track)
             .Include(t => t.Playlist)
             .ToListAsync())
-            .Select(e => _mapper.Map(e)!);
+            .Select(e => _iuowMapper.Map(e)!);
     }
 }

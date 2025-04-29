@@ -8,8 +8,8 @@ namespace App.DAL.EF.Repositories;
 
 public class PlaylistRepository : BaseRepository<DTO.Playlist, Domain.Playlist>, IPlaylistRepository
 {
-    private readonly PlaylistMapper _mapper = new PlaylistMapper();
-    public PlaylistRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new PlaylistMapper())
+    private readonly PlaylistUOWMapper _iuowMapper = new PlaylistUOWMapper();
+    public PlaylistRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new PlaylistUOWMapper())
     {
     }
     
@@ -18,6 +18,6 @@ public class PlaylistRepository : BaseRepository<DTO.Playlist, Domain.Playlist>,
         return (await GetQuery(userId)
             .Include(p => p.User)
             .ToListAsync())
-            .Select(e => _mapper.Map(e)!);
+            .Select(e => _iuowMapper.Map(e)!);
     }
 }

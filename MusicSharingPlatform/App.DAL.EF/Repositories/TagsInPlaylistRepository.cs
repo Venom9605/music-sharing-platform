@@ -8,8 +8,8 @@ namespace App.DAL.EF.Repositories;
 
 public class TagsInPlaylistRepository : BaseRepository<DTO.TagsInPlaylist, Domain.TagsInPlaylist>, ITagsInPlaylistRepository
 {
-    private readonly TagsInPlaylistMapper _mapper = new TagsInPlaylistMapper();
-    public TagsInPlaylistRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new TagsInPlaylistMapper())
+    private readonly TagsInPlaylistUOWMapper _iuowMapper = new TagsInPlaylistUOWMapper();
+    public TagsInPlaylistRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new TagsInPlaylistUOWMapper())
     {
     }
     
@@ -19,6 +19,6 @@ public class TagsInPlaylistRepository : BaseRepository<DTO.TagsInPlaylist, Domai
             .Include(t => t.Playlist)
             .Include(t => t.Tag)
             .ToListAsync())
-            .Select(e => _mapper.Map(e)!);
+            .Select(e => _iuowMapper.Map(e)!);
     }
 }

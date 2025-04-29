@@ -7,9 +7,13 @@ namespace App.DAL.EF.Repositories;
 
 public class TrackRepository : BaseRepository<DTO.Track, Domain.Track>, ITrackRepository
 {
-    private readonly TrackMapper _mapper = new TrackMapper();
-    public TrackRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new TrackMapper())
+    private readonly TrackUOWMapper _iuowMapper = new TrackUOWMapper();
+    public TrackRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new TrackUOWMapper())
     {
     }
-    
+
+    public void CustomMethodTest()
+    {
+        Console.WriteLine("Custom test Track method called.");
+    }
 }

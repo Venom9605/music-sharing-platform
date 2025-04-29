@@ -3,7 +3,7 @@ using Base.DAL.Interfaces;
 
 namespace App.DAL.EF.Mappers;
 
-public class UserSavedTracksMapper : IMapper<DTO.UserSavedTracks, Domain.UserSavedTracks>
+public class UserSavedTracksUOWMapper : IUOWMapper<DTO.UserSavedTracks, Domain.UserSavedTracks>
 {
     public UserSavedTracks? Map(Domain.UserSavedTracks? entity)
     {

@@ -8,8 +8,8 @@ namespace App.DAL.EF.Repositories;
 
 public class UserSavedTracksRepository : BaseRepository<DTO.UserSavedTracks, Domain.UserSavedTracks>, IUserSavedTracksRepository
 {
-    private readonly UserSavedTracksMapper _mapper = new UserSavedTracksMapper();
-    public UserSavedTracksRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new UserSavedTracksMapper())
+    private readonly UserSavedTracksUOWMapper _iuowMapper = new UserSavedTracksUOWMapper();
+    public UserSavedTracksRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new UserSavedTracksUOWMapper())
     {
     }
     
@@ -19,6 +19,6 @@ public class UserSavedTracksRepository : BaseRepository<DTO.UserSavedTracks, Dom
             .Include(u => u.User)
             .Include(u => u.Track)
             .ToListAsync())
-            .Select(e => _mapper.Map(e)!);
+            .Select(e => _iuowMapper.Map(e)!);
     }
 }

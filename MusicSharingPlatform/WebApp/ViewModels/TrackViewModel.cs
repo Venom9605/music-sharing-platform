@@ -1,4 +1,4 @@
-﻿using App.DAL.DTO;
+﻿using App.BLL.DTO;
 
 namespace WebApp.ViewModels;
 

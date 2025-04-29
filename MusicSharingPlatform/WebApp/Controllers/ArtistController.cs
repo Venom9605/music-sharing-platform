@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using App.BLL.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using App.DAL.Interfaces;
 using Base.Helpers;
 using App.DAL.DTO;
@@ -12,17 +13,18 @@ namespace WebApp.Controllers;
 public class ArtistController : Controller
 {
 
-    private readonly IAppUOW _uow;
+    private readonly IAppBLL _bll;
 
-    public ArtistController(IAppUOW uow)
+    public ArtistController(IAppBLL bll)
     {
-        _uow = uow;
+        _bll = bll;
     }
 
     // GET: Artist
     public async Task<IActionResult> Index()
     {
-        return View(await _uow.ArtistRepository.AllAsync(User.GetUserId()));
+        _bll.ArtistService.CustomMethodTest();
+        return View(await _bll.ArtistService.AllAsync(User.GetUserId()));
     }
 
     // GET: Artist/Edit/5
@@ -33,7 +35,7 @@ public class ArtistController : Controller
             return NotFound();
         }
 
-        var artist = await _uow.ArtistRepository.FindAsync(id, User.GetUserId());
+        var artist = await _bll.ArtistService.FindAsync(id, User.GetUserId());
         
         if (artist == null)
         {
@@ -65,7 +67,7 @@ public class ArtistController : Controller
 
         if (ModelState.IsValid)
         {
-            var artist = await _uow.ArtistRepository.FindAsync(vm.Id, User.GetUserId());
+            var artist = await _bll.ArtistService.FindAsync(vm.Id, User.GetUserId());
             
             if (artist == null)
             {
@@ -76,8 +78,8 @@ public class ArtistController : Controller
             artist.Bio = vm.Bio;
             artist.ProfilePicture = vm.ProfilePicture;
             
-            _uow.ArtistRepository.Update(artist);
-            await _uow.SaveChangesAsync();
+            _bll.ArtistService.Update(artist);
+            await _bll.SaveChangesAsync();
             
             return RedirectToAction(nameof(Index));
         }

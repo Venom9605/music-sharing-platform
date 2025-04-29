@@ -2,7 +2,11 @@
 
 namespace App.DAL.Interfaces;
 
-public interface ITrackInPlaylistRepository : IBaseRepository<DTO.TrackInPlaylist>
+public interface ITrackInPlaylistRepository : IBaseRepository<DTO.TrackInPlaylist>, ITrackInPlaylistRepositoryCustom
 {
     
+}
+
+public interface ITrackInPlaylistRepositoryCustom
+{
 }

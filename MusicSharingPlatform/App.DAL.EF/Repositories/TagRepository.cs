@@ -8,8 +8,8 @@ namespace App.DAL.EF.Repositories;
 
 public class TagRepository : BaseRepository<DTO.Tag, Domain.Tag>, ITagRepository
 {
-    private readonly TagMapper _mapper = new TagMapper();
-    public TagRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new TagMapper())
+    private readonly TagUOWMapper _iuowMapper = new TagUOWMapper();
+    public TagRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new TagUOWMapper())
     {
     }
 }

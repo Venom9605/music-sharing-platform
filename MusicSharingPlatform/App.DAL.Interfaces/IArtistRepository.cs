@@ -2,7 +2,13 @@
 
 namespace App.DAL.Interfaces;
 
-public interface IArtistRepository : IRepository<DTO.Artist, string>
+public interface IArtistRepository : IRepository<DTO.Artist, string>, IArtistRepositoryCustom
 {
     
+}
+
+public interface IArtistRepositoryCustom
+{
+    void CustomMethodTest();
+
 }

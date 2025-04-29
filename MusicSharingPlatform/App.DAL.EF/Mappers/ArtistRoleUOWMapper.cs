@@ -3,30 +3,30 @@ using Base.DAL.Interfaces;
 
 namespace App.DAL.EF.Mappers;
 
-public class LinkTypeMapper : IMapper<DTO.LinkType, Domain.LinkType>
+public class ArtistRoleUOWMapper : IUOWMapper<DTO.ArtistRole, Domain.ArtistRole>
 {
-    public LinkType? Map(Domain.LinkType? entity)
+    public ArtistRole? Map(Domain.ArtistRole? entity)
     {
         if (entity == null) return null;
-        var res = new LinkType()
+        var res = new ArtistRole()
         {
             Id = entity.Id,
             Name = entity.Name,
-            UserLinks = null,
-            TrackLinks = null
+            ArtistInTracks = null
+
         };
         return res;
     }
 
-    public Domain.LinkType? Map(LinkType? entity)
+    public Domain.ArtistRole? Map(ArtistRole? entity)
     {
         if (entity == null) return null;
-        var res = new Domain.LinkType()
+        var res = new Domain.ArtistRole()
         {
             Id = entity.Id,
             Name = entity.Name,
-            UserLinks = null,
-            TrackLinks = null
+            ArtistInTracks = null
+
         };
         return res;
     }

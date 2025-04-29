@@ -9,8 +9,13 @@ namespace App.DAL.EF.Repositories;
 
 public class ArtistRoleRepository : BaseRepository<DTO.ArtistRole, Domain.ArtistRole>, IArtistRoleRepository
 {
-    private readonly ArtistRoleMapper _mapper = new ArtistRoleMapper();
-    public ArtistRoleRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new ArtistRoleMapper())
+    private readonly ArtistRoleUOWMapper _iuowMapper = new ArtistRoleUOWMapper();
+    public ArtistRoleRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new ArtistRoleUOWMapper())
     {
+    }
+
+    public void CustomMethodTest()
+    {
+        Console.WriteLine("Custom test ArtistRole method called.");
     }
 }

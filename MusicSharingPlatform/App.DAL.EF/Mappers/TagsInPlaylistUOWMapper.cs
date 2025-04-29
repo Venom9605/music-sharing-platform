@@ -3,7 +3,7 @@ using Base.DAL.Interfaces;
 
 namespace App.DAL.EF.Mappers;
 
-public class TagsInPlaylistMapper : IMapper<DTO.TagsInPlaylist, Domain.TagsInPlaylist>
+public class TagsInPlaylistUOWMapper : IUOWMapper<DTO.TagsInPlaylist, Domain.TagsInPlaylist>
 {
     public TagsInPlaylist? Map(Domain.TagsInPlaylist? entity)
     {

@@ -3,7 +3,7 @@ using Base.DAL.Interfaces;
 
 namespace App.DAL.EF.Mappers;
 
-public class TagMapper : IMapper<DTO.Tag, Domain.Tag>
+public class TagUOWMapper : IUOWMapper<DTO.Tag, Domain.Tag>
 {
     public Tag? Map(Domain.Tag? entity)
     {

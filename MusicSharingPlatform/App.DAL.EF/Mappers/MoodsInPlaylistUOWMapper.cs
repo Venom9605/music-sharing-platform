@@ -3,34 +3,32 @@ using Base.DAL.Interfaces;
 
 namespace App.DAL.EF.Mappers;
 
-public class TrackInPlaylistMapper : IMapper<DTO.TrackInPlaylist, Domain.TrackInPlaylist>
+public class MoodsInPlaylistUOWMapper : IUOWMapper<DTO.MoodsInPlaylist, Domain.MoodsInPlaylist>
 {
-    public TrackInPlaylist? Map(Domain.TrackInPlaylist? entity)
+    public MoodsInPlaylist? Map(Domain.MoodsInPlaylist? entity)
     {
         if (entity == null) return null;
-        var res = new TrackInPlaylist()
+        var res = new MoodsInPlaylist()
         {
             Id = entity.Id,
-            TrackId = entity.TrackId,
-            Track = null,
+            MoodId = entity.MoodId,
+            Mood = null,
             PlaylistId = entity.PlaylistId,
             Playlist = null,
-
         };
         return res;
     }
 
-    public Domain.TrackInPlaylist? Map(TrackInPlaylist? entity)
+    public Domain.MoodsInPlaylist? Map(MoodsInPlaylist? entity)
     {
         if (entity == null) return null;
-        var res = new Domain.TrackInPlaylist()
+        var res = new Domain.MoodsInPlaylist()
         {
             Id = entity.Id,
-            TrackId = entity.TrackId,
-            Track = null,
+            MoodId = entity.MoodId,
+            Mood = null,
             PlaylistId = entity.PlaylistId,
             Playlist = null,
-
         };
         return res;
     }

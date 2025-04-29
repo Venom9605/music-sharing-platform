@@ -3,32 +3,34 @@ using Base.DAL.Interfaces;
 
 namespace App.DAL.EF.Mappers;
 
-public class MoodsInTrackMapper : IMapper<DTO.MoodsInTrack, Domain.MoodsInTrack>
+public class TagsInTrackUOWMapper : IUOWMapper<DTO.TagsInTrack, Domain.TagsInTrack>
 {
-    public MoodsInTrack? Map(Domain.MoodsInTrack? entity)
+    public TagsInTrack? Map(Domain.TagsInTrack? entity)
     {
         if (entity == null) return null;
-        var res = new MoodsInTrack()
+        var res = new TagsInTrack()
         {
             Id = entity.Id,
-            MoodId = entity.MoodId,
-            Mood = null,
             TrackId = entity.TrackId,
             Track = null,
+            TagId = entity.TagId,
+            Tag = null,
+
         };
         return res;
     }
 
-    public Domain.MoodsInTrack? Map(MoodsInTrack? entity)
+    public Domain.TagsInTrack? Map(TagsInTrack? entity)
     {
         if (entity == null) return null;
-        var res = new Domain.MoodsInTrack()
+        var res = new Domain.TagsInTrack()
         {
             Id = entity.Id,
-            MoodId = entity.MoodId,
-            Mood = null,
             TrackId = entity.TrackId,
             Track = null,
+            TagId = entity.TagId,
+            Tag = null,
+
         };
         return res;
     }

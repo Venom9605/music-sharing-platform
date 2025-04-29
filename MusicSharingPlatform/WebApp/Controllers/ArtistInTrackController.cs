@@ -1,3 +1,4 @@
+using App.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -5,7 +6,7 @@ using App.DAL.EF;
 using App.DAL.EF.Repositories;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using App.DAL.DTO;
+using App.BLL.DTO;
 using Microsoft.AspNetCore.Authorization;
 using WebApp.ViewModels;
 
@@ -16,18 +17,26 @@ namespace WebApp.Controllers;
 public class ArtistInTrackController : Controller
 {
     
-    private readonly IAppUOW _uow;
+    private readonly IAppBLL _bll;
 
-    public ArtistInTrackController(IAppUOW uow)
+    public ArtistInTrackController(IAppBLL bll)
     {
-        _uow = uow;
+        _bll = bll;
     }
 
     
     // GET: ArtistInTrack
     public async Task<IActionResult> Index()
     {
-        return View(await _uow.ArtistInTrackRepository.AllAsync(User.GetUserId()));
+        _bll.ArtistInTrackService.CustomMethodTest();
+
+        var artistInTracks = await _bll.ArtistInTrackService.AllAsync(User.GetUserId());
+        foreach (var artistInTrack in artistInTracks)
+        {
+            Console.WriteLine($"Index Method - ArtistInTrack: {artistInTrack.Id}, Track: {artistInTrack.Track?.Title}, User: {artistInTrack.User?.DisplayName}, Role: {artistInTrack.ArtistRole?.Name}");
+        }
+
+        return View(artistInTracks);
     }
 
     
@@ -40,7 +49,7 @@ public class ArtistInTrackController : Controller
             return NotFound();
         }
 
-        var artistInTrack = await _uow.ArtistInTrackRepository.FindAsync(id.Value, User.GetUserId());
+        var artistInTrack = await _bll.ArtistInTrackService.FindAsync(id.Value, User.GetUserId());
         
         if (artistInTrack == null)
         {
@@ -68,8 +77,8 @@ public class ArtistInTrackController : Controller
     {
         if (ModelState.IsValid)
         {
-            _uow.ArtistInTrackRepository.Add(vm.ArtistInTrack);
-            await _uow.SaveChangesAsync();
+            _bll.ArtistInTrackService.Add(vm.ArtistInTrack);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
         
@@ -87,7 +96,7 @@ public class ArtistInTrackController : Controller
             return NotFound();
         }
 
-        var artistInTrack = await _uow.ArtistInTrackRepository.FindAsync(id.Value, User.GetUserId());
+        var artistInTrack = await _bll.ArtistInTrackService.FindAsync(id.Value, User.GetUserId());
         
         if (artistInTrack == null)
         {
@@ -114,8 +123,8 @@ public class ArtistInTrackController : Controller
 
         if (ModelState.IsValid)
         {
-            _uow.ArtistInTrackRepository.Update(vm.ArtistInTrack);
-            await _uow.SaveChangesAsync();
+            _bll.ArtistInTrackService.Update(vm.ArtistInTrack);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
         
@@ -132,7 +141,7 @@ public class ArtistInTrackController : Controller
             return NotFound();
         }
 
-        var artistInTrack = await _uow.ArtistInTrackRepository.FindAsync(id.Value, User.GetUserId());
+        var artistInTrack = await _bll.ArtistInTrackService.FindAsync(id.Value, User.GetUserId());
         
         if (artistInTrack == null)
         {
@@ -147,8 +156,8 @@ public class ArtistInTrackController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _uow.ArtistInTrackRepository.RemoveAsync(id, User.GetUserId());
-        await _uow.SaveChangesAsync();
+        await _bll.ArtistInTrackService.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
     
@@ -157,21 +166,21 @@ public class ArtistInTrackController : Controller
         var userId = User.GetUserId();
 
         vm.TracksList = new SelectList(
-            await _uow.TrackRepository.AllAsync(userId),
+            await _bll.TrackService.AllAsync(userId),
             nameof(Track.Id),
             nameof(Track.Title),
             vm.ArtistInTrack.TrackId
         );
 
         vm.ArtistRolesList = new SelectList(
-            await _uow.ArtistRoleRepository.AllAsync(userId),
+            await _bll.ArtistRoleService.AllAsync(userId),
             nameof(ArtistRole.Id),
             nameof(ArtistRole.Name),
             vm.ArtistInTrack.ArtistRoleId
         );
 
         vm.ArtistsList = new SelectList(
-            await _uow.ArtistRepository.AllAsync(userId),
+            await _bll.ArtistService.AllAsync(userId),
             nameof(Artist.Id),
             nameof(Artist.DisplayName),
             vm.ArtistInTrack.UserId

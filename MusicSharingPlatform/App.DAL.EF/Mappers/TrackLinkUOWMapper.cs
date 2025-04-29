@@ -3,7 +3,7 @@ using Base.DAL.Interfaces;
 
 namespace App.DAL.EF.Mappers;
 
-public class TrackLinkMapper : IMapper<DTO.TrackLink, Domain.TrackLink>
+public class TrackLinkUOWMapper : IUOWMapper<DTO.TrackLink, Domain.TrackLink>
 {
     public TrackLink? Map(Domain.TrackLink? entity)
     {

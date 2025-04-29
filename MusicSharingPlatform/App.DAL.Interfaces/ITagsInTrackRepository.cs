@@ -2,7 +2,11 @@
 
 namespace App.DAL.Interfaces;
 
-public interface ITagsInTrackRepository : IBaseRepository<DTO.TagsInTrack>
+public interface ITagsInTrackRepository : IBaseRepository<DTO.TagsInTrack>, ITagsInTrackRepositoryCustom
 {
     
+}
+
+public interface ITagsInTrackRepositoryCustom
+{
 }

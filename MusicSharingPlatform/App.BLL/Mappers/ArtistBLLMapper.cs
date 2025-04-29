@@ -1,13 +1,15 @@
 ﻿using App.DAL.DTO;
-using Base.DAL.Interfaces;
+using Base.BLL.Interfaces;
 
-namespace App.DAL.EF.Mappers;
+namespace App.BLL.Mappers;
 
-public class ArtistMapper : IMapper<DTO.Artist, Domain.Artist, string>
+public class ArtistBLLMapper : IBLLMapper<App.BLL.DTO.Artist, App.DAL.DTO.Artist, string>
 {
-    public Artist? Map(Domain.Artist? entity)
+    public Artist? Map(DTO.Artist? entity)
     {
         if (entity == null) return null;
+        
+        
         var res = new Artist()
         {
             Id = entity.Id,
@@ -24,10 +26,11 @@ public class ArtistMapper : IMapper<DTO.Artist, Domain.Artist, string>
         return res;
     }
 
-    public Domain.Artist? Map(Artist? entity)
+    public DTO.Artist? Map(Artist? entity)
     {
         if (entity == null) return null;
-        var res = new Domain.Artist()
+        
+        var res = new DTO.Artist()
         {
             Id = entity.Id,
             DisplayName = entity.DisplayName,

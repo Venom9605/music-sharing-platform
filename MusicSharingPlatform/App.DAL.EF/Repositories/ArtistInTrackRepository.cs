@@ -8,20 +8,26 @@ namespace App.DAL.EF.Repositories;
 
 public class ArtistInTrackRepository : BaseRepository<DTO.ArtistInTrack, Domain.ArtistInTrack>, IArtistInTrackRepository
 {
-    private readonly ArtistInTrackMapper _mapper = new ArtistInTrackMapper();
+    private readonly ArtistInTrackUOWMapper _iuowMapper = new ArtistInTrackUOWMapper();
     
-    public ArtistInTrackRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new ArtistInTrackMapper())
+    public ArtistInTrackRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new ArtistInTrackUOWMapper())
     {
     }
     
     public override async Task<IEnumerable<DTO.ArtistInTrack>> AllAsync(string? userId = null)
     {
-        return (await GetQuery(userId)
+        var query = GetQuery(userId)
             .Include(a => a.Track)
             .Include(a => a.User)
-            .Include(a => a.ArtistRole)
-            .ToListAsync())
-            .Select(e => _mapper.Map(e)!);
+            .Include(a => a.ArtistRole);
+
+        var result = await query.ToListAsync();
+        foreach (var entity in result)
+        {
+            Console.WriteLine($"Fetched ArtistInTrack: {entity.Id}, Track: {entity.Track?.Title}, User: {entity.User?.DisplayName}, Role: {entity.ArtistRole?.Name}");
+        }
+
+        return result.Select(e => _iuowMapper.Map(e)!);
     }
 
     public override async Task<DTO.ArtistInTrack?> FindAsync(Guid id, string? userId)
@@ -32,6 +38,11 @@ public class ArtistInTrackRepository : BaseRepository<DTO.ArtistInTrack, Domain.
             .Include(a => a.ArtistRole)
             .FirstOrDefaultAsync(e => e.Id.Equals(id));
 
-        return _mapper.Map(res);
+        return _iuowMapper.Map(res);
+    }
+
+    public void CustomMethodTest()
+    {
+        Console.WriteLine("Custom test ArtistInTrack method called.");
     }
 }

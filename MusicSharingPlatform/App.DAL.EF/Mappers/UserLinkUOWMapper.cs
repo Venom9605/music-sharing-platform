@@ -3,7 +3,7 @@ using Base.DAL.Interfaces;
 
 namespace App.DAL.EF.Mappers;
 
-public class UserLinkMapper : IMapper<DTO.UserLink, Domain.UserLink>
+public class UserLinkUOWMapper : IUOWMapper<DTO.UserLink, Domain.UserLink>
 {
     public UserLink? Map(Domain.UserLink? entity)
     {

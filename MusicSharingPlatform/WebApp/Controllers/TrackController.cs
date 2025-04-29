@@ -1,7 +1,8 @@
+using App.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using App.DAL.DTO;
+using App.BLL.DTO;
 using Microsoft.AspNetCore.Authorization;
 using WebApp.ViewModels;
 
@@ -12,17 +13,18 @@ namespace WebApp.Controllers;
 public class TrackController : Controller
 {
 
-    private readonly IAppUOW _uow;
+    private readonly IAppBLL _bll;
 
-    public TrackController(IAppUOW uow)
+    public TrackController(IAppBLL bll)
     {
-        _uow = uow;
+        _bll = bll;
     }
 
     // GET: Track
     public async Task<IActionResult> Index()
     {
-        return View(await _uow.TrackRepository.AllAsync(User.GetUserId()));
+        _bll.TrackService.CustomMethodTest();
+        return View(await _bll.TrackService.AllAsync(User.GetUserId()));
     }
 
     // GET: Track/Details/5
@@ -33,7 +35,7 @@ public class TrackController : Controller
             return NotFound();
         }
 
-        var track = await _uow.TrackRepository.FindAsync(id.Value, User.GetUserId());
+        var track = await _bll.TrackService.FindAsync(id.Value, User.GetUserId());
 
         if (track == null)
         {
@@ -69,8 +71,8 @@ public class TrackController : Controller
                 
             };
 
-            _uow.TrackRepository.Add(entity);
-            await _uow.SaveChangesAsync();
+            _bll.TrackService.Add(entity);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
         return View(vm);
@@ -84,7 +86,7 @@ public class TrackController : Controller
             return NotFound();
         }
 
-        var track = await _uow.TrackRepository.FindAsync(id.Value, User.GetUserId());
+        var track = await _bll.TrackService.FindAsync(id.Value, User.GetUserId());
         
         if (track == null)
         {
@@ -117,7 +119,7 @@ public class TrackController : Controller
 
         if (ModelState.IsValid)
         {
-            var track = await _uow.TrackRepository.FindAsync(vm.Id, User.GetUserId());
+            var track = await _bll.TrackService.FindAsync(vm.Id, User.GetUserId());
             
             if (track == null)
             {
@@ -129,8 +131,8 @@ public class TrackController : Controller
             track.CoverPath = vm.CoverPath;
             track.Duration = vm.Duration;
             
-            _uow.TrackRepository.Update(track);
-            await _uow.SaveChangesAsync();
+            _bll.TrackService.Update(track);
+            await _bll.SaveChangesAsync();
             
             return RedirectToAction(nameof(Index));
         }
@@ -145,7 +147,7 @@ public class TrackController : Controller
             return NotFound();
         }
 
-        var track = await _uow.TrackRepository.FindAsync(id.Value, User.GetUserId());
+        var track = await _bll.TrackService.FindAsync(id.Value, User.GetUserId());
         
         if (track == null)
         {
@@ -160,8 +162,8 @@ public class TrackController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _uow.TrackRepository.RemoveAsync(id, User.GetUserId());
-        await _uow.SaveChangesAsync();
+        await _bll.TrackService.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
     

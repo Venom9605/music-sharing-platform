@@ -2,7 +2,11 @@
 
 namespace App.DAL.Interfaces;
 
-public interface IRatingRepository : IBaseRepository<DTO.Rating>
+public interface IRatingRepository : IBaseRepository<DTO.Rating>, IRatingRepositoryCustom
 {
     
+}
+
+public interface IRatingRepositoryCustom
+{
 }

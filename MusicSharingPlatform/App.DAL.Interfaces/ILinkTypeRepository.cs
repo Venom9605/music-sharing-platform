@@ -2,7 +2,12 @@
 
 namespace App.DAL.Interfaces;
 
-public interface ILinkTypeRepository: IBaseRepository<DTO.LinkType>
+public interface ILinkTypeRepository: IBaseRepository<DTO.LinkType>, ILinkTypeRepositoryCustom
+{
+    
+}
+
+public interface ILinkTypeRepositoryCustom
 {
     
 }

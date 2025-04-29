@@ -3,7 +3,7 @@ using Base.DAL.Interfaces;
 
 namespace App.DAL.EF.Mappers;
 
-public class RatingMapper : IMapper<DTO.Rating, Domain.Rating>
+public class RatingUOWMapper : IUOWMapper<DTO.Rating, Domain.Rating>
 {
     public Rating? Map(Domain.Rating? entity)
     {

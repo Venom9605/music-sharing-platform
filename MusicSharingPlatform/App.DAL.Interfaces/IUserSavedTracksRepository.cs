@@ -2,7 +2,11 @@
 
 namespace App.DAL.Interfaces;
 
-public interface IUserSavedTracksRepository : IBaseRepository<DTO.UserSavedTracks>
+public interface IUserSavedTracksRepository : IBaseRepository<DTO.UserSavedTracks>, IUserSavedTracksRepositoryCustom
 {
     
+}
+
+public interface IUserSavedTracksRepositoryCustom
+{
 }

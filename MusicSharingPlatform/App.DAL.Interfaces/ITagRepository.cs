@@ -2,7 +2,11 @@
 
 namespace App.DAL.Interfaces;
 
-public interface ITagRepository : IBaseRepository<DTO.Tag>
+public interface ITagRepository : IBaseRepository<DTO.Tag>, ITagRepositoryCustom
 {
     
+}
+
+public interface ITagRepositoryCustom
+{
 }

@@ -8,8 +8,8 @@ namespace App.DAL.EF.Repositories;
 
 public class RatingRepository : BaseRepository<DTO.Rating, Domain.Rating>, IRatingRepository
 {
-    private readonly RatingMapper _mapper = new RatingMapper();
-    public RatingRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new RatingMapper())
+    private readonly RatingUOWMapper _iuowMapper = new RatingUOWMapper();
+    public RatingRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new RatingUOWMapper())
     {
     }
     
@@ -19,6 +19,6 @@ public class RatingRepository : BaseRepository<DTO.Rating, Domain.Rating>, IRati
             .Include(r => r.Track)
             .Include(r => r.User)
             .ToListAsync())
-            .Select(e => _mapper.Map(e)!);
+            .Select(e => _iuowMapper.Map(e)!);
     }
 }

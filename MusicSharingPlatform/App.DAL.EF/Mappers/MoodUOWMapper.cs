@@ -3,7 +3,7 @@ using Base.DAL.Interfaces;
 
 namespace App.DAL.EF.Mappers;
 
-public class MoodMapper : IMapper<DTO.Mood, Domain.Mood>
+public class MoodUOWMapper : IUOWMapper<DTO.Mood, Domain.Mood>
 {
     public Mood? Map(Domain.Mood? entity)
     {

@@ -9,8 +9,8 @@ namespace App.DAL.EF.Repositories;
 
 public class ArtistRepository : BaseRepository<DTO.Artist, Domain.Artist, string>, IArtistRepository
 {
-    private readonly ArtistMapper _mapper = new ArtistMapper();
-    public ArtistRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new ArtistMapper())
+    private readonly ArtistUOWMapper _iuowMapper = new ArtistUOWMapper();
+    public ArtistRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new ArtistUOWMapper())
     {
     }
 
@@ -30,7 +30,7 @@ public class ArtistRepository : BaseRepository<DTO.Artist, Domain.Artist, string
     {
         return (await GetQuery(userId)
             .ToListAsync())
-            .Select(e => _mapper.Map(e)!);
+            .Select(e => _iuowMapper.Map(e)!);
     }
 
     public override async Task<DTO.Artist?> FindAsync(string id, string? userId)
@@ -39,6 +39,11 @@ public class ArtistRepository : BaseRepository<DTO.Artist, Domain.Artist, string
 
         var res = await query.FirstOrDefaultAsync(e => e.Id.Equals(id));
 
-        return _mapper.Map(res);
+        return _iuowMapper.Map(res);
+    }
+
+    public void CustomMethodTest()
+    {
+        Console.WriteLine("Custom test Artist method called.");
     }
 }

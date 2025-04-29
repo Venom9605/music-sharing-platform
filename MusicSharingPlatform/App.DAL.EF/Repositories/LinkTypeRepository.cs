@@ -8,8 +8,8 @@ namespace App.DAL.EF.Repositories;
 
 public class LinkTypeRepository : BaseRepository<DTO.LinkType, Domain.LinkType>, ILinkTypeRepository
 {
-    private readonly LinkTypeMapper _mapper = new LinkTypeMapper();
-    public LinkTypeRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new LinkTypeMapper())
+    private readonly LinkTypeUOWMapper _iuowMapper = new LinkTypeUOWMapper();
+    public LinkTypeRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new LinkTypeUOWMapper())
     {
     }
 }

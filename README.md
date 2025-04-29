@@ -6,6 +6,7 @@ Marc Täll
 
 ### FIX:
 - Rating controller is broken 
+- custom services umbes tund pool 25. aprill loengus
 
 ~~~sh
 

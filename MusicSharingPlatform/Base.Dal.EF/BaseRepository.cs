@@ -9,8 +9,8 @@ public class BaseRepository<TDalEntity, TDomainEntity>: BaseRepository<TDalEntit
     where TDalEntity : class, IBaseEntityId<Guid>
     where TDomainEntity : BaseEntity
 {
-    public BaseRepository(DbContext repositoryDbContext, IMapper<TDalEntity, TDomainEntity> mapper) 
-        : base(repositoryDbContext, mapper)
+    public BaseRepository(DbContext repositoryDbContext, IUOWMapper<TDalEntity, TDomainEntity> iuowMapper) 
+        : base(repositoryDbContext, iuowMapper)
     {
     }
 }
@@ -23,12 +23,12 @@ public class BaseRepository<TDalEntity, TDomainEntity, TKey> : IRepository<TDalE
     
     protected DbContext RepositoryDbContext;
     protected DbSet<TDomainEntity> RepositoryDbSet;
-    protected IMapper<TDalEntity, TDomainEntity, TKey> Mapper; 
+    protected IUOWMapper<TDalEntity, TDomainEntity, TKey> IuowMapper; 
     
-    public BaseRepository(DbContext repositoryDbContext, IMapper<TDalEntity, TDomainEntity, TKey> mapper)
+    public BaseRepository(DbContext repositoryDbContext, IUOWMapper<TDalEntity, TDomainEntity, TKey> iuowMapper)
     {
         RepositoryDbContext = repositoryDbContext;
-        Mapper = mapper;
+        IuowMapper = iuowMapper;
         RepositoryDbSet = RepositoryDbContext.Set<TDomainEntity>();
     }
 
@@ -49,14 +49,14 @@ public class BaseRepository<TDalEntity, TDomainEntity, TKey> : IRepository<TDalE
     {
         return GetQuery(userId)
             .ToList()
-            .Select(e => Mapper.Map(e)!);
+            .Select(e => IuowMapper.Map(e)!);
     }
 
     public virtual async Task<IEnumerable<TDalEntity>> AllAsync(string? userId = null)
     {
         return (await GetQuery(userId)
             .ToListAsync())
-            .Select(e => Mapper.Map(e)!);
+            .Select(e => IuowMapper.Map(e)!);
     }
 
     public virtual TDalEntity? Find(TKey id, string? userId)
@@ -65,7 +65,7 @@ public class BaseRepository<TDalEntity, TDomainEntity, TKey> : IRepository<TDalE
 
         var res = query.FirstOrDefault(e => e.Id.Equals(id));
 
-        return Mapper.Map(res);
+        return IuowMapper.Map(res);
     }
 
     public virtual async Task<TDalEntity?> FindAsync(TKey id, string? userId)
@@ -74,17 +74,17 @@ public class BaseRepository<TDalEntity, TDomainEntity, TKey> : IRepository<TDalE
 
         var res =  await query.FirstOrDefaultAsync(e => e.Id.Equals(id));
         
-        return Mapper.Map(res);
+        return IuowMapper.Map(res);
     }
 
     public virtual void Add(TDalEntity entity)
     {
-        RepositoryDbSet.Add(Mapper.Map(entity)!);
+        RepositoryDbSet.Add(IuowMapper.Map(entity)!);
     }
 
     public virtual TDalEntity Update(TDalEntity entity)
     {
-        return Mapper.Map(RepositoryDbSet.Update(Mapper.Map(entity)!).Entity)!;
+        return IuowMapper.Map(RepositoryDbSet.Update(IuowMapper.Map(entity)!).Entity)!;
     }
 
     public virtual void Remove(TDalEntity entity, string? userId)

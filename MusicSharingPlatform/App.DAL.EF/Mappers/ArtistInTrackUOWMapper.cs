@@ -3,11 +3,14 @@ using Base.DAL.Interfaces;
 
 namespace App.DAL.EF.Mappers;
 
-public class ArtistInTrackMapper : IMapper<DTO.ArtistInTrack, Domain.ArtistInTrack>
+public class ArtistInTrackUOWMapper : IUOWMapper<DTO.ArtistInTrack, Domain.ArtistInTrack>
 {
     public ArtistInTrack? Map(Domain.ArtistInTrack? entity)
     {
         if (entity == null) return null;
+        
+        Console.WriteLine("Mapping from Domain to DAL DTO: " + entity.Id);
+        
         var res = new ArtistInTrack()
         {
             Id = entity.Id,
@@ -34,13 +37,23 @@ public class ArtistInTrackMapper : IMapper<DTO.ArtistInTrack, Domain.ArtistInTra
             } : null
             
         };
+        
+        
+        Console.WriteLine(res.Track!.Title);
+        Console.WriteLine(res.User!.DisplayName);
+        Console.WriteLine(res.ArtistRole!.Name);
+        
         return res;
 
+        
+        
     }
 
     public Domain.ArtistInTrack? Map(ArtistInTrack? entity)
     {
         if (entity == null) return null;
+        
+        Console.WriteLine("Mapping from DAL DTO to Domain: " + entity.Id);
         
         var res = new Domain.ArtistInTrack()
         {

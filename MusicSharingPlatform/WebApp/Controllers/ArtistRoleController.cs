@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using App.DAL.DTO;
+using App.BLL.DTO;
 using Microsoft.AspNetCore.Authorization;
 using WebApp.ViewModels;
 
@@ -19,17 +20,18 @@ namespace WebApp.Controllers;
 public class ArtistRoleController : Controller
 {
     
-    private readonly IAppUOW _uow;
+    private readonly IAppBLL _bll;
 
-    public ArtistRoleController(IAppUOW uow)
+    public ArtistRoleController(IAppBLL bll)
     {
-        _uow = uow;
+        _bll = bll;
     }
 
     // GET: ArtistRole
     public async Task<IActionResult> Index()
     {
-        return View(await _uow.ArtistRoleRepository.AllAsync(User.GetUserId()));
+        _bll.ArtistRoleService.CustomMethodTest();
+        return View(await _bll.ArtistRoleService.AllAsync(User.GetUserId()));
     }
 
     // GET: ArtistRole/Details/5
@@ -40,7 +42,7 @@ public class ArtistRoleController : Controller
             return NotFound();
         }
 
-        var artistRole = await _uow.ArtistRoleRepository.FindAsync(id.Value, User.GetUserId());
+        var artistRole = await _bll.ArtistRoleService.FindAsync(id.Value, User.GetUserId());
         
         if (artistRole == null)
         {
@@ -70,8 +72,8 @@ public class ArtistRoleController : Controller
                 Name = vm.Name
             };
             
-            _uow.ArtistRoleRepository.Add(artistRole);
-            await _uow.SaveChangesAsync();
+            _bll.ArtistRoleService.Add(artistRole);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
 
         }
@@ -86,7 +88,7 @@ public class ArtistRoleController : Controller
             return NotFound();
         }
 
-        var artistRole = await _uow.ArtistRoleRepository.FindAsync(id.Value, User.GetUserId());
+        var artistRole = await _bll.ArtistRoleService.FindAsync(id.Value, User.GetUserId());
         
         if (artistRole == null)
         {
@@ -116,7 +118,7 @@ public class ArtistRoleController : Controller
 
         if (ModelState.IsValid)
         {
-            var artistRole = await _uow.ArtistRoleRepository.FindAsync(vm.Id, User.GetUserId());
+            var artistRole = await _bll.ArtistRoleService.FindAsync(vm.Id, User.GetUserId());
             
             if (artistRole == null)
             {
@@ -125,8 +127,8 @@ public class ArtistRoleController : Controller
             
             artistRole.Name = vm.Name;
             
-            _uow.ArtistRoleRepository.Update(artistRole);
-            await _uow.SaveChangesAsync();
+            _bll.ArtistRoleService.Update(artistRole);
+            await _bll.SaveChangesAsync();
             
             return RedirectToAction(nameof(Index));
         }
@@ -141,7 +143,7 @@ public class ArtistRoleController : Controller
             return NotFound();
         }
 
-        var artistRole = await _uow.ArtistRoleRepository.FindAsync(id.Value, User.GetUserId());
+        var artistRole = await _bll.ArtistRoleService.FindAsync(id.Value, User.GetUserId());
         
         if (artistRole == null)
         {
@@ -156,8 +158,8 @@ public class ArtistRoleController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _uow.ArtistRoleRepository.RemoveAsync(id, User.GetUserId());
-        await _uow.SaveChangesAsync();
+        await _bll.ArtistRoleService.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 }
