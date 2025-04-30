@@ -1,4 +1,4 @@
-@model App.DAL.DTO.MoodsInPlaylist
+@model WebApp.ViewModels.MoodsInPlaylistViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -12,17 +12,20 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="All " class="text-danger"></div>
+            <input type="hidden" asp-for="MoodsInPlaylist.Id" />
+            
             <div class="form-group">
-                <label asp-for="MoodId" class="control-label"></label>
-                <select asp-for="MoodId" class="form-control" asp-items="ViewBag.MoodId"></select>
-                <span asp-validation-for="MoodId" class="text-danger"></span>
+                <label asp-for="MoodsInPlaylist.PlaylistId" class="control-label"></label>
+                <select asp-for="MoodsInPlaylist.PlaylistId" class ="form-control" asp-items="Model.PlaylistsList"></select>
+                <span asp-validation-for="MoodsInPlaylist.PlaylistId" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
-                <label asp-for="PlaylistId" class="control-label"></label>
-                <select asp-for="PlaylistId" class="form-control" asp-items="ViewBag.PlaylistId"></select>
-                <span asp-validation-for="PlaylistId" class="text-danger"></span>
+                <label asp-for="MoodsInPlaylist.MoodId" class="control-label"></label>
+                <select asp-for="MoodsInPlaylist.MoodId" class ="form-control" asp-items="Model.MoodsList"></select>
+                <span asp-validation-for="MoodsInPlaylist.MoodId" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Id" />
+            
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

@@ -2,14 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using App.DAL.DTO;
+using App.BLL.DTO;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
@@ -17,19 +19,18 @@ namespace WebApp.Controllers;
 
 public class MoodsInPlaylistController : Controller
 {
-    private readonly AppDbContext _context;
-    private readonly IMoodsInPlaylistRepository _moodsInPlaylistRepository;
+    private readonly IAppBLL _bll;
 
-    public MoodsInPlaylistController(AppDbContext context, IMoodsInPlaylistRepository moodsInPlaylistRepository)
+
+    public MoodsInPlaylistController(IAppBLL bll)
     {
-        _context = context;
-        _moodsInPlaylistRepository = moodsInPlaylistRepository;
+        _bll = bll;
     }
 
     // GET: MoodsInPlaylist
     public async Task<IActionResult> Index()
     {
-        return View(await _moodsInPlaylistRepository.AllAsync(User.GetUserId()));
+        return View(await _bll.MoodsInPlaylistService.AllAsync(User.GetUserId()));
     }
 
     // GET: MoodsInPlaylist/Details/5
@@ -39,11 +40,9 @@ public class MoodsInPlaylistController : Controller
         {
             return NotFound();
         }
-
-        var moodsInPlaylist = await _context.MoodsInPlaylists
-            .Include(m => m.Mood)
-            .Include(m => m.Playlist)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        
+        var moodsInPlaylist = await _bll.MoodsInPlaylistService.FindAsync(id.Value, User.GetUserId());
+        
         if (moodsInPlaylist == null)
         {
             return NotFound();
@@ -53,11 +52,12 @@ public class MoodsInPlaylistController : Controller
     }
 
     // GET: MoodsInPlaylist/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        ViewData["MoodId"] = new SelectList(_context.Moods, "Id", "Name");
-        ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Name");
-        return View();
+        var vm = new MoodsInPlaylistViewModel { MoodsInPlaylist = new MoodsInPlaylist() };
+        await PopulateSelectListsAsync(vm);
+        
+        return View(vm);
     }
 
     // POST: MoodsInPlaylist/Create
@@ -65,58 +65,63 @@ public class MoodsInPlaylistController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("MoodId,PlaylistId,Id")] MoodsInPlaylist moodsInPlaylist)
+    public async Task<IActionResult> Create(MoodsInPlaylistViewModel vm)
     {
         if (ModelState.IsValid)
         {
-            moodsInPlaylist.Id = Guid.NewGuid();
-            _context.Add(moodsInPlaylist);
-            await _context.SaveChangesAsync();
+            _bll.MoodsInPlaylistService.Add(vm.MoodsInPlaylist);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["MoodId"] = new SelectList(_context.Moods, "Id", "Name", moodsInPlaylist.MoodId);
-        ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Name", moodsInPlaylist.PlaylistId);
-        return View(moodsInPlaylist);
+        await PopulateSelectListsAsync(vm);
+        return View(vm);
     }
 
     // GET: MoodsInPlaylist/Edit/5
-    //missing
+
+    public async Task<IActionResult> Edit(Guid? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        var moodsInPlaylist = await _bll.MoodsInPlaylistService.FindAsync(id.Value, User.GetUserId());
+        
+        if (moodsInPlaylist == null)
+        {
+            return NotFound();
+        }
+        
+        var vm = new MoodsInPlaylistViewModel() { MoodsInPlaylist = moodsInPlaylist };
+        await PopulateSelectListsAsync(vm);
+
+        return View(vm);
+    }
+    
 
     // POST: MoodsInPlaylist/Edit/5
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("MoodId,PlaylistId,Id")] MoodsInPlaylist moodsInPlaylist)
+    public async Task<IActionResult> Edit(Guid id, MoodsInPlaylistViewModel vm)
     {
-        if (id != moodsInPlaylist.Id)
+        if (id != vm.MoodsInPlaylist.Id)
         {
             return NotFound();
         }
 
         if (ModelState.IsValid)
         {
-            try
-            {
-                _context.Update(moodsInPlaylist);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MoodsInPlaylistExists(moodsInPlaylist.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _bll.MoodsInPlaylistService.Update(vm.MoodsInPlaylist);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["MoodId"] = new SelectList(_context.Moods, "Id", "Name", moodsInPlaylist.MoodId);
-        ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Name", moodsInPlaylist.PlaylistId);
-        return View(moodsInPlaylist);
+        
+        await PopulateSelectListsAsync(vm);
+
+        return View(vm);
     }
 
     // GET: MoodsInPlaylist/Delete/5
@@ -127,10 +132,8 @@ public class MoodsInPlaylistController : Controller
             return NotFound();
         }
 
-        var moodsInPlaylist = await _context.MoodsInPlaylists
-            .Include(m => m.Mood)
-            .Include(m => m.Playlist)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var moodsInPlaylist = await _bll.MoodsInPlaylistService.FindAsync(id.Value, User.GetUserId());
+        
         if (moodsInPlaylist == null)
         {
             return NotFound();
@@ -139,23 +142,33 @@ public class MoodsInPlaylistController : Controller
         return View(moodsInPlaylist);
     }
 
-    // POST: MoodsInPlaylist/Delete/5
+    // POST: ArtistInTrack/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        var moodsInPlaylist = await _context.MoodsInPlaylists.FindAsync(id);
-        if (moodsInPlaylist != null)
-        {
-            _context.MoodsInPlaylists.Remove(moodsInPlaylist);
-        }
-
-        await _context.SaveChangesAsync();
+        await _bll.MoodsInPlaylistService.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
-
-    private bool MoodsInPlaylistExists(Guid id)
+    
+    
+    private async Task PopulateSelectListsAsync(MoodsInPlaylistViewModel vm)
     {
-        return _context.MoodsInPlaylists.Any(e => e.Id == id);
+        var userId = User.GetUserId();
+
+        vm.MoodsList = new SelectList(
+            await _bll.MoodService.AllAsync(userId),
+            nameof(Mood.Id),
+            nameof(Mood.Name),
+            vm.MoodsInPlaylist.MoodId
+        );
+
+        vm.PlaylistsList = new SelectList(
+            await _bll.PlaylistService.AllAsync(userId),
+            nameof(Playlist.Id),
+            nameof(Playlist.Name),
+            vm.MoodsInPlaylist.PlaylistId
+        );
     }
 }

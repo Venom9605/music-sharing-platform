@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using App.DAL.DTO;
+using App.BLL.DTO;
 using Microsoft.AspNetCore.Authorization;
 using WebApp.ViewModels;
 
@@ -18,17 +19,17 @@ namespace WebApp.Controllers;
 
 public class RatingController : Controller
 {
-    private readonly IAppUOW _uow;
+    private readonly IAppBLL _bll;
 
-    public RatingController(IAppUOW uow)
+    public RatingController(IAppBLL bll)
     {
-        _uow = uow;
+        _bll = bll;
     }
 
     // GET: Rating
     public async Task<IActionResult> Index()
     {
-        return View(await _uow.RatingRepository.AllAsync(User.GetUserId()));
+        return View(await _bll.RatingService.AllAsync(User.GetUserId()));
     }
 
     // GET: Rating/Details/5
@@ -39,7 +40,7 @@ public class RatingController : Controller
             return NotFound();
         }
 
-        var rating = await _uow.RatingRepository.FindAsync(id.Value, User.GetUserId());
+        var rating = await _bll.RatingService.FindAsync(id.Value, User.GetUserId());
         
         if (rating == null)
         {
@@ -56,7 +57,7 @@ public class RatingController : Controller
         {
             Rating = new Rating(),
             TracksList = new SelectList(
-                await _uow.TrackRepository.AllAsync(User.GetUserId()),
+                await _bll.TrackService.AllAsync(User.GetUserId()),
                 nameof(Track.Id),
                 nameof(Track.Title)
             )
@@ -76,14 +77,14 @@ public class RatingController : Controller
         {
             vm.Rating.UserId = User.GetUserId();
 
-            _uow.RatingRepository.Add(vm.Rating);
-            await _uow.SaveChangesAsync();
+            _bll.RatingService.Add(vm.Rating);
+            await _bll.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
         
         vm.TracksList = new SelectList(
-            await _uow.TrackRepository.AllAsync(User.GetUserId()),
+            await _bll.TrackService.AllAsync(User.GetUserId()),
             nameof(Track.Id),
             nameof(Track.Title),
             vm.Rating.TrackId
@@ -100,7 +101,7 @@ public class RatingController : Controller
             return NotFound();
         }
 
-        var rating = await _uow.RatingRepository.FindAsync(id.Value, User.GetUserId());
+        var rating = await _bll.RatingService.FindAsync(id.Value, User.GetUserId());
         
         if (rating == null)
         {
@@ -124,14 +125,14 @@ public class RatingController : Controller
 
         if (ModelState.IsValid)
         {
-            var dbEntity = await _uow.RatingRepository.FindAsync(id, User.GetUserId());
+            var dbEntity = await _bll.RatingService.FindAsync(id, User.GetUserId());
             if (dbEntity == null) return NotFound();
 
             dbEntity.Score = rating.Score;
             dbEntity.Comment = rating.Comment;
 
-            _uow.RatingRepository.Update(dbEntity);
-            await _uow.SaveChangesAsync();
+            _bll.RatingService.Update(dbEntity);
+            await _bll.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
@@ -147,7 +148,7 @@ public class RatingController : Controller
             return NotFound();
         }
 
-        var rating = await _uow.RatingRepository.FindAsync(id.Value, User.GetUserId());
+        var rating = await _bll.RatingService.FindAsync(id.Value, User.GetUserId());
         
         if (rating == null)
         {
@@ -162,8 +163,8 @@ public class RatingController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _uow.RatingRepository.RemoveAsync(id, User.GetUserId());
-        await _uow.SaveChangesAsync();
+        await _bll.RatingService.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 }

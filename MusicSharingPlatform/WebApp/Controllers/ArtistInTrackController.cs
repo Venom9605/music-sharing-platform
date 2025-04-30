@@ -28,14 +28,8 @@ public class ArtistInTrackController : Controller
     // GET: ArtistInTrack
     public async Task<IActionResult> Index()
     {
-        _bll.ArtistInTrackService.CustomMethodTest();
-
         var artistInTracks = await _bll.ArtistInTrackService.AllAsync(User.GetUserId());
-        foreach (var artistInTrack in artistInTracks)
-        {
-            Console.WriteLine($"Index Method - ArtistInTrack: {artistInTrack.Id}, Track: {artistInTrack.Track?.Title}, User: {artistInTrack.User?.DisplayName}, Role: {artistInTrack.ArtistRole?.Name}");
-        }
-
+        
         return View(artistInTracks);
     }
 

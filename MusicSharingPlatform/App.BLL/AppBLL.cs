@@ -42,5 +42,96 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
             BLLUOW,
             new ArtistBLLMapper()
             );
+    
+    private ILinkTypeService? _linkTypeService;
+    public ILinkTypeService LinkTypeService => 
+        _linkTypeService ??= new LinkTypeService(
+            BLLUOW,
+            new LinkTypeBLLMapper()
+            );
+    
+    private IMoodService? _moodService;
+    public IMoodService MoodService => 
+        _moodService ??= new MoodService(
+            BLLUOW,
+            new MoodBLLMapper()
+            );
+    
+    private IMoodsInPlaylistService? _moodsInPlaylistService;
+    public IMoodsInPlaylistService MoodsInPlaylistService => 
+        _moodsInPlaylistService ??= new MoodsInPlaylistService(
+            BLLUOW,
+            new MoodsInPlaylistBLLMapper()
+            );
+    
+    private IMoodsInTrackService? _moodsInTrackService;
+    public IMoodsInTrackService MoodsInTrackService => 
+        _moodsInTrackService ??= new MoodsInTrackService(
+            BLLUOW,
+            new MoodsInTrackBLLMapper()
+            );
+    
+    private IPlaylistService? _playlistService;
+    public IPlaylistService PlaylistService => 
+        _playlistService ??= new PlaylistService(
+            BLLUOW,
+            new PlaylistBLLMapper()
+            );
+    
+    private IRatingService? _ratingService;
+    public IRatingService RatingService => 
+        _ratingService ??= new RatingService(
+            BLLUOW,
+            new RatingBLLMapper()
+            );
+    
+    private ITagService? _tagService;
+    public ITagService TagService => 
+        _tagService ??= new TagService(
+            BLLUOW,
+            new TagBLLMapper()
+            );
+    
+    private ITagsInPlaylistService? _tagsInPlaylistService;
+    public ITagsInPlaylistService TagsInPlaylistService => 
+        _tagsInPlaylistService ??= new TagsInPlaylistService(
+            BLLUOW,
+            new TagsInPlaylistBLLMapper()
+            );
+    
+    private ITagsInTrackService? _tagsInTrackService;
+    public ITagsInTrackService TagsInTrackService => 
+        _tagsInTrackService ??= new TagsInTrackService(
+            BLLUOW,
+            new TagsInTrackBLLMapper()
+            );
+    
+    private ITrackInPlaylistService? _trackInPlaylistService;
+    public ITrackInPlaylistService TrackInPlaylistService => 
+        _trackInPlaylistService ??= new TrackInPlaylistService(
+            BLLUOW,
+            new TrackInPlaylistBLLMapper()
+            );
+    
+    private ITrackLinkService? _trackLinkService;
+    public ITrackLinkService TrackLinkService => 
+        _trackLinkService ??= new TrackLinkService(
+            BLLUOW,
+            new TrackLinkBLLMapper()
+            );
+    
+    private IUserLinkService? _userLinkService;
+    public IUserLinkService UserLinkService => 
+        _userLinkService ??= new UserLinkService(
+            BLLUOW,
+            new UserLinkBLLMapper()
+            );
+    
+    private IUserSavedTracksService? _userSavedTracksService;
+    public IUserSavedTracksService UserSavedTracksService => 
+        _userSavedTracksService ??= new UserSavedTracksService(
+            BLLUOW,
+            new UserSavedTracksBLLMapper()
+            );
 
 }

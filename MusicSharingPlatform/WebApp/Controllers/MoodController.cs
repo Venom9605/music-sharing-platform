@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using App.DAL.DTO;
+using App.BLL.DTO;
 using Microsoft.AspNetCore.Authorization;
 using WebApp.ViewModels;
 
@@ -18,17 +19,17 @@ namespace WebApp.Controllers;
 
 public class MoodController : Controller
 {
-    private readonly IAppUOW _uow;
+    private readonly IAppBLL _bll;
 
-    public MoodController(IAppUOW uow)
+    public MoodController(IAppBLL bll)
     {
-        _uow = uow;
+        _bll = bll;
     }
 
     // GET: Mood
     public async Task<IActionResult> Index()
     {
-        return View(await _uow.MoodRepository.AllAsync(User.GetUserId()));
+        return View(await _bll.MoodService.AllAsync(User.GetUserId()));
     }
 
     // GET: Mood/Details/5
@@ -39,7 +40,7 @@ public class MoodController : Controller
             return NotFound();
         }
 
-        var mood = await _uow.MoodRepository.FindAsync(id.Value, User.GetUserId());
+        var mood = await _bll.MoodService.FindAsync(id.Value, User.GetUserId());
         
         if (mood == null)
         {
@@ -69,8 +70,8 @@ public class MoodController : Controller
                 Name = vm.Name
             };
             
-            _uow.MoodRepository.Add(mood);
-            await _uow.SaveChangesAsync();
+            _bll.MoodService.Add(mood);
+            await _bll.SaveChangesAsync();
             
             return RedirectToAction(nameof(Index));
         }
@@ -85,7 +86,7 @@ public class MoodController : Controller
             return NotFound();
         }
 
-        var mood = await _uow.MoodRepository.FindAsync(id.Value, User.GetUserId());
+        var mood = await _bll.MoodService.FindAsync(id.Value, User.GetUserId());
         
         if (mood == null)
         {
@@ -115,7 +116,7 @@ public class MoodController : Controller
 
         if (ModelState.IsValid)
         {
-            var mood = await _uow.MoodRepository.FindAsync(vm.Id, User.GetUserId());
+            var mood = await _bll.MoodService.FindAsync(vm.Id, User.GetUserId());
             
             if (mood == null)
             {
@@ -123,8 +124,8 @@ public class MoodController : Controller
             }
             
             mood.Name = vm.Name;
-            _uow.MoodRepository.Update(mood);
-            await _uow.SaveChangesAsync();
+            _bll.MoodService.Update(mood);
+            await _bll.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
@@ -139,7 +140,7 @@ public class MoodController : Controller
             return NotFound();
         }
 
-        var mood = await _uow.MoodRepository.FindAsync(id.Value, User.GetUserId());
+        var mood = await _bll.MoodService.FindAsync(id.Value, User.GetUserId());
         
         if (mood == null)
         {
@@ -154,8 +155,8 @@ public class MoodController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _uow.MoodRepository.RemoveAsync(id, User.GetUserId());
-        await _uow.SaveChangesAsync();
+        await _bll.MoodService.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 }

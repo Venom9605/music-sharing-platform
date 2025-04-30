@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using App.DAL.DTO;
+using App.BLL.DTO;
 using Microsoft.AspNetCore.Authorization;
 using WebApp.ViewModels;
 
@@ -17,17 +18,17 @@ namespace WebApp.Controllers;
 
 public class TagController : Controller
 {
-    private readonly IAppUOW _uow;
+    private readonly IAppBLL _bll;
 
-    public TagController(IAppUOW uow)
+    public TagController(IAppBLL bll)
     {
-        _uow = uow;
+        _bll = bll;
     }
 
     // GET: Tag
     public async Task<IActionResult> Index()
     {
-        return View(await _uow.TagRepository.AllAsync(User.GetUserId()));
+        return View(await _bll.TagService.AllAsync(User.GetUserId()));
     }
 
     // GET: Tag/Details/5
@@ -38,7 +39,7 @@ public class TagController : Controller
             return NotFound();
         }
 
-        var tag = await _uow.TagRepository.FindAsync(id.Value, User.GetUserId());
+        var tag = await _bll.TagService.FindAsync(id.Value, User.GetUserId());
         
         if (tag == null)
         {
@@ -68,8 +69,8 @@ public class TagController : Controller
                 Name = vm.Name
             };
             
-            _uow.TagRepository.Add(tag);
-            await _uow.SaveChangesAsync();
+            _bll.TagService.Add(tag);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
         return View(vm);
@@ -83,7 +84,7 @@ public class TagController : Controller
             return NotFound();
         }
 
-        var tag = await _uow.TagRepository.FindAsync(id.Value, User.GetUserId());
+        var tag = await _bll.TagService.FindAsync(id.Value, User.GetUserId());
         
         if (tag == null)
         {
@@ -113,7 +114,7 @@ public class TagController : Controller
 
         if (ModelState.IsValid)
         {
-            var tag = await _uow.TagRepository.FindAsync(vm.Id, User.GetUserId());
+            var tag = await _bll.TagService.FindAsync(vm.Id, User.GetUserId());
             
             if (tag == null)
             {
@@ -122,8 +123,8 @@ public class TagController : Controller
             
             tag.Name = vm.Name;
             
-            _uow.TagRepository.Update(tag);
-            await _uow.SaveChangesAsync();
+            _bll.TagService.Update(tag);
+            await _bll.SaveChangesAsync();
             
             return RedirectToAction(nameof(Index));
         }
@@ -138,7 +139,7 @@ public class TagController : Controller
             return NotFound();
         }
 
-        var tag = await _uow.TagRepository.FindAsync(id.Value, User.GetUserId());
+        var tag = await _bll.TagService.FindAsync(id.Value, User.GetUserId());
         
         if (tag == null)
         {
@@ -153,8 +154,8 @@ public class TagController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _uow.TagRepository.RemoveAsync(id, User.GetUserId());
-        await _uow.SaveChangesAsync();
+        await _bll.TagService.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
     

@@ -11,10 +11,20 @@ public class MoodsInPlaylistUOWMapper : IUOWMapper<DTO.MoodsInPlaylist, Domain.M
         var res = new MoodsInPlaylist()
         {
             Id = entity.Id,
+            
             MoodId = entity.MoodId,
-            Mood = null,
+            Mood = entity.Mood != null ? new Mood
+            {
+                Id = entity.Mood.Id,
+                Name = entity.Mood.Name
+            } : null,
+            
             PlaylistId = entity.PlaylistId,
-            Playlist = null,
+            Playlist = entity.Playlist != null ? new Playlist
+            {
+                Id = entity.Playlist.Id,
+                Name = entity.Playlist.Name
+            } : null,
         };
         return res;
     }

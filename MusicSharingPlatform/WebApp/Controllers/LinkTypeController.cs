@@ -8,7 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using App.DAL.DTO;
+using App.BLL.DTO;
+using App.BLL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using WebApp.ViewModels;
 
@@ -18,17 +19,17 @@ namespace WebApp.Controllers;
 
 public class LinkTypeController : Controller
 {
-    private readonly IAppUOW _uow;
+    private readonly IAppBLL _bll;
 
-    public LinkTypeController(IAppUOW uow)
+    public LinkTypeController(IAppBLL bll)
     {
-        _uow = uow;
+        _bll = bll;
     }
 
     // GET: LinkType
     public async Task<IActionResult> Index()
     {
-        return View(await _uow.LinkTypeRepository.AllAsync(User.GetUserId()));
+        return View(await _bll.LinkTypeService.AllAsync(User.GetUserId()));
     }
 
     // GET: LinkType/Details/5
@@ -39,7 +40,7 @@ public class LinkTypeController : Controller
             return NotFound();
         }
 
-        var linkType = await _uow.LinkTypeRepository.FindAsync(id.Value, User.GetUserId());
+        var linkType = await _bll.LinkTypeService.FindAsync(id.Value, User.GetUserId());
         
         if (linkType == null)
         {
@@ -69,8 +70,8 @@ public class LinkTypeController : Controller
                 Name = vm.Name
             };
 
-            _uow.LinkTypeRepository.Add(linkType);
-            await _uow.SaveChangesAsync();
+            _bll.LinkTypeService.Add(linkType);
+            await _bll.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
@@ -85,7 +86,7 @@ public class LinkTypeController : Controller
             return NotFound();
         }
 
-        var linkType = await _uow.LinkTypeRepository.FindAsync(id.Value, User.GetUserId());
+        var linkType = await _bll.LinkTypeService.FindAsync(id.Value, User.GetUserId());
         
         if (linkType == null)
         {
@@ -115,7 +116,7 @@ public class LinkTypeController : Controller
 
         if (ModelState.IsValid)
         {
-            var linkType = await _uow.LinkTypeRepository.FindAsync(vm.Id, User.GetUserId());
+            var linkType = await _bll.LinkTypeService.FindAsync(vm.Id, User.GetUserId());
             
             if (linkType == null)
             {
@@ -124,8 +125,8 @@ public class LinkTypeController : Controller
             
             linkType.Name = vm.Name;
             
-            _uow.LinkTypeRepository.Update(linkType);
-            await _uow.SaveChangesAsync();
+            _bll.LinkTypeService.Update(linkType);
+            await _bll.SaveChangesAsync();
             
             
             return RedirectToAction(nameof(Index));
@@ -141,7 +142,7 @@ public class LinkTypeController : Controller
             return NotFound();
         }
 
-        var linkType = await _uow.LinkTypeRepository.FindAsync(id.Value, User.GetUserId());
+        var linkType = await _bll.LinkTypeService.FindAsync(id.Value, User.GetUserId());
         
         if (linkType == null)
         {
@@ -156,8 +157,8 @@ public class LinkTypeController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _uow.LinkTypeRepository.RemoveAsync(id, User.GetUserId());
-        await _uow.SaveChangesAsync();
+        await _bll.LinkTypeService.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 }
