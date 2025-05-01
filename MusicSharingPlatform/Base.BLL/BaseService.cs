@@ -63,6 +63,7 @@ public class BaseService<TBllEntity, TDalEntity, TDalRepository, TKey> : IBaseSe
         ServiceRepository.Add(dalEntity!);
     }
 
+    // TODO: add user id check to update
     public virtual TBllEntity Update(TBllEntity entity)
     {
         var dalEntity = BLLMapper.Map(entity);

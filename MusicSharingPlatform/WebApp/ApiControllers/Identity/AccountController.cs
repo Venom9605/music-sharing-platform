@@ -15,7 +15,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebApp.ApiControllers.Identity;
 
-[Route("api/[controller]/[action]")]
+/// <summary>
+/// Account API controller
+/// </summary>
+[Route("api/v{version:apiVersion}/[controller]/[action]")]
 [ApiController]
 //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class AccountController : ControllerBase
@@ -28,6 +31,14 @@ public class AccountController : ControllerBase
     private readonly Random _random = new Random();
     private readonly AppDbContext _context;
 
+    /// <summary>
+    /// Account controller constructor
+    /// </summary>
+    /// <param name="configuration"></param>
+    /// <param name="userManager"></param>
+    /// <param name="logger"></param>
+    /// <param name="signInManager"></param>
+    /// <param name="context"></param>
     public AccountController(IConfiguration configuration, UserManager<Artist> userManager, ILogger<AccountController> logger, SignInManager<Artist> signInManager, AppDbContext context)
     {
         _configuration = configuration;
@@ -37,6 +48,12 @@ public class AccountController : ControllerBase
         _context = context;
     }
 
+    /// <summary>
+    /// Register a new user
+    /// </summary>
+    /// <param name="registrationData"></param>
+    /// <param name="expiresInSeconds"></param>
+    /// <returns></returns>
     [HttpPost]
     [Produces("application/json")]
     [Consumes("application/json")]
@@ -140,6 +157,13 @@ public class AccountController : ControllerBase
     }
 
 
+    /// <summary>
+    /// Login user
+    /// </summary>
+    /// <param name="loginInfo"></param>
+    /// <param name="jwtExpiresInSeconds"></param>
+    /// <param name="refreshTokenExpiresInSeconds"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<ActionResult<JWTResponse>> Login(
         [FromBody] 
@@ -223,6 +247,12 @@ public class AccountController : ControllerBase
     }
 
 
+    /// <summary>
+    /// Refresh JWT token
+    /// </summary>
+    /// <param name="tokenRefreshInfo"></param>
+    /// <param name="expiresInSeconds"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<ActionResult<JWTResponse>> TokenRefresh(
         [FromBody] TokenRefreshInfo tokenRefreshInfo,
@@ -342,6 +372,11 @@ public class AccountController : ControllerBase
     }
     
     
+    /// <summary>
+    /// Logout user
+    /// </summary>
+    /// <param name="logout"></param>
+    /// <returns></returns>
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost]
     public async Task<ActionResult> Logout(
