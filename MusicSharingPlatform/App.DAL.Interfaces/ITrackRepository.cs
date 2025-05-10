@@ -9,4 +9,6 @@ public interface ITrackRepository : IBaseRepository<DTO.Track>, ITrackRepository
 public interface ITrackRepositoryCustom
 {
     void CustomMethodTest();
+    
+    Task UpdateTrackWithRelationsAsync(DTO.Track track);
 }

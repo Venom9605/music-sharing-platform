@@ -5,5 +5,5 @@ namespace App.BLL.Interfaces;
 
 public interface IRatingService : IBaseService<App.BLL.DTO.Rating>, IRatingRepositoryCustom
 {
-    
+    Task<double> GetAverageScoreAsync(Guid trackId);
 }

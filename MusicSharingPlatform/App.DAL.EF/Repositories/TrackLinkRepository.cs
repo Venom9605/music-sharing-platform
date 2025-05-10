@@ -21,4 +21,14 @@ public class TrackLinkRepository : BaseRepository<DTO.TrackLink, Domain.TrackLin
             .ToListAsync())
             .Select(e => _iuowMapper.Map(e)!);
     }
+    
+    public override async Task<DTO.TrackLink?> FindAsync(Guid id, string? userId)
+    {
+        var entity = await GetQuery(userId)
+            .Include(r => r.Track)
+            .Include(r => r.LinkType)
+            .FirstOrDefaultAsync(e => e.Id.Equals(id));
+
+        return _iuowMapper.Map(entity);
+    }
 }

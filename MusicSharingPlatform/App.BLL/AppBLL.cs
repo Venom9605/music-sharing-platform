@@ -131,7 +131,8 @@ public class AppBLL : BaseBLL<IAppUOW>, IAppBLL
     public IUserSavedTracksService UserSavedTracksService => 
         _userSavedTracksService ??= new UserSavedTracksService(
             BLLUOW,
-            new UserSavedTracksBLLMapper()
+            new UserSavedTracksBLLMapper(),
+            new TrackBLLMapper()
             );
 
 }

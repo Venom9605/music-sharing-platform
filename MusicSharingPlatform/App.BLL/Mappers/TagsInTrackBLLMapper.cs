@@ -12,10 +12,20 @@ public class TagsInTrackBLLMapper : IBLLMapper<App.BLL.DTO.TagsInTrack, App.DAL.
         var res = new TagsInTrack()
         {
             Id = entity.Id,
+            
             TrackId = entity.TrackId,
-            Track = null,
+            Track = entity.Track != null ? new Track
+            {
+                Id = entity.Track.Id,
+                Title = entity.Track.Title
+            } : null,
+            
             TagId = entity.TagId,
-            Tag = null,
+            Tag = entity.Tag != null ? new Tag
+            {
+                Id = entity.Tag.Id,
+                Name = entity.Tag.Name
+            } : null,
 
         };
         return res;
@@ -27,10 +37,20 @@ public class TagsInTrackBLLMapper : IBLLMapper<App.BLL.DTO.TagsInTrack, App.DAL.
         var res = new DTO.TagsInTrack()
         {
             Id = entity.Id,
+            
             TrackId = entity.TrackId,
-            Track = null,
+            Track = entity.Track != null ? new DTO.Track
+            {
+                Id = entity.Track.Id,
+                Title = entity.Track.Title
+            } : null,
+            
             TagId = entity.TagId,
-            Tag = null,
+            Tag = entity.Tag != null ? new DTO.Tag
+            {
+                Id = entity.Tag.Id,
+                Name = entity.Tag.Name
+            } : null,
 
         };
         return res;

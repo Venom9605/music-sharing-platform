@@ -12,10 +12,20 @@ public class MoodsInTrackBLLMapper : IBLLMapper<App.BLL.DTO.MoodsInTrack, App.DA
         var res = new MoodsInTrack()
         {
             Id = entity.Id,
+            
             MoodId = entity.MoodId,
-            Mood = null,
+            Mood = entity.Mood != null ? new Mood
+            {
+                Id = entity.Mood.Id,
+                Name = entity.Mood.Name
+            } : null,
+            
             TrackId = entity.TrackId,
-            Track = null,
+            Track = entity.Track != null ? new Track
+            {
+                Id = entity.Track.Id,
+                Title = entity.Track.Title
+            } : null,
         };
         return res;
     }
@@ -26,10 +36,20 @@ public class MoodsInTrackBLLMapper : IBLLMapper<App.BLL.DTO.MoodsInTrack, App.DA
         var res = new DTO.MoodsInTrack()
         {
             Id = entity.Id,
+            
             MoodId = entity.MoodId,
-            Mood = null,
+            Mood = entity.Mood != null ? new DTO.Mood
+            {
+                Id = entity.Mood.Id,
+                Name = entity.Mood.Name
+            } : null,
+            
             TrackId = entity.TrackId,
-            Track = null,
+            Track = entity.Track != null ? new DTO.Track
+            {
+                Id = entity.Track.Id,
+                Title = entity.Track.Title
+            } : null,
         };
         return res;
     }

@@ -21,4 +21,14 @@ public class TagsInPlaylistRepository : BaseRepository<DTO.TagsInPlaylist, Domai
             .ToListAsync())
             .Select(e => _iuowMapper.Map(e)!);
     }
+
+    public override async Task<DTO.TagsInPlaylist?> FindAsync(Guid id, string? userId)
+    {
+        var entity = await GetQuery(userId)
+            .Include(r => r.Tag)
+            .Include(r => r.Playlist)
+            .FirstOrDefaultAsync(e => e.Id.Equals(id));
+
+        return _iuowMapper.Map(entity);
+    }
 }

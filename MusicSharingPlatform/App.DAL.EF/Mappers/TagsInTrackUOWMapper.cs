@@ -11,10 +11,20 @@ public class TagsInTrackUOWMapper : IUOWMapper<DTO.TagsInTrack, Domain.TagsInTra
         var res = new TagsInTrack()
         {
             Id = entity.Id,
+            
             TrackId = entity.TrackId,
-            Track = null,
+            Track = entity.Track != null ? new Track
+            {
+                Id = entity.Track.Id,
+                Title = entity.Track.Title
+            } : null,
+            
             TagId = entity.TagId,
-            Tag = null,
+            Tag = entity.Tag != null ? new Tag
+            {
+                Id = entity.Tag.Id,
+                Name = entity.Tag.Name
+            } : null,
 
         };
         return res;

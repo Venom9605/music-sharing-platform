@@ -11,10 +11,21 @@ public class UserLinkUOWMapper : IUOWMapper<DTO.UserLink, Domain.UserLink>
         var res = new UserLink()
         {
             Id = entity.Id,
+            
             UserId = entity.UserId,
-            User = null,
+            User = entity.User != null ? new Artist
+            {
+                Id = entity.User.Id,
+                DisplayName = entity.User.DisplayName
+            } : null,
+            
             LinkTypeId = entity.LinkTypeId,
-            LinkType = null,
+            LinkType = entity.LinkType != null ? new LinkType
+            {
+                Id = entity.LinkType.Id,
+                Name = entity.LinkType.Name
+            } : null,
+            
             Url = entity.Url
 
         };

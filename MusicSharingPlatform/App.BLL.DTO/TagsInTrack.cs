@@ -17,4 +17,6 @@ public class TagsInTrack : IBaseEntityId<Guid>
     public Guid TagId { get; set; }
     [Display(Name = nameof(Tag), Prompt = nameof(Tag), ResourceType = typeof(App.Resources.Domain.TagsInTrack))]
     public Tag? Tag { get; set; }
+    
+    public string? TagName { get; set; } = default!;
 }

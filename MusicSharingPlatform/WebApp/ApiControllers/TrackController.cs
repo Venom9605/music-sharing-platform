@@ -1,13 +1,11 @@
 ﻿using App.BLL.Interfaces;
-using App.DAL.Interfaces;
+using Asp.Versioning;
 using Base.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using App.BLL.DTO;
-using Asp.Versioning;
 
-namespace WebApp.ApiControllers.Identity;
+namespace WebApp.ApiControllers;
 
 /// <summary>
 /// Track API controller
@@ -48,7 +46,7 @@ public class TrackController : ControllerBase
         var res = data.Select(t => _mapper.Map(t)!).ToList();
     
         return res;
-}
+    }
     
     /// <summary>
     /// Get a specific track by ID for the currently logged-in user
@@ -62,12 +60,11 @@ public class TrackController : ControllerBase
     public async Task<ActionResult<App.DTO.v1.Track>> GetTrack(Guid id)
     {
         var track = await _bll.TrackService.FindAsync(id, User.GetUserId());
+        
         if (track == null)
         {
             return NotFound();
         }
-        
-        
         
         return _mapper.Map(track)!;
     }
@@ -104,15 +101,15 @@ public class TrackController : ControllerBase
     /// Update an existing track for the currently logged-in user
     /// </summary>
     /// <param name="id">The ID of the track to update.</param>
-    /// <param name="track">The updated track data.</param>
+    /// <param name="dto">The updated track data.</param>
     /// <returns>No content if the update is successful, or an error response if not.</returns>
     [HttpPut("{id}")]
     [ProducesResponseType(204)]
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
-    public async Task<IActionResult> UpdateTrack(Guid id, App.DTO.v1.Track track)
+    public async Task<IActionResult> UpdateTrack(Guid id, App.DTO.v1.TrackEdit dto)
     {
-        if (id != track.Id)
+        if (id != dto.Id)
         {
             return BadRequest();
         }
@@ -121,8 +118,10 @@ public class TrackController : ControllerBase
         {
             return BadRequest(ModelState);
         }
+        
+        var bllDto = _mapper.Map(dto)!;
 
-        _bll.TrackService.Update(_mapper.Map(track)!);
+        await _bll.TrackService.UpdateTrackWithRelationsAsync(bllDto);
         await _bll.SaveChangesAsync();
 
         return NoContent();

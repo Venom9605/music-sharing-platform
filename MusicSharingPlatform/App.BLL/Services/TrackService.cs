@@ -19,4 +19,10 @@ public class TrackService : BaseService<App.BLL.DTO.Track, App.DAL.DTO.Track, Ap
     {
         ServiceRepository.CustomMethodTest();
     }
+    
+    public async Task UpdateTrackWithRelationsAsync(App.BLL.DTO.Track track)
+    {
+        var dalTrack = BLLMapper.Map(track)!;
+        await ServiceRepository.UpdateTrackWithRelationsAsync(dalTrack);
+    }
 }

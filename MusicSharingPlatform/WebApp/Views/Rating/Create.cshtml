@@ -12,6 +12,13 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="All " class="text-danger"></div>
+            
+            <div class="form-group">
+                <label asp-for="Rating.UserId"></label>
+                <select asp-for="Rating.UserId" class="form-control" asp-items="Model.ArtistsList"></select>
+                <span asp-validation-for="Rating.UserId" class="text-danger"></span>
+            </div>
+            
             <div class="form-group">
                 <label asp-for="Rating.TrackId"></label>
                 <select asp-for="Rating.TrackId" class="form-control" asp-items="Model.TracksList"></select>

@@ -2,15 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using App.DAL.DTO;
+using App.BLL.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Identity.Client;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
@@ -18,19 +20,19 @@ namespace WebApp.Controllers;
 
 public class UserSavedTrackController : Controller
 {
-    private readonly AppDbContext _context;
-    private readonly IUserSavedTracksRepository _userSavedTracksRepository;
+    private readonly IAppBLL _bll;
 
-    public UserSavedTrackController(AppDbContext context, IUserSavedTracksRepository userSavedTracksRepository)
+    public UserSavedTrackController(IAppBLL bll)
     {
-        _context = context;
-        _userSavedTracksRepository = userSavedTracksRepository;
+        _bll = bll;
     }
 
     // GET: UserSavedTrack
     public async Task<IActionResult> Index()
     {
-        return View(await _userSavedTracksRepository.AllAsync(User.GetUserId()));
+        var userSavedTracks = await _bll.UserSavedTracksService.AllAsync(User.GetUserId());
+        
+        return View(userSavedTracks);
     }
 
     // GET: UserSavedTrack/Details/5
@@ -41,24 +43,25 @@ public class UserSavedTrackController : Controller
             return NotFound();
         }
 
-        var userSavedTracks = await _context.UserSavedTracks
-            .Include(u => u.Track)
-            .Include(u => u.User)
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (userSavedTracks == null)
+        var userSavedTrack = await _bll.UserSavedTracksService.FindAsync(id.Value, User.GetUserId());
+        
+        
+        if (userSavedTrack == null)
         {
             return NotFound();
         }
 
-        return View(userSavedTracks);
+        return View(userSavedTrack);
     }
 
     // GET: UserSavedTrack/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title");
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
-        return View();
+        var vm = new UserSavedTrackViewModel() { UserSavedTrack = new UserSavedTracks() };
+        
+        await PopulateSelectListsAsync(vm);
+        
+        return View(vm);
     }
 
     // POST: UserSavedTrack/Create
@@ -66,60 +69,60 @@ public class UserSavedTrackController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("TrackId,UserId,SavedAt,Id")] UserSavedTracks userSavedTracks)
+    public async Task<IActionResult> Create(UserSavedTrackViewModel vm)
     {
         if (ModelState.IsValid)
         {
-            userSavedTracks.Id = Guid.NewGuid();
-            _context.Add(userSavedTracks);
-            await _context.SaveChangesAsync();
+            _bll.UserSavedTracksService.Add(vm.UserSavedTrack);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", userSavedTracks.TrackId);
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userSavedTracks.UserId);
-        return View(userSavedTracks);
+        
+        await PopulateSelectListsAsync(vm);
+        
+        return View(vm);
     }
 
-    // GET: UserSavedTrack/Edit/5
+    public async Task<IActionResult> Edit(Guid? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+        var userSavedTrack = await _bll.UserSavedTracksService.FindAsync(id.Value, User.GetUserId());
+        
+        if (userSavedTrack == null)
+        {
+            return NotFound();
+        }
+        
+        var vm = new UserSavedTrackViewModel() { UserSavedTrack = userSavedTrack };
+        await PopulateSelectListsAsync(vm);
 
-    // POST: UserSavedTrack/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        return View(vm);
+    }
+    
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("TrackId,UserId,SavedAt,Id")] UserSavedTracks userSavedTracks)
+    public async Task<IActionResult> Edit(Guid id, UserSavedTrackViewModel vm)
     {
-        if (id != userSavedTracks.Id)
+        if (id != vm.UserSavedTrack.Id)
         {
             return NotFound();
         }
 
         if (ModelState.IsValid)
         {
-            try
-            {
-                _context.Update(userSavedTracks);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserSavedTracksExists(userSavedTracks.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _bll.UserSavedTracksService.Update(vm.UserSavedTrack);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", userSavedTracks.TrackId);
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userSavedTracks.UserId);
-        return View(userSavedTracks);
+        
+        await PopulateSelectListsAsync(vm);
+
+        return View(vm);
     }
 
-    // GET: UserSavedTrack/Delete/5
     public async Task<IActionResult> Delete(Guid? id)
     {
         if (id == null)
@@ -127,35 +130,41 @@ public class UserSavedTrackController : Controller
             return NotFound();
         }
 
-        var userSavedTracks = await _context.UserSavedTracks
-            .Include(u => u.Track)
-            .Include(u => u.User)
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (userSavedTracks == null)
+        var userSavedTrack = await _bll.UserSavedTracksService.FindAsync(id.Value, User.GetUserId());
+        
+        if (userSavedTrack == null)
         {
             return NotFound();
         }
 
-        return View(userSavedTracks);
+        return View(userSavedTrack);
     }
-
-    // POST: UserSavedTrack/Delete/5
+    
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        var userSavedTracks = await _context.UserSavedTracks.FindAsync(id);
-        if (userSavedTracks != null)
-        {
-            _context.UserSavedTracks.Remove(userSavedTracks);
-        }
-
-        await _context.SaveChangesAsync();
+        await _bll.UserSavedTracksService.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
-    private bool UserSavedTracksExists(Guid id)
+    private async Task PopulateSelectListsAsync(UserSavedTrackViewModel vm)
     {
-        return _context.UserSavedTracks.Any(e => e.Id == id);
+        var userId = User.GetUserId();
+
+        vm.UsersList = new SelectList(
+            await _bll.ArtistService.AllAsync(userId),
+            nameof(Artist.Id),
+            nameof(Artist.DisplayName),
+            vm.UserSavedTrack.UserId
+        );
+        
+        vm.TracksList = new SelectList(
+            await _bll.TrackService.AllAsync(userId),
+            nameof(Track.Id),
+            nameof(Track.Title),
+            vm.UserSavedTrack.TrackId
+        );
     }
 }

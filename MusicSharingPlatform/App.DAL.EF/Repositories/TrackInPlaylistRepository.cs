@@ -21,4 +21,14 @@ public class TrackInPlaylistRepository : BaseRepository<DTO.TrackInPlaylist, Dom
             .ToListAsync())
             .Select(e => _iuowMapper.Map(e)!);
     }
+    
+    public override async Task<DTO.TrackInPlaylist?> FindAsync(Guid id, string? userId)
+    {
+        var entity = await GetQuery(userId)
+            .Include(r => r.Track)
+            .Include(r => r.Playlist)
+            .FirstOrDefaultAsync(e => e.Id.Equals(id));
+
+        return _iuowMapper.Map(entity);
+    }
 }

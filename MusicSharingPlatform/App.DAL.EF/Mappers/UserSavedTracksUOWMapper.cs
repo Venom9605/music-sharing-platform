@@ -11,10 +11,20 @@ public class UserSavedTracksUOWMapper : IUOWMapper<DTO.UserSavedTracks, Domain.U
         var res = new UserSavedTracks()
         {
             Id = entity.Id,
+            
             TrackId = entity.TrackId,
-            Track = null,
+            Track = entity.Track != null ? new Track
+            {
+                Id = entity.Track.Id,
+                Title = entity.Track.Title
+            } : null,
+            
             UserId = entity.UserId,
-            User = null
+            User = entity.User != null ? new Artist
+            {
+                Id = entity.User.Id,
+                DisplayName = entity.User.DisplayName
+            } : null
 
         };
         return res;
@@ -26,8 +36,10 @@ public class UserSavedTracksUOWMapper : IUOWMapper<DTO.UserSavedTracks, Domain.U
         var res = new Domain.UserSavedTracks()
         {
             Id = entity.Id,
+            
             TrackId = entity.TrackId,
             Track = null,
+            
             UserId = entity.UserId,
             User = null
 

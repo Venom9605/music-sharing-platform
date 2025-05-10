@@ -11,4 +11,7 @@ public class RatingsViewModel
     
     [ValidateNever]
     public SelectList TracksList { get; set; } = default!;
+    
+    [ValidateNever]
+    public SelectList ArtistsList { get; set; } = default!;
 }

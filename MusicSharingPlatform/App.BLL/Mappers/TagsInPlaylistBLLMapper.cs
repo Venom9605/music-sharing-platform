@@ -12,10 +12,20 @@ public class TagsInPlaylistBLLMapper : IBLLMapper<App.BLL.DTO.TagsInPlaylist, Ap
         var res = new TagsInPlaylist()
         {
             Id = entity.Id,
+            
             PlaylistId = entity.PlaylistId,
-            Playlist = null,
+            Playlist = entity.Playlist != null ? new Playlist
+            {
+                Id = entity.Playlist.Id,
+                Name = entity.Playlist.Name
+            } : null,
+            
             TagId = entity.TagId,
-            Tag = null,
+            Tag = entity.Tag != null ? new Tag
+            {
+                Id = entity.Tag.Id,
+                Name = entity.Tag.Name
+            } : null,
 
         };
         return res;
@@ -27,10 +37,20 @@ public class TagsInPlaylistBLLMapper : IBLLMapper<App.BLL.DTO.TagsInPlaylist, Ap
         var res = new DTO.TagsInPlaylist()
         {
             Id = entity.Id,
+            
             PlaylistId = entity.PlaylistId,
-            Playlist = null,
+            Playlist = entity.Playlist != null ? new DTO.Playlist
+            {
+                Id = entity.Playlist.Id,
+                Name = entity.Playlist.Name
+            } : null,
+            
             TagId = entity.TagId,
-            Tag = null,
+            Tag = entity.Tag != null ? new DTO.Tag
+            {
+                Id = entity.Tag.Id,
+                Name = entity.Tag.Name
+            } : null,
 
         };
         return res;

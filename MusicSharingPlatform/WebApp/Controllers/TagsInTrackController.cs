@@ -1,15 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using App.DAL.DTO;
+using App.BLL.DTO;
+using App.BLL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
@@ -17,19 +15,19 @@ namespace WebApp.Controllers;
 
 public class TagsInTrackController : Controller
 {
-    private readonly AppDbContext _context;
-    private readonly ITagsInTrackRepository _tagsInTrackRepository;
+    private readonly IAppBLL _bll;
 
-    public TagsInTrackController(AppDbContext context, ITagsInTrackRepository tagsInTrackRepository)
+    public TagsInTrackController(IAppBLL bll)
     {
-        _context = context;
-        _tagsInTrackRepository = tagsInTrackRepository;
+        _bll = bll;
     }
 
     // GET: TagsInTrack
     public async Task<IActionResult> Index()
     {
-        return View(await _tagsInTrackRepository.AllAsync(User.GetUserId()));
+        var tagsInTrack = await _bll.TagsInTrackService.AllAsync(User.GetUserId());
+        
+        return View(tagsInTrack);
     }
 
     // GET: TagsInTrack/Details/5
@@ -40,10 +38,9 @@ public class TagsInTrackController : Controller
             return NotFound();
         }
 
-        var tagsInTrack = await _context.TagsInTracks
-            .Include(t => t.Tag)
-            .Include(t => t.Track)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var tagsInTrack = await _bll.TagsInTrackService.FindAsync(id.Value, User.GetUserId());
+        
+        
         if (tagsInTrack == null)
         {
             return NotFound();
@@ -53,11 +50,13 @@ public class TagsInTrackController : Controller
     }
 
     // GET: TagsInTrack/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        ViewData["TagId"] = new SelectList(_context.Tags, "Id", "Name");
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title");
-        return View();
+        var vm = new TagsInTrackViewModel() { TagsInTrack = new TagsInTrack() };
+        
+        await PopulateSelectListsAsync(vm);
+        
+        return View(vm);
     }
 
     // POST: TagsInTrack/Create
@@ -65,57 +64,58 @@ public class TagsInTrackController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("TrackId,TagId,Id")] TagsInTrack tagsInTrack)
+    public async Task<IActionResult> Create(TagsInTrackViewModel vm)
     {
         if (ModelState.IsValid)
         {
-            tagsInTrack.Id = Guid.NewGuid();
-            _context.Add(tagsInTrack);
-            await _context.SaveChangesAsync();
+            _bll.TagsInTrackService.Add(vm.TagsInTrack);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["TagId"] = new SelectList(_context.Tags, "Id", "Name", tagsInTrack.TagId);
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", tagsInTrack.TrackId);
-        return View(tagsInTrack);
+        
+        await PopulateSelectListsAsync(vm);
+        
+        return View(vm);
     }
+    
+    public async Task<IActionResult> Edit(Guid? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+        var tagsInTrack = await _bll.TagsInTrackService.FindAsync(id.Value, User.GetUserId());
+        
+        if (tagsInTrack == null)
+        {
+            return NotFound();
+        }
+        
+        var vm = new TagsInTrackViewModel() { TagsInTrack = tagsInTrack };
+        await PopulateSelectListsAsync(vm);
 
-    // GET: TagsInTrack/Edit/5
-
-    // POST: TagsInTrack/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        return View(vm);
+    }
+    
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("TrackId,TagId,Id")] TagsInTrack tagsInTrack)
+    public async Task<IActionResult> Edit(Guid id, TagsInTrackViewModel vm)
     {
-        if (id != tagsInTrack.Id)
+        if (id != vm.TagsInTrack.Id)
         {
             return NotFound();
         }
 
         if (ModelState.IsValid)
         {
-            try
-            {
-                _context.Update(tagsInTrack);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TagsInTrackExists(tagsInTrack.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _bll.TagsInTrackService.Update(vm.TagsInTrack);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["TagId"] = new SelectList(_context.Tags, "Id", "Name", tagsInTrack.TagId);
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", tagsInTrack.TrackId);
-        return View(tagsInTrack);
+        
+        await PopulateSelectListsAsync(vm);
+
+        return View(vm);
     }
 
     // GET: TagsInTrack/Delete/5
@@ -126,10 +126,8 @@ public class TagsInTrackController : Controller
             return NotFound();
         }
 
-        var tagsInTrack = await _context.TagsInTracks
-            .Include(t => t.Tag)
-            .Include(t => t.Track)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var tagsInTrack = await _bll.TagsInTrackService.FindAsync(id.Value, User.GetUserId());
+        
         if (tagsInTrack == null)
         {
             return NotFound();
@@ -137,24 +135,32 @@ public class TagsInTrackController : Controller
 
         return View(tagsInTrack);
     }
-
-    // POST: TagsInTrack/Delete/5
+    
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        var tagsInTrack = await _context.TagsInTracks.FindAsync(id);
-        if (tagsInTrack != null)
-        {
-            _context.TagsInTracks.Remove(tagsInTrack);
-        }
-
-        await _context.SaveChangesAsync();
+        await _bll.TagsInTrackService.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
-    private bool TagsInTrackExists(Guid id)
+    private async Task PopulateSelectListsAsync(TagsInTrackViewModel vm)
     {
-        return _context.TagsInTracks.Any(e => e.Id == id);
+        var userId = User.GetUserId();
+
+        vm.TagsList = new SelectList(
+            await _bll.TagService.AllAsync(userId),
+            nameof(Tag.Id),
+            nameof(Tag.Name),
+            vm.TagsInTrack.TagId
+        );
+        
+        vm.TracksList = new SelectList(
+            await _bll.TrackService.AllAsync(userId),
+            nameof(Track.Id),
+            nameof(Track.Title),
+            vm.TagsInTrack.TrackId
+        );
     }
 }

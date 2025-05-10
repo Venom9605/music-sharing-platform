@@ -11,10 +11,21 @@ public class RatingUOWMapper : IUOWMapper<DTO.Rating, Domain.Rating>
         var res = new Rating()
         {
             Id = entity.Id,
+            
             TrackId = entity.TrackId,
-            Track = null,
+            Track = entity.Track != null ? new Track
+            {
+                Id = entity.Track.Id,
+                Title = entity.Track.Title
+            } : null,
+            
             UserId = entity.UserId,
-            User = null,
+            User = entity.User != null ? new Artist
+            {
+                Id = entity.User.Id,
+                DisplayName = entity.User.DisplayName
+            } : null,
+            
             Score = entity.Score,
             Comment = entity.Comment,
 

@@ -1,4 +1,4 @@
-@model App.DAL.DTO.MoodsInTrack
+@model WebApp.ViewModels.MoodsInTrackViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -12,14 +12,19 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="All " class="text-danger"></div>
+            
             <div class="form-group">
-                <label asp-for="MoodId" class="control-label"></label>
-                <select asp-for="MoodId" class ="form-control" asp-items="ViewBag.MoodId"></select>
+                <label asp-for="MoodsInTrack.MoodId" class="control-label"></label>
+                <select asp-for="MoodsInTrack.MoodId" class="form-control" asp-items="Model.MoodsList"></select>
+                <span asp-validation-for="MoodsInTrack.MoodId" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
-                <label asp-for="TrackId" class="control-label"></label>
-                <select asp-for="TrackId" class ="form-control" asp-items="ViewBag.TrackId"></select>
+                <label asp-for="MoodsInTrack.TrackId" class="control-label"></label>
+                <select asp-for="MoodsInTrack.TrackId" class="form-control" asp-items="Model.TracksList"></select>
+                <span asp-validation-for="MoodsInTrack.TrackId" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

@@ -11,10 +11,20 @@ public class TagsInPlaylistUOWMapper : IUOWMapper<DTO.TagsInPlaylist, Domain.Tag
         var res = new TagsInPlaylist()
         {
             Id = entity.Id,
+            
             PlaylistId = entity.PlaylistId,
-            Playlist = null,
+            Playlist = entity.Playlist != null ? new Playlist
+            {
+                Id = entity.Playlist.Id,
+                Name = entity.Playlist.Name
+            } : null,
+            
             TagId = entity.TagId,
-            Tag = null,
+            Tag = entity.Tag != null ? new Tag
+            {
+                Id = entity.Tag.Id,
+                Name = entity.Tag.Name
+            } : null,
 
         };
         return res;
@@ -26,8 +36,10 @@ public class TagsInPlaylistUOWMapper : IUOWMapper<DTO.TagsInPlaylist, Domain.Tag
         var res = new Domain.TagsInPlaylist()
         {
             Id = entity.Id,
+            
             PlaylistId = entity.PlaylistId,
             Playlist = null,
+            
             TagId = entity.TagId,
             Tag = null,
 

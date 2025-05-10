@@ -17,4 +17,6 @@ public class MoodsInTrack : IBaseEntityId<Guid>
     public Guid TrackId { get; set; }
     [Display(Name = nameof(Track), Prompt = nameof(Track), ResourceType = typeof(App.Resources.Domain.MoodsInTrack))]
     public Track? Track { get; set; }
+    
+    public string? MoodName { get; set; } = default!;
 }

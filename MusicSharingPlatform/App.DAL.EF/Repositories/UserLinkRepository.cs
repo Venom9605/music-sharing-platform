@@ -21,4 +21,14 @@ public class UserLinkRepository : BaseRepository<DTO.UserLink, Domain.UserLink>,
             .ToListAsync())
             .Select(e => _iuowMapper.Map(e)!);
     }
+    
+    public override async Task<DTO.UserLink?> FindAsync(Guid id, string? userId)
+    {
+        var entity = await GetQuery(userId)
+            .Include(r => r.User)
+            .Include(r => r.LinkType)
+            .FirstOrDefaultAsync(e => e.Id.Equals(id));
+
+        return _iuowMapper.Map(entity);
+    }
 }

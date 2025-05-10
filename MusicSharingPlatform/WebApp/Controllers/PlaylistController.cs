@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using App.DAL.EF;
-using App.DAL.Interfaces;
 using Base.Helpers;
-using App.DAL.DTO;
+using App.BLL.DTO;
+using App.BLL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
@@ -17,19 +13,19 @@ namespace WebApp.Controllers;
 
 public class PlaylistController : Controller
 {
-    private readonly AppDbContext _context;
-    private readonly IPlaylistRepository _playlistRepository;
+    private readonly IAppBLL _bll;
 
-    public PlaylistController(AppDbContext context, IPlaylistRepository playlistRepository)
+    public PlaylistController(IAppBLL bll)
     {
-        _context = context;
-        _playlistRepository = playlistRepository;
+        _bll = bll;
     }
 
     // GET: Playlist
     public async Task<IActionResult> Index()
     {
-        return View(await _playlistRepository.AllAsync(User.GetUserId()));
+        var playlists = await _bll.PlaylistService.AllAsync(User.GetUserId());
+        
+        return View(playlists);
     }
 
     // GET: Playlist/Details/5
@@ -40,9 +36,9 @@ public class PlaylistController : Controller
             return NotFound();
         }
 
-        var playlist = await _context.Playlists
-            .Include(p => p.User)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var playlist = await _bll.PlaylistService.FindAsync(id.Value, User.GetUserId());
+        
+        
         if (playlist == null)
         {
             return NotFound();
@@ -52,10 +48,13 @@ public class PlaylistController : Controller
     }
 
     // GET: Playlist/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
-        return View();
+        var vm = new PlaylistViewModel { Playlist = new Playlist() };
+        
+        await PopulateSelectListsAsync(vm);
+        
+        return View(vm);
     }
 
     // POST: Playlist/Create
@@ -63,55 +62,59 @@ public class PlaylistController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("UserId,Name,Description,CoverUrl,IsPublic,CreatedAt,Id")] Playlist playlist)
+    public async Task<IActionResult> Create(PlaylistViewModel vm)
     {
         if (ModelState.IsValid)
         {
-            playlist.Id = Guid.NewGuid();
-            _context.Add(playlist);
-            await _context.SaveChangesAsync();
+            _bll.PlaylistService.Add(vm.Playlist);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", playlist.UserId);
-        return View(playlist);
+        
+        await PopulateSelectListsAsync(vm);
+        
+        return View(vm);
     }
 
     // GET: Playlist/Edit/5
+    public async Task<IActionResult> Edit(Guid? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+        var playlist = await _bll.PlaylistService.FindAsync(id.Value, User.GetUserId());
+        
+        if (playlist == null)
+        {
+            return NotFound();
+        }
+        
+        var vm = new PlaylistViewModel { Playlist = playlist };
+        await PopulateSelectListsAsync(vm);
 
-    // POST: Playlist/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        return View(vm);
+    }
+    
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("UserId,Name,Description,CoverUrl,IsPublic,CreatedAt,Id")] Playlist playlist)
+    public async Task<IActionResult> Edit(Guid id, PlaylistViewModel vm)
     {
-        if (id != playlist.Id)
+        if (id != vm.Playlist.Id)
         {
             return NotFound();
         }
 
         if (ModelState.IsValid)
         {
-            try
-            {
-                _context.Update(playlist);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PlaylistExists(playlist.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _bll.PlaylistService.Update(vm.Playlist);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", playlist.UserId);
-        return View(playlist);
+        
+        await PopulateSelectListsAsync(vm);
+
+        return View(vm);
     }
 
     // GET: Playlist/Delete/5
@@ -122,9 +125,8 @@ public class PlaylistController : Controller
             return NotFound();
         }
 
-        var playlist = await _context.Playlists
-            .Include(p => p.User)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var playlist = await _bll.PlaylistService.FindAsync(id.Value, User.GetUserId());
+        
         if (playlist == null)
         {
             return NotFound();
@@ -132,24 +134,25 @@ public class PlaylistController : Controller
 
         return View(playlist);
     }
-
-    // POST: Playlist/Delete/5
+    
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        var playlist = await _context.Playlists.FindAsync(id);
-        if (playlist != null)
-        {
-            _context.Playlists.Remove(playlist);
-        }
-
-        await _context.SaveChangesAsync();
+        await _bll.PlaylistService.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
-    private bool PlaylistExists(Guid id)
+    private async Task PopulateSelectListsAsync(PlaylistViewModel vm)
     {
-        return _context.Playlists.Any(e => e.Id == id);
+        var userId = User.GetUserId();
+
+        vm.ArtistsList = new SelectList(
+            await _bll.ArtistService.AllAsync(userId),
+            nameof(Artist.Id),
+            nameof(Artist.DisplayName),
+            vm.Playlist.UserId
+        );
     }
 }

@@ -23,7 +23,6 @@ public class TrackController : Controller
     // GET: Track
     public async Task<IActionResult> Index()
     {
-        _bll.TrackService.CustomMethodTest();
         return View(await _bll.TrackService.AllAsync(User.GetUserId()));
     }
 

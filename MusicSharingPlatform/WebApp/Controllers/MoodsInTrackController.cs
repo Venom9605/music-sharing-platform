@@ -8,8 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using App.DAL.DTO;
+using App.BLL.DTO;
+using App.BLL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
@@ -17,19 +19,19 @@ namespace WebApp.Controllers;
 
 public class MoodsInTrackController : Controller
 {
-    private readonly AppDbContext _context;
-    private readonly IMoodsInTrackRepository _moodsInTrackRepository;
+    private readonly IAppBLL _bll;
 
-    public MoodsInTrackController(AppDbContext context, IMoodsInTrackRepository moodsInTrackRepository)
+    public MoodsInTrackController(IAppBLL bll)
     {
-        _context = context;
-        _moodsInTrackRepository = moodsInTrackRepository;
+        _bll = bll;
     }
 
     // GET: MoodsInTrack
     public async Task<IActionResult> Index()
     {
-        return View(await _moodsInTrackRepository.AllAsync(User.GetUserId()));
+        var moodsInTracks = await _bll.MoodsInTrackService.AllAsync(User.GetUserId());
+        
+        return View(moodsInTracks);
     }
 
     // GET: MoodsInTrack/Details/5
@@ -40,10 +42,8 @@ public class MoodsInTrackController : Controller
             return NotFound();
         }
 
-        var moodsInTrack = await _context.MoodsInTracks
-            .Include(m => m.Mood)
-            .Include(m => m.Track)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var moodsInTrack = await _bll.MoodsInTrackService.FindAsync(id.Value, User.GetUserId());
+        
         if (moodsInTrack == null)
         {
             return NotFound();
@@ -52,12 +52,14 @@ public class MoodsInTrackController : Controller
         return View(moodsInTrack);
     }
 
-    // GET: MoodsInTrack/Create
-    public IActionResult Create()
+    // GET: Playlist/Create
+    public async Task<IActionResult> Create()
     {
-        ViewData["MoodId"] = new SelectList(_context.Moods, "Id", "Name");
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title");
-        return View();
+        var vm = new MoodsInTrackViewModel { MoodsInTrack = new MoodsInTrack() };
+        
+        await PopulateSelectListsAsync(vm);
+        
+        return View(vm);
     }
 
     // POST: MoodsInTrack/Create
@@ -65,57 +67,61 @@ public class MoodsInTrackController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("MoodId,TrackId,Id")] MoodsInTrack moodsInTrack)
+    public async Task<IActionResult> Create(MoodsInTrackViewModel vm)
     {
         if (ModelState.IsValid)
         {
-            moodsInTrack.Id = Guid.NewGuid();
-            _context.Add(moodsInTrack);
-            await _context.SaveChangesAsync();
+            _bll.MoodsInTrackService.Add(vm.MoodsInTrack);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["MoodId"] = new SelectList(_context.Moods, "Id", "Name", moodsInTrack.MoodId);
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", moodsInTrack.TrackId);
-        return View(moodsInTrack);
+        
+        await PopulateSelectListsAsync(vm);
+        
+        return View(vm);
     }
 
     // GET: MoodsInTrack/Edit/5
+    public async Task<IActionResult> Edit(Guid? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
 
-    // POST: MoodsInTrack/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        var moodsInTrack = await _bll.MoodsInTrackService.FindAsync(id.Value, User.GetUserId());
+        
+        if (moodsInTrack == null)
+        {
+            return NotFound();
+        }
+        
+        var vm = new MoodsInTrackViewModel { MoodsInTrack = moodsInTrack };
+        
+        await PopulateSelectListsAsync(vm);
+        
+        return View(vm);
+    }
+    
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("MoodId,TrackId,Id")] MoodsInTrack moodsInTrack)
+    public async Task<IActionResult> Edit(Guid id, MoodsInTrackViewModel vm)
     {
-        if (id != moodsInTrack.Id)
+        if (id != vm.MoodsInTrack.Id)
         {
             return NotFound();
         }
 
         if (ModelState.IsValid)
         {
-            try
-            {
-                _context.Update(moodsInTrack);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MoodsInTrackExists(moodsInTrack.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _bll.MoodsInTrackService.Update(vm.MoodsInTrack);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["MoodId"] = new SelectList(_context.Moods, "Id", "Name", moodsInTrack.MoodId);
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", moodsInTrack.TrackId);
-        return View(moodsInTrack);
+        
+        await PopulateSelectListsAsync(vm);
+
+        return View(vm);
     }
 
     // GET: MoodsInTrack/Delete/5
@@ -126,10 +132,8 @@ public class MoodsInTrackController : Controller
             return NotFound();
         }
 
-        var moodsInTrack = await _context.MoodsInTracks
-            .Include(m => m.Mood)
-            .Include(m => m.Track)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var moodsInTrack = await _bll.MoodsInTrackService.FindAsync(id.Value, User.GetUserId());
+        
         if (moodsInTrack == null)
         {
             return NotFound();
@@ -138,23 +142,32 @@ public class MoodsInTrackController : Controller
         return View(moodsInTrack);
     }
 
-    // POST: MoodsInTrack/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        var moodsInTrack = await _context.MoodsInTracks.FindAsync(id);
-        if (moodsInTrack != null)
-        {
-            _context.MoodsInTracks.Remove(moodsInTrack);
-        }
-
-        await _context.SaveChangesAsync();
+        await _bll.MoodsInTrackService.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
-    private bool MoodsInTrackExists(Guid id)
+    private async Task PopulateSelectListsAsync(MoodsInTrackViewModel vm)
     {
-        return _context.MoodsInTracks.Any(e => e.Id == id);
+        var userId = User.GetUserId();
+
+        vm.MoodsList = new SelectList(
+            await _bll.MoodService.AllAsync(userId),
+            nameof(Mood.Id),
+            nameof(Mood.Name),
+            vm.MoodsInTrack.MoodId
+        );
+
+        vm.TracksList = new SelectList(
+            await _bll.TrackService.AllAsync(userId),
+            nameof(Track.Id),
+            nameof(Track.Title),
+            vm.MoodsInTrack.TrackId
+        );
+
     }
 }

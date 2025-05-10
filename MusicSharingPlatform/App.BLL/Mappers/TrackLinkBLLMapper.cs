@@ -12,10 +12,21 @@ public class TrackLinkBLLMapper : IBLLMapper<App.BLL.DTO.TrackLink, App.DAL.DTO.
         var res = new TrackLink()
         {
             Id = entity.Id,
+            
             TrackId = entity.TrackId,
-            Track = null,
+            Track = entity.Track != null ? new Track
+            {
+                Id = entity.Track.Id,
+                Title = entity.Track.Title
+            } : null,
+            
             LinkTypeId = entity.LinkTypeId,
-            LinkType = null,
+            LinkType = entity.LinkType != null ? new LinkType
+            {
+                Id = entity.LinkType.Id,
+                Name = entity.LinkType.Name
+            } : null,
+            
             Url = entity.Url,
             
 
@@ -29,10 +40,21 @@ public class TrackLinkBLLMapper : IBLLMapper<App.BLL.DTO.TrackLink, App.DAL.DTO.
         var res = new DTO.TrackLink()
         {
             Id = entity.Id,
+            
             TrackId = entity.TrackId,
-            Track = null,
+            Track = entity.Track != null ? new DTO.Track
+            {
+                Id = entity.Track.Id,
+                Title = entity.Track.Title
+            } : null,
+            
             LinkTypeId = entity.LinkTypeId,
-            LinkType = null,
+            LinkType = entity.LinkType != null ? new DTO.LinkType
+            {
+                Id = entity.LinkType.Id,
+                Name = entity.LinkType.Name
+            } : null,
+            
             Url = entity.Url,
             
 

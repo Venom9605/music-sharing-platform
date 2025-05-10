@@ -12,10 +12,21 @@ public class UserLinkBLLMapper : IBLLMapper<App.BLL.DTO.UserLink, App.DAL.DTO.Us
         var res = new UserLink()
         {
             Id = entity.Id,
+            
             UserId = entity.UserId,
-            User = null,
+            User = entity.User != null ? new Artist
+            {
+                Id = entity.User.Id,
+                DisplayName = entity.User.DisplayName
+            } : null,
+            
             LinkTypeId = entity.LinkTypeId,
-            LinkType = null,
+            LinkType = entity.LinkType != null ? new LinkType
+            {
+                Id = entity.LinkType.Id,
+                Name = entity.LinkType.Name
+            } : null,
+            
             Url = entity.Url
 
         };
@@ -28,10 +39,21 @@ public class UserLinkBLLMapper : IBLLMapper<App.BLL.DTO.UserLink, App.DAL.DTO.Us
         var res = new DTO.UserLink()
         {
             Id = entity.Id,
+            
             UserId = entity.UserId,
-            User = null,
+            User = entity.User != null ? new DTO.Artist
+            {
+                Id = entity.User.Id,
+                DisplayName = entity.User.DisplayName
+            } : null,
+            
             LinkTypeId = entity.LinkTypeId,
-            LinkType = null,
+            LinkType = entity.LinkType != null ? new DTO.LinkType
+            {
+                Id = entity.LinkType.Id,
+                Name = entity.LinkType.Name
+            } : null,
+            
             Url = entity.Url
 
         };

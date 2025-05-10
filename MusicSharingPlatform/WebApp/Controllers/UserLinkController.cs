@@ -1,15 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using App.DAL.DTO;
+using App.BLL.DTO;
+using App.BLL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
@@ -17,19 +15,19 @@ namespace WebApp.Controllers;
 
 public class UserLinkController : Controller
 {
-    private readonly AppDbContext _context;
-    private readonly IUserLinkRepository _userLinkRepository;
+    private readonly IAppBLL _bll;
 
-    public UserLinkController(AppDbContext context, IUserLinkRepository userLinkRepository)
+    public UserLinkController(IAppBLL bll)
     {
-        _context = context;
-        _userLinkRepository = userLinkRepository;
+        _bll = bll;
     }
 
     // GET: UserLink
     public async Task<IActionResult> Index()
     {
-        return View(await _userLinkRepository.AllAsync(User.GetUserId()));
+        var userLink = await _bll.UserLinkService.AllAsync(User.GetUserId());
+        
+        return View(userLink);
     }
 
     // GET: UserLink/Details/5
@@ -40,10 +38,9 @@ public class UserLinkController : Controller
             return NotFound();
         }
 
-        var userLink = await _context.UserLinks
-            .Include(u => u.LinkType)
-            .Include(u => u.User)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var userLink = await _bll.UserLinkService.FindAsync(id.Value, User.GetUserId());
+        
+        
         if (userLink == null)
         {
             return NotFound();
@@ -53,11 +50,13 @@ public class UserLinkController : Controller
     }
 
     // GET: UserLink/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        ViewData["LinkTypeId"] = new SelectList(_context.LinkTypes, "Id", "Name");
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
-        return View();
+        var vm = new UserLinkViewModel() { UserLink = new UserLink() };
+        
+        await PopulateSelectListsAsync(vm);
+        
+        return View(vm);
     }
 
     // POST: UserLink/Create
@@ -65,61 +64,60 @@ public class UserLinkController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("UserId,LinkTypeId,Url,Id")] UserLink userLink)
+    public async Task<IActionResult> Create(UserLinkViewModel vm)
     {
         if (ModelState.IsValid)
         {
-            userLink.Id = Guid.NewGuid();
-            _context.Add(userLink);
-            await _context.SaveChangesAsync();
+            _bll.UserLinkService.Add(vm.UserLink);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["LinkTypeId"] = new SelectList(_context.LinkTypes, "Id", "Name", userLink.LinkTypeId);
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userLink.UserId);
-        return View(userLink);
+        
+        await PopulateSelectListsAsync(vm);
+        
+        return View(vm);
     }
-
-    // GET: UserLink/Edit/5
     
+    public async Task<IActionResult> Edit(Guid? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+        var userLink = await _bll.UserLinkService.FindAsync(id.Value, User.GetUserId());
+        
+        if (userLink == null)
+        {
+            return NotFound();
+        }
+        
+        var vm = new UserLinkViewModel() { UserLink = userLink };
+        await PopulateSelectListsAsync(vm);
 
-    // POST: UserLink/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        return View(vm);
+    }
+    
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("UserId,LinkTypeId,Url,Id")] UserLink userLink)
+    public async Task<IActionResult> Edit(Guid id, UserLinkViewModel vm)
     {
-        if (id != userLink.Id)
+        if (id != vm.UserLink.Id)
         {
             return NotFound();
         }
 
         if (ModelState.IsValid)
         {
-            try
-            {
-                _context.Update(userLink);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserLinkExists(userLink.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _bll.UserLinkService.Update(vm.UserLink);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["LinkTypeId"] = new SelectList(_context.LinkTypes, "Id", "Name", userLink.LinkTypeId);
-        ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", userLink.UserId);
-        return View(userLink);
+        
+        await PopulateSelectListsAsync(vm);
+
+        return View(vm);
     }
 
-    // GET: UserLink/Delete/5
     public async Task<IActionResult> Delete(Guid? id)
     {
         if (id == null)
@@ -127,10 +125,8 @@ public class UserLinkController : Controller
             return NotFound();
         }
 
-        var userLink = await _context.UserLinks
-            .Include(u => u.LinkType)
-            .Include(u => u.User)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var userLink = await _bll.UserLinkService.FindAsync(id.Value, User.GetUserId());
+        
         if (userLink == null)
         {
             return NotFound();
@@ -138,24 +134,32 @@ public class UserLinkController : Controller
 
         return View(userLink);
     }
-
-    // POST: UserLink/Delete/5
+    
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        var userLink = await _context.UserLinks.FindAsync(id);
-        if (userLink != null)
-        {
-            _context.UserLinks.Remove(userLink);
-        }
-
-        await _context.SaveChangesAsync();
+        await _bll.UserLinkService.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
-    private bool UserLinkExists(Guid id)
+    private async Task PopulateSelectListsAsync(UserLinkViewModel vm)
     {
-        return _context.UserLinks.Any(e => e.Id == id);
+        var userId = User.GetUserId();
+
+        vm.UsersList = new SelectList(
+            await _bll.ArtistService.AllAsync(userId),
+            nameof(Artist.Id),
+            nameof(Artist.DisplayName),
+            vm.UserLink.UserId
+        );
+        
+        vm.LinkTypesList = new SelectList(
+            await _bll.LinkTypeService.AllAsync(userId),
+            nameof(LinkType.Id),
+            nameof(LinkType.Name),
+            vm.UserLink.LinkTypeId
+        );
     }
 }

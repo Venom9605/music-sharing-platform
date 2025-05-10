@@ -2,6 +2,8 @@
 using App.DAL.Interfaces;
 using Base.Dal.EF;
 using Domain;
+using Microsoft.EntityFrameworkCore;
+using Track = App.DAL.DTO.Track;
 
 namespace App.DAL.EF.Repositories;
 
@@ -11,9 +13,131 @@ public class TrackRepository : BaseRepository<DTO.Track, Domain.Track>, ITrackRe
     public TrackRepository(AppDbContext repositoryDbContext) : base(repositoryDbContext, new TrackUOWMapper())
     {
     }
+    
+    public override async Task<IEnumerable<DTO.Track>> AllAsync(string? userId = null)
+    {
+        var query = GetQuery(userId)
+            .Include(t => t.ArtistInTracks)!
+            .ThenInclude(ait => ait.User)
+
+            .Include(t => t.ArtistInTracks)!
+            .ThenInclude(ait => ait.ArtistRole)
+
+            .Include(t => t.Rating)!
+            .ThenInclude(r => r.User)
+
+            .Include(t => t.TrackLinks)!
+            .ThenInclude(tl => tl.LinkType)
+
+            .Include(t => t.TagsInTracks)!
+            .ThenInclude(tit => tit.Tag)
+
+            .Include(t => t.MoodsInTracks)!
+            .ThenInclude(mit => mit.Mood);
+
+        var result = await query.ToListAsync();
+
+        return result.Select(e => _iuowMapper.Map(e)!);
+    }
+
+    public override async Task<Track?> FindAsync(Guid id, string? userId)
+    {
+        var query = GetQuery(userId)
+            .Include(t => t.ArtistInTracks)!
+            .ThenInclude(ait => ait.User)
+
+            .Include(t => t.ArtistInTracks)!
+            .ThenInclude(ait => ait.ArtistRole)
+
+            .Include(t => t.Rating)!
+            .ThenInclude(r => r.User)
+
+            .Include(t => t.TrackLinks)!
+            .ThenInclude(tl => tl.LinkType)
+
+            .Include(t => t.TagsInTracks)!
+            .ThenInclude(tit => tit.Tag)
+
+            .Include(t => t.MoodsInTracks)!
+            .ThenInclude(mit => mit.Mood);
+
+        var res =  await query.FirstOrDefaultAsync(e => e.Id.Equals(id));
+        
+        return IuowMapper.Map(res);
+    }
+    
+    
 
     public void CustomMethodTest()
     {
         Console.WriteLine("Custom test Track method called.");
+    }
+
+    public async Task UpdateTrackWithRelationsAsync(Track track)
+    {
+        var existing = await RepositoryDbSet
+            .Include(t => t.ArtistInTracks)
+            .Include(t => t.TagsInTracks)
+            .Include(t => t.MoodsInTracks)
+            .Include(t => t.TrackLinks)
+            .AsTracking()
+            .FirstOrDefaultAsync(t => t.Id == track.Id);
+        
+        if (existing == null) return;
+        
+        existing.Title = track.Title;
+        existing.CoverPath = track.CoverPath;
+        
+        RepositoryDbContext.RemoveRange(existing.ArtistInTracks!);
+        RepositoryDbContext.RemoveRange(existing.TagsInTracks!);
+        RepositoryDbContext.RemoveRange(existing.MoodsInTracks!);
+        RepositoryDbContext.RemoveRange(existing.TrackLinks!);
+
+
+        if (track.ArtistInTracks != null)
+        {
+            var newArtistLinks = track.ArtistInTracks.Select(a => new Domain.ArtistInTrack
+            {
+                Id = Guid.NewGuid(),
+                TrackId = a.TrackId,
+                UserId = a.UserId,
+                ArtistRoleId = a.ArtistRoleId
+            });
+            await RepositoryDbContext.AddRangeAsync(newArtistLinks);
+        }
+
+        if (track.TagsInTracks != null)
+        {
+            var newTags = track.TagsInTracks.Select(t => new Domain.TagsInTrack
+            {
+                Id = Guid.NewGuid(),
+                TrackId = t.TrackId,
+                TagId = t.TagId
+            });
+            await RepositoryDbContext.AddRangeAsync(newTags);
+        }
+
+        if (track.MoodsInTracks != null)
+        {
+            var newMoods = track.MoodsInTracks.Select(m => new Domain.MoodsInTrack
+            {
+                Id = Guid.NewGuid(),
+                TrackId = m.TrackId,
+                MoodId = m.MoodId
+            });
+            await RepositoryDbContext.AddRangeAsync(newMoods);
+        }
+
+        if (track.TrackLinks != null)
+        {
+            var newLinks = track.TrackLinks.Select(l => new Domain.TrackLink
+            {
+                Id = Guid.NewGuid(),
+                TrackId = l.TrackId,
+                LinkTypeId = l.LinkTypeId,
+                Url = l.Url
+            });
+            await RepositoryDbContext.AddRangeAsync(newLinks);
+        }
     }
 }

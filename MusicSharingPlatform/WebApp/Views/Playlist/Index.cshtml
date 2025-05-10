@@ -1,4 +1,4 @@
-@model IEnumerable<App.DAL.DTO.Playlist>
+@model IEnumerable<App.BLL.DTO.Playlist>
 
 @{
     ViewData["Title"] = "Index";
@@ -35,7 +35,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.User!.Id)
+                @Html.DisplayFor(modelItem => item.User!.DisplayName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)

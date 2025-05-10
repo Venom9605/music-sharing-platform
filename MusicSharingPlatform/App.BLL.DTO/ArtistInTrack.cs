@@ -24,4 +24,9 @@ public class ArtistInTrack : IBaseEntityId<Guid>
     public Guid ArtistRoleId { get; set; }
     [Display(Name = nameof(ArtistRole), Prompt = nameof(ArtistRole), ResourceType = typeof(App.Resources.Domain.ArtistInTrack))]
     public ArtistRole? ArtistRole { get; set; }
+    
+    
+    public string? ArtistDisplayName { get; set; } = default!;
+    
+    public string? ArtistRoleName { get; set; } = default!;
 }

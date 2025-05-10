@@ -1,4 +1,4 @@
-@model App.DAL.DTO.UserSavedTracks
+@model WebApp.ViewModels.UserSavedTrackViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -12,17 +12,20 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="All " class="text-danger"></div>
+            <input type="hidden" asp-for="UserSavedTrack.Id" />
+            
             <div class="form-group">
-                <label asp-for="TrackId" class="control-label"></label>
-                <select asp-for="TrackId" class="form-control" asp-items="ViewBag.TrackId"></select>
-                <span asp-validation-for="TrackId" class="text-danger"></span>
+                <label asp-for="UserSavedTrack.UserId" class="control-label"></label>
+                <select asp-for="UserSavedTrack.UserId" class="form-control" asp-items="Model.UsersList"></select>
+                <span asp-validation-for="UserSavedTrack.UserId" class="text-danger"></span>
             </div>
+            
             <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
-                <span asp-validation-for="UserId" class="text-danger"></span>
+                <label asp-for="UserSavedTrack.TrackId" class="control-label"></label>
+                <select asp-for="UserSavedTrack.TrackId" class="form-control" asp-items="Model.TracksList"></select>
+                <span asp-validation-for="UserSavedTrack.TrackId" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Id" />
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

@@ -22,4 +22,6 @@ public class TrackLink : IBaseEntityId<Guid>
     [MaxLength(500)]
     [Display(Name = nameof(Url), Prompt = nameof(Url), ResourceType = typeof(App.Resources.Domain.TrackLink))]
     public string Url { get; set; } = default!;
+    
+    public string? LinkTypeName { get; set; } = default!;
 }

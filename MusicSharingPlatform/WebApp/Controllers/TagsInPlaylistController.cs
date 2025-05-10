@@ -2,14 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using App.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using App.DAL.DTO;
+using App.BLL.DTO;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
@@ -17,19 +19,19 @@ namespace WebApp.Controllers;
 
 public class TagsInPlaylistController : Controller
 {
-    private readonly AppDbContext _context;
-    private readonly ITagsInPlaylistRepository _tagsInPlaylistRepository;
+    private readonly IAppBLL _bll;
 
-    public TagsInPlaylistController(AppDbContext context, ITagsInPlaylistRepository tagsInPlaylistRepository)
+    public TagsInPlaylistController(IAppBLL bll)
     {
-        _context = context;
-        _tagsInPlaylistRepository = tagsInPlaylistRepository;
+        _bll = bll;
     }
 
     // GET: TagsInPlaylist
     public async Task<IActionResult> Index()
     {
-        return View(await _tagsInPlaylistRepository.AllAsync(User.GetUserId()));
+        var tagsInPlaylists = await _bll.TagsInPlaylistService.AllAsync(User.GetUserId());
+        
+        return View(tagsInPlaylists);
     }
 
     // GET: TagsInPlaylist/Details/5
@@ -40,24 +42,25 @@ public class TagsInPlaylistController : Controller
             return NotFound();
         }
 
-        var tagsInPlaylist = await _context.TagsInPlaylists
-            .Include(t => t.Playlist)
-            .Include(t => t.Tag)
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (tagsInPlaylist == null)
+        var tagsInPlaylists = await _bll.TagsInPlaylistService.FindAsync(id.Value, User.GetUserId());
+        
+        
+        if (tagsInPlaylists == null)
         {
             return NotFound();
         }
 
-        return View(tagsInPlaylist);
+        return View(tagsInPlaylists);
     }
 
     // GET: TagsInPlaylist/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Name");
-        ViewData["TagId"] = new SelectList(_context.Tags, "Id", "Name");
-        return View();
+        var vm = new TagsInPlaylistViewModel() { TagsInPlaylist = new TagsInPlaylist() };
+        
+        await PopulateSelectListsAsync(vm);
+        
+        return View(vm);
     }
 
     // POST: TagsInPlaylist/Create
@@ -65,61 +68,61 @@ public class TagsInPlaylistController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("PlaylistId,TagId,Id")] TagsInPlaylist tagsInPlaylist)
+    public async Task<IActionResult> Create(TagsInPlaylistViewModel vm)
     {
         if (ModelState.IsValid)
         {
-            tagsInPlaylist.Id = Guid.NewGuid();
-            _context.Add(tagsInPlaylist);
-            await _context.SaveChangesAsync();
+            _bll.TagsInPlaylistService.Add(vm.TagsInPlaylist);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Name", tagsInPlaylist.PlaylistId);
-        ViewData["TagId"] = new SelectList(_context.Tags, "Id", "Name", tagsInPlaylist.TagId);
-        return View(tagsInPlaylist);
+        
+        await PopulateSelectListsAsync(vm);
+        
+        return View(vm);
     }
+    
+    public async Task<IActionResult> Edit(Guid? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+        
+        var tagsInPlaylist = await _bll.TagsInPlaylistService.FindAsync(id.Value, User.GetUserId());
+        
+        if (tagsInPlaylist == null)
+        {
+            return NotFound();
+        }
+        
+        var vm = new TagsInPlaylistViewModel() { TagsInPlaylist = tagsInPlaylist };
+        await PopulateSelectListsAsync(vm);
 
-    // GET: TagsInPlaylist/Edit/5
-
-
-    // POST: TagsInPlaylist/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        return View(vm);
+    }
+    
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("PlaylistId,TagId,Id")] TagsInPlaylist tagsInPlaylist)
+    public async Task<IActionResult> Edit(Guid id, TagsInPlaylistViewModel vm)
     {
-        if (id != tagsInPlaylist.Id)
+        if (id != vm.TagsInPlaylist.Id)
         {
             return NotFound();
         }
 
         if (ModelState.IsValid)
         {
-            try
-            {
-                _context.Update(tagsInPlaylist);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TagsInPlaylistExists(tagsInPlaylist.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _bll.TagsInPlaylistService.Update(vm.TagsInPlaylist);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["PlaylistId"] = new SelectList(_context.Playlists, "Id", "Name", tagsInPlaylist.PlaylistId);
-        ViewData["TagId"] = new SelectList(_context.Tags, "Id", "Name", tagsInPlaylist.TagId);
-        return View(tagsInPlaylist);
+        
+        await PopulateSelectListsAsync(vm);
+
+        return View(vm);
     }
 
-    // GET: TagsInPlaylist/Delete/5
     public async Task<IActionResult> Delete(Guid? id)
     {
         if (id == null)
@@ -127,10 +130,8 @@ public class TagsInPlaylistController : Controller
             return NotFound();
         }
 
-        var tagsInPlaylist = await _context.TagsInPlaylists
-            .Include(t => t.Playlist)
-            .Include(t => t.Tag)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var tagsInPlaylist = await _bll.TagsInPlaylistService.FindAsync(id.Value, User.GetUserId());
+        
         if (tagsInPlaylist == null)
         {
             return NotFound();
@@ -138,24 +139,32 @@ public class TagsInPlaylistController : Controller
 
         return View(tagsInPlaylist);
     }
-
-    // POST: TagsInPlaylist/Delete/5
+    
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        var tagsInPlaylist = await _context.TagsInPlaylists.FindAsync(id);
-        if (tagsInPlaylist != null)
-        {
-            _context.TagsInPlaylists.Remove(tagsInPlaylist);
-        }
-
-        await _context.SaveChangesAsync();
+        await _bll.TagsInPlaylistService.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
-    private bool TagsInPlaylistExists(Guid id)
+    private async Task PopulateSelectListsAsync(TagsInPlaylistViewModel vm)
     {
-        return _context.TagsInPlaylists.Any(e => e.Id == id);
+        var userId = User.GetUserId();
+
+        vm.TagsList = new SelectList(
+            await _bll.TagService.AllAsync(userId),
+            nameof(Tag.Id),
+            nameof(Tag.Name),
+            vm.TagsInPlaylist.TagId
+        );
+        
+        vm.PlaylistsList = new SelectList(
+            await _bll.PlaylistService.AllAsync(userId),
+            nameof(Playlist.Id),
+            nameof(Playlist.Name),
+            vm.TagsInPlaylist.PlaylistId
+        );
     }
 }

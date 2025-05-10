@@ -11,10 +11,20 @@ public class MoodsInTrackUOWMapper : IUOWMapper<DTO.MoodsInTrack, Domain.MoodsIn
         var res = new MoodsInTrack()
         {
             Id = entity.Id,
+            
             MoodId = entity.MoodId,
-            Mood = null,
+            Mood = entity.Mood != null ? new Mood
+            {
+                Id = entity.Mood.Id,
+                Name = entity.Mood.Name
+            } : null,
+            
             TrackId = entity.TrackId,
-            Track = null,
+            Track = entity.Track != null ? new Track
+            {
+                Id = entity.Track.Id,
+                Title = entity.Track.Title
+            } : null,
         };
         return res;
     }
@@ -25,8 +35,10 @@ public class MoodsInTrackUOWMapper : IUOWMapper<DTO.MoodsInTrack, Domain.MoodsIn
         var res = new Domain.MoodsInTrack()
         {
             Id = entity.Id,
+            
             MoodId = entity.MoodId,
             Mood = null,
+            
             TrackId = entity.TrackId,
             Track = null,
         };

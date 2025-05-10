@@ -1,13 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using App.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using App.DAL.EF;
-using App.DAL.Interfaces;
 using Base.Helpers;
 using App.BLL.DTO;
 using Microsoft.AspNetCore.Authorization;
@@ -53,15 +46,9 @@ public class RatingController : Controller
     // GET: Rating/Create
     public async Task<IActionResult> Create()
     {
-        var vm = new RatingsViewModel
-        {
-            Rating = new Rating(),
-            TracksList = new SelectList(
-                await _bll.TrackService.AllAsync(User.GetUserId()),
-                nameof(Track.Id),
-                nameof(Track.Title)
-            )
-        };
+        var vm = new RatingsViewModel { Rating = new Rating() };
+        
+        await PopulateSelectListsAsync(vm);
         
         return View(vm);
     }
@@ -75,20 +62,13 @@ public class RatingController : Controller
     {
         if (ModelState.IsValid)
         {
-            vm.Rating.UserId = User.GetUserId();
-
             _bll.RatingService.Add(vm.Rating);
+            
             await _bll.SaveChangesAsync();
-
             return RedirectToAction(nameof(Index));
         }
         
-        vm.TracksList = new SelectList(
-            await _bll.TrackService.AllAsync(User.GetUserId()),
-            nameof(Track.Id),
-            nameof(Track.Title),
-            vm.Rating.TrackId
-        );
+        await PopulateSelectListsAsync(vm);
         
         return View(vm);
     }
@@ -108,7 +88,11 @@ public class RatingController : Controller
             return NotFound();
         }
         
-        return View(rating);
+        var vm = new RatingsViewModel { Rating = rating };
+        await PopulateSelectListsAsync(vm);
+        
+        
+        return View(vm);
     }
 
     // POST: Rating/Edit/5
@@ -116,28 +100,23 @@ public class RatingController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, Rating rating)
+    public async Task<IActionResult> Edit(Guid id, RatingsViewModel vm)
     {
-        if (id != rating.Id)
+        if (id != vm.Rating.Id)
         {
             return NotFound();
         }
 
         if (ModelState.IsValid)
         {
-            var dbEntity = await _bll.RatingService.FindAsync(id, User.GetUserId());
-            if (dbEntity == null) return NotFound();
-
-            dbEntity.Score = rating.Score;
-            dbEntity.Comment = rating.Comment;
-
-            _bll.RatingService.Update(dbEntity);
+            _bll.RatingService.Update(vm.Rating);
             await _bll.SaveChangesAsync();
-
             return RedirectToAction(nameof(Index));
         }
         
-        return View(rating);
+        await PopulateSelectListsAsync(vm);
+        
+        return View(vm);
     }
 
     // GET: Rating/Delete/5
@@ -166,5 +145,25 @@ public class RatingController : Controller
         await _bll.RatingService.RemoveAsync(id, User.GetUserId());
         await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
+    }
+    
+    
+    private async Task PopulateSelectListsAsync(RatingsViewModel vm)
+    {
+        var userId = User.GetUserId();
+
+        vm.TracksList = new SelectList(
+            await _bll.TrackService.AllAsync(userId),
+            nameof(Track.Id),
+            nameof(Track.Title),
+            vm.Rating.TrackId
+        );
+        
+        vm.ArtistsList = new SelectList(
+            await _bll.ArtistService.AllAsync(userId),
+            nameof(Artist.Id),
+            nameof(Artist.DisplayName),
+            vm.Rating.UserId
+        );
     }
 }

@@ -27,4 +27,6 @@ public class Rating : IBaseEntityId<Guid>
     [MaxLength(512)]
     [Display(Name = nameof(Comment), Prompt = nameof(Comment), ResourceType = typeof(App.Resources.Domain.Rating))]
     public string? Comment { get; set; } = default!;
+    
+    public string? ArtistDisplayName { get; set; } = default!;
 }

@@ -8,8 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.DAL.Interfaces;
 using Base.Helpers;
-using App.DAL.DTO;
+using App.BLL.DTO;
+using App.BLL.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
@@ -17,19 +19,19 @@ namespace WebApp.Controllers;
 
 public class TrackLinkController : Controller
 {
-    private readonly AppDbContext _context;
-    private readonly ITrackLinkRepository _trackLinkRepository;
+    private readonly IAppBLL _bll;
 
-    public TrackLinkController(AppDbContext context, ITrackLinkRepository trackLinkRepository)
+    public TrackLinkController(IAppBLL bll)
     {
-        _context = context;
-        _trackLinkRepository = trackLinkRepository;
+        _bll = bll;
     }
 
     // GET: TrackLink
     public async Task<IActionResult> Index()
     {
-        return View(await _trackLinkRepository.AllAsync(User.GetUserId()));
+        var trackLink = await _bll.TrackLinkService.AllAsync(User.GetUserId());
+        
+        return View(trackLink);
     }
 
     // GET: TrackLink/Details/5
@@ -40,10 +42,9 @@ public class TrackLinkController : Controller
             return NotFound();
         }
 
-        var trackLink = await _context.TrackLinks
-            .Include(t => t.LinkType)
-            .Include(t => t.Track)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var trackLink = await _bll.TrackLinkService.FindAsync(id.Value, User.GetUserId());
+        
+        
         if (trackLink == null)
         {
             return NotFound();
@@ -53,11 +54,13 @@ public class TrackLinkController : Controller
     }
 
     // GET: TrackLink/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
-        ViewData["LinkTypeId"] = new SelectList(_context.LinkTypes, "Id", "Name");
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title");
-        return View();
+        var vm = new TrackLinkViewModel() { TrackLink = new TrackLink() };
+        
+        await PopulateSelectListsAsync(vm);
+        
+        return View(vm);
     }
 
     // POST: TrackLink/Create
@@ -65,18 +68,18 @@ public class TrackLinkController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("TrackId,LinkTypeId,Url,Id")] TrackLink trackLink)
+    public async Task<IActionResult> Create(TrackLinkViewModel vm)
     {
         if (ModelState.IsValid)
         {
-            trackLink.Id = Guid.NewGuid();
-            _context.Add(trackLink);
-            await _context.SaveChangesAsync();
+            _bll.TrackLinkService.Add(vm.TrackLink);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["LinkTypeId"] = new SelectList(_context.LinkTypes, "Id", "Name", trackLink.LinkTypeId);
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", trackLink.TrackId);
-        return View(trackLink);
+        
+        await PopulateSelectListsAsync(vm);
+        
+        return View(vm);
     }
 
     // GET: TrackLink/Edit/5
@@ -84,41 +87,46 @@ public class TrackLinkController : Controller
     // POST: TrackLink/Edit/5
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    public async Task<IActionResult> Edit(Guid? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+        var trackLink = await _bll.TrackLinkService.FindAsync(id.Value, User.GetUserId());
+        
+        if (trackLink == null)
+        {
+            return NotFound();
+        }
+        
+        var vm = new TrackLinkViewModel() { TrackLink = trackLink };
+        await PopulateSelectListsAsync(vm);
+
+        return View(vm);
+    }
+    
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("TrackId,LinkTypeId,Url,Id")] TrackLink trackLink)
+    public async Task<IActionResult> Edit(Guid id, TrackLinkViewModel vm)
     {
-        if (id != trackLink.Id)
+        if (id != vm.TrackLink.Id)
         {
             return NotFound();
         }
 
         if (ModelState.IsValid)
         {
-            try
-            {
-                _context.Update(trackLink);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TrackLinkExists(trackLink.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _bll.TrackLinkService.Update(vm.TrackLink);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-        ViewData["LinkTypeId"] = new SelectList(_context.LinkTypes, "Id", "Name", trackLink.LinkTypeId);
-        ViewData["TrackId"] = new SelectList(_context.Tracks, "Id", "Title", trackLink.TrackId);
-        return View(trackLink);
+        
+        await PopulateSelectListsAsync(vm);
+
+        return View(vm);
     }
 
-    // GET: TrackLink/Delete/5
     public async Task<IActionResult> Delete(Guid? id)
     {
         if (id == null)
@@ -126,10 +134,8 @@ public class TrackLinkController : Controller
             return NotFound();
         }
 
-        var trackLink = await _context.TrackLinks
-            .Include(t => t.LinkType)
-            .Include(t => t.Track)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var trackLink = await _bll.TrackLinkService.FindAsync(id.Value, User.GetUserId());
+        
         if (trackLink == null)
         {
             return NotFound();
@@ -137,24 +143,32 @@ public class TrackLinkController : Controller
 
         return View(trackLink);
     }
-
-    // POST: TrackLink/Delete/5
+    
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        var trackLink = await _context.TrackLinks.FindAsync(id);
-        if (trackLink != null)
-        {
-            _context.TrackLinks.Remove(trackLink);
-        }
-
-        await _context.SaveChangesAsync();
+        await _bll.TrackLinkService.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
-    private bool TrackLinkExists(Guid id)
+    private async Task PopulateSelectListsAsync(TrackLinkViewModel vm)
     {
-        return _context.TrackLinks.Any(e => e.Id == id);
+        var userId = User.GetUserId();
+
+        vm.TracksList = new SelectList(
+            await _bll.TrackService.AllAsync(userId),
+            nameof(Track.Id),
+            nameof(Track.Title),
+            vm.TrackLink.TrackId
+        );
+        
+        vm.LinkTypesList = new SelectList(
+            await _bll.LinkTypeService.AllAsync(userId),
+            nameof(LinkType.Id),
+            nameof(LinkType.Name),
+            vm.TrackLink.LinkTypeId
+        );
     }
 }

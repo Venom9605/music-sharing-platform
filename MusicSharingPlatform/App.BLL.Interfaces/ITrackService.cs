@@ -3,7 +3,7 @@ using Base.BLL.Interfaces;
 
 namespace App.BLL.Interfaces;
 
-public interface ITrackService : IBaseService<App.BLL.DTO.Track>, ITrackRepositoryCustom
+public interface ITrackService : IBaseService<App.BLL.DTO.Track>
 {
-    
+    Task UpdateTrackWithRelationsAsync(App.BLL.DTO.Track track);
 }

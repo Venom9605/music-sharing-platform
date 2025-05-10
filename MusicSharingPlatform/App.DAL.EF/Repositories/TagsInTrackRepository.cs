@@ -21,4 +21,14 @@ public class TagsInTrackRepository : BaseRepository<DTO.TagsInTrack, Domain.Tags
             .ToListAsync())
             .Select(e => _iuowMapper.Map(e)!);
     }
+    
+    public override async Task<DTO.TagsInTrack?> FindAsync(Guid id, string? userId)
+    {
+        var entity = await GetQuery(userId)
+            .Include(r => r.Track)
+            .Include(r => r.Tag)
+            .FirstOrDefaultAsync(e => e.Id.Equals(id));
+
+        return _iuowMapper.Map(entity);
+    }
 }

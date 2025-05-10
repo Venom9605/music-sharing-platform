@@ -12,10 +12,20 @@ public class UserSavedTracksBLLMapper : IBLLMapper<App.BLL.DTO.UserSavedTracks, 
         var res = new UserSavedTracks()
         {
             Id = entity.Id,
+            
             TrackId = entity.TrackId,
-            Track = null,
+            Track = entity.Track != null ? new Track
+            {
+                Id = entity.Track.Id,
+                Title = entity.Track.Title
+            } : null,
+            
             UserId = entity.UserId,
-            User = null
+            User = entity.User != null ? new Artist
+            {
+                Id = entity.User.Id,
+                DisplayName = entity.User.DisplayName
+            } : null
 
         };
         return res;
@@ -27,10 +37,20 @@ public class UserSavedTracksBLLMapper : IBLLMapper<App.BLL.DTO.UserSavedTracks, 
         var res = new DTO.UserSavedTracks()
         {
             Id = entity.Id,
+            
             TrackId = entity.TrackId,
-            Track = null,
+            Track = entity.Track != null ? new DTO.Track
+            {
+                Id = entity.Track.Id,
+                Title = entity.Track.Title
+            } : null,
+            
             UserId = entity.UserId,
-            User = null
+            User = entity.User != null ? new DTO.Artist
+            {
+                Id = entity.User.Id,
+                DisplayName = entity.User.DisplayName
+            } : null
 
         };
         return res;
