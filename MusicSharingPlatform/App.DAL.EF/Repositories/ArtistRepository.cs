@@ -41,6 +41,14 @@ public class ArtistRepository : BaseRepository<DTO.Artist, Domain.Artist, string
 
         return _iuowMapper.Map(res);
     }
+    
+    public async Task<DTO.Artist?> FindByNormalizedUserNameAsync(string normalizedUserName)
+    {
+        var res = await RepositoryDbSet
+            .FirstOrDefaultAsync(a => a.NormalizedUserName == normalizedUserName);
+        
+        return _iuowMapper.Map(res);
+    }
 
     public void CustomMethodTest()
     {

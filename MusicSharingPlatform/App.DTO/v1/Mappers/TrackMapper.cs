@@ -92,11 +92,35 @@ public class TrackMapper : IMapper<App.DTO.v1.Track, App.BLL.DTO.Track>
         return res;
     }
     
-    public BLL.DTO.Track? Map(App.DTO.v1.TrackCreate? entity)
+    public BLL.DTO.Track? Map(App.DTO.v1.TrackCreate? entity, string userId)
     {
         if (entity == null) return null;
         
         var trackId = Guid.NewGuid();
+        
+        var artistInTracks = new List<BLL.DTO.ArtistInTrack>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TrackId = trackId,
+                UserId = userId,
+                ArtistRoleId = entity.ArtistRoleId
+            }
+        };
+        
+        if (entity.ArtistInTracks != null)
+        {
+            artistInTracks.AddRange(entity.ArtistInTracks
+                .Where(a => a.UserId != userId)
+                .Select(a => new BLL.DTO.ArtistInTrack
+                {
+                    Id = Guid.NewGuid(),
+                    TrackId = trackId,
+                    UserId = a.UserId,
+                    ArtistRoleId = a.ArtistRoleId
+                }));
+        }
         
         var res = new BLL.DTO.Track()
         {
@@ -108,13 +132,7 @@ public class TrackMapper : IMapper<App.DTO.v1.Track, App.BLL.DTO.Track>
             TimesPlayed = 0,
             TimesSaved = 0,
             
-            ArtistInTracks = entity.ArtistInTracks?.Select(a => new BLL.DTO.ArtistInTrack
-            {
-                Id = Guid.NewGuid(),
-                TrackId = trackId,
-                UserId = a.UserId,
-                ArtistRoleId = a.ArtistRoleId
-            }).ToList(),
+            ArtistInTracks = artistInTracks,
 
             TagsInTracks = entity.TagsInTracks?.Select(t => new BLL.DTO.TagsInTrack
             {
@@ -141,48 +159,5 @@ public class TrackMapper : IMapper<App.DTO.v1.Track, App.BLL.DTO.Track>
 
         return res;
     }
-
-    public BLL.DTO.Track? Map(App.DTO.v1.TrackEdit? entity)
-    {
-        if (entity == null) return null;
-        
-        var res = new BLL.DTO.Track()
-        {
-            Id = entity.Id,
-            Title = entity.Title,
-            CoverPath = entity.CoverPath,
-            
-            ArtistInTracks = entity.ArtistInTracks?.Select(a => new BLL.DTO.ArtistInTrack
-            {
-                Id = Guid.NewGuid(),
-                TrackId = entity.Id,
-                UserId = a.UserId,
-                ArtistRoleId = a.ArtistRoleId
-            }).ToList(),
-
-            TagsInTracks = entity.TagsInTracks?.Select(t => new BLL.DTO.TagsInTrack
-            {
-                Id = Guid.NewGuid(),
-                TrackId = entity.Id,
-                TagId = t.TagId
-            }).ToList(),
-
-            MoodsInTracks = entity.MoodsInTracks?.Select(m => new BLL.DTO.MoodsInTrack
-            {
-                Id = Guid.NewGuid(),
-                TrackId = entity.Id,
-                MoodId = m.MoodId
-            }).ToList(),
-
-            TrackLinks = entity.TrackLinks?.Select(l => new BLL.DTO.TrackLink
-            {
-                Id = Guid.NewGuid(),
-                TrackId = entity.Id,
-                LinkTypeId = l.LinkTypeId,
-                Url = l.Url
-            }).ToList()
-        };
-        
-        return res;
-    }
+    
 }

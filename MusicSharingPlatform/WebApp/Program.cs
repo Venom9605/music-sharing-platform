@@ -9,6 +9,7 @@ using App.DAL.Interfaces;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Domain;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -30,7 +31,7 @@ if (builder.Environment.IsProduction())
         options
             .UseNpgsql(
                 connectionString, 
-                o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+                o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery)
             )
             .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution)
     );
@@ -41,7 +42,7 @@ else
         options
             .UseNpgsql(
                 connectionString, 
-                o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+                o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery)
             )
             .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution)
             .ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))
@@ -83,7 +84,20 @@ builder.Services
         }
     );
 
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Limits.MaxRequestBodySize = 104_857_600; // 100 MB
+});
+
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 104_857_600; // 100 MB
+});
+
+
 builder.Services.AddControllersWithViews();
+
 
 // Add culture switch support
 
@@ -163,6 +177,12 @@ else
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    ServeUnknownFileTypes = true,
+    DefaultContentType = "application/octet-stream"
+});
 
 app.UseRequestLocalization(options: app.Services.GetService<IOptions<RequestLocalizationOptions>>()!.Value!);
 

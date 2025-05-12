@@ -11,4 +11,6 @@ public interface ITrackRepositoryCustom
     void CustomMethodTest();
     
     Task UpdateTrackWithRelationsAsync(DTO.Track track);
+    
+    Task<DTO.Track?> GetRandomTrackAsync();
 }

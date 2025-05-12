@@ -16,27 +16,22 @@ public class TrackRepository : BaseRepository<DTO.Track, Domain.Track>, ITrackRe
     
     public override async Task<IEnumerable<DTO.Track>> AllAsync(string? userId = null)
     {
-        var query = GetQuery(userId)
+        var query = RepositoryDbSet
             .Include(t => t.ArtistInTracks)!
             .ThenInclude(ait => ait.User)
-
             .Include(t => t.ArtistInTracks)!
             .ThenInclude(ait => ait.ArtistRole)
-
             .Include(t => t.Rating)!
             .ThenInclude(r => r.User)
-
             .Include(t => t.TrackLinks)!
             .ThenInclude(tl => tl.LinkType)
-
             .Include(t => t.TagsInTracks)!
             .ThenInclude(tit => tit.Tag)
-
             .Include(t => t.MoodsInTracks)!
-            .ThenInclude(mit => mit.Mood);
+            .ThenInclude(mit => mit.Mood)
+            .Where(t => t.ArtistInTracks!.Any(ait => ait.UserId == userId));
 
         var result = await query.ToListAsync();
-
         return result.Select(e => _iuowMapper.Map(e)!);
     }
 
@@ -139,5 +134,27 @@ public class TrackRepository : BaseRepository<DTO.Track, Domain.Track>, ITrackRe
             });
             await RepositoryDbContext.AddRangeAsync(newLinks);
         }
+    }
+
+    public async Task<Track?> GetRandomTrackAsync()
+    {
+        var query = RepositoryDbSet
+            .AsNoTracking()
+            .Include(t => t.ArtistInTracks!)
+            .ThenInclude(ait => ait.User)
+            .Include(t => t.ArtistInTracks!)
+            .ThenInclude(ait => ait.ArtistRole)
+            .Include(t => t.Rating!)
+            .ThenInclude(r => r.User)
+            .Include(t => t.TrackLinks!)
+            .ThenInclude(tl => tl.LinkType)
+            .Include(t => t.TagsInTracks!)
+            .ThenInclude(tag => tag.Tag)
+            .Include(t => t.MoodsInTracks!)
+            .ThenInclude(mood => mood.Mood)
+            .OrderBy(x => Guid.NewGuid());
+
+        var entity = await query.FirstOrDefaultAsync();
+        return _iuowMapper.Map(entity);
     }
 }

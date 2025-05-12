@@ -14,15 +14,17 @@ public class TrackService : BaseService<App.BLL.DTO.Track, App.DAL.DTO.Track, Ap
         IBLLMapper<DTO.Track, Track, Guid> bllMapper) : base(serviceUOW, serviceUOW.TrackRepository, bllMapper)
     {
     }
-
-    public void CustomMethodTest()
-    {
-        ServiceRepository.CustomMethodTest();
-    }
     
     public async Task UpdateTrackWithRelationsAsync(App.BLL.DTO.Track track)
     {
         var dalTrack = BLLMapper.Map(track)!;
         await ServiceRepository.UpdateTrackWithRelationsAsync(dalTrack);
+    }
+
+    public async Task<DTO.Track?> GetRandomTrackAsync()
+    {
+        var track = await ServiceRepository.GetRandomTrackAsync();
+        
+        return BLLMapper.Map(track);
     }
 }

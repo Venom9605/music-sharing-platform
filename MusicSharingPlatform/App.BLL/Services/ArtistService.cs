@@ -19,4 +19,11 @@ public class ArtistService : BaseService<App.BLL.DTO.Artist, App.DAL.DTO.Artist,
     {
         ServiceRepository.CustomMethodTest();
     }
+
+    public Task<Artist?> FindByNormalizedUserNameAsync(string normalizedUserName)
+    {
+        var res = ServiceRepository.FindByNormalizedUserNameAsync(normalizedUserName);
+        
+        return res;
+    }
 }

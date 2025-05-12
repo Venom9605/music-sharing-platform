@@ -20,6 +20,10 @@ public class TrackCreate
     [Display(Name = "CoverPath", Prompt = "CoverPath", ResourceType = typeof(App.Resources.Domain.Track))]
     public string CoverPath { get; set; } = default!;
     
+    [Required]
+    public Guid ArtistRoleId { get; set; }
+
+    
     public ICollection<ArtistInTrackCreate>? ArtistInTracks { get; set; }
     
     public ICollection<TrackLinkCreate>? TrackLinks { get; set; }
@@ -27,4 +31,14 @@ public class TrackCreate
     public ICollection<TagInTrackCreate>? TagsInTracks { get; set; }
     
     public ICollection<MoodInTrackCreate>? MoodsInTracks { get; set; }
+    
+    
+    
+    public ICollection<CollaboratorInput>? Collaborators { get; set; }
+
+    public class CollaboratorInput
+    {
+        public string Email { get; set; } = default!;
+        public Guid ArtistRoleId { get; set; }
+    }
 }

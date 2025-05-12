@@ -55,7 +55,7 @@ public class TrackController : ControllerBase
     /// <returns>The requested track if found, or a 404 error if not.</returns>
     [HttpGet("{id}")]
     [Produces("application/json")]
-    [ProducesResponseType(typeof(IEnumerable<App.DTO.v1.Track>), 200)]
+    [ProducesResponseType(typeof(App.DTO.v1.Track), 200)]
     [ProducesResponseType(404)]
     public async Task<ActionResult<App.DTO.v1.Track>> GetTrack(Guid id)
     {
@@ -68,6 +68,29 @@ public class TrackController : ControllerBase
         
         return _mapper.Map(track)!;
     }
+    
+    
+    /// <summary>
+    /// Get a random track.
+    /// </summary>
+    /// <returns>The requested track if found, or a 404 error if not.</returns>
+    [HttpGet]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(App.DTO.v1.Track), 200)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult<App.DTO.v1.Track>> GetRandomTrack()
+    {
+        var track = await _bll.TrackService.GetRandomTrackAsync();
+        
+        if (track == null)
+        {
+            return NotFound();
+        }
+        
+        return Ok(_mapper.Map(track));
+    }
+    
+    
     
     /// <summary>
     /// Create a new track for the currently logged-in user
@@ -84,8 +107,36 @@ public class TrackController : ControllerBase
         {
             return BadRequest(ModelState);
         }
+
         
-        var bllEntity = _mapper.Map(track)!;
+        var userId = User.GetUserId();
+        
+        
+        if (track.Collaborators != null && track.Collaborators.Any())
+        {
+            var resolved = new List<App.DTO.v1.ArtistInTrackCreate>();
+
+            foreach (var collaborator in track.Collaborators)
+            {
+                var normalized = collaborator.Email.Trim().ToUpperInvariant();
+                
+                var artist = await _bll.ArtistService.FindByNormalizedUserNameAsync(normalized);
+                if (artist != null)
+                {
+                    resolved.Add(new App.DTO.v1.ArtistInTrackCreate
+                    {
+                        UserId = artist.Id,
+                        ArtistRoleId = collaborator.ArtistRoleId
+                    });
+                }
+            }
+
+            track.ArtistInTracks ??= new List<App.DTO.v1.ArtistInTrackCreate>();
+            track.ArtistInTracks = track.ArtistInTracks.Concat(resolved).ToList();
+        }
+        
+        
+        var bllEntity = _mapper.Map(track, userId)!;
         
         _bll.TrackService.Add(bllEntity);
         await _bll.SaveChangesAsync();
@@ -95,36 +146,6 @@ public class TrackController : ControllerBase
             id = bllEntity.Id,
             version = HttpContext.GetRequestedApiVersion()!.ToString()
         }, bllEntity);
-    }
-    
-    /// <summary>
-    /// Update an existing track for the currently logged-in user
-    /// </summary>
-    /// <param name="id">The ID of the track to update.</param>
-    /// <param name="dto">The updated track data.</param>
-    /// <returns>No content if the update is successful, or an error response if not.</returns>
-    [HttpPut("{id}")]
-    [ProducesResponseType(204)]
-    [ProducesResponseType(400)]
-    [ProducesResponseType(404)]
-    public async Task<IActionResult> UpdateTrack(Guid id, App.DTO.v1.TrackEdit dto)
-    {
-        if (id != dto.Id)
-        {
-            return BadRequest();
-        }
-        
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        
-        var bllDto = _mapper.Map(dto)!;
-
-        await _bll.TrackService.UpdateTrackWithRelationsAsync(bllDto);
-        await _bll.SaveChangesAsync();
-
-        return NoContent();
     }
     
     /// <summary>
@@ -147,6 +168,59 @@ public class TrackController : ControllerBase
         await _bll.SaveChangesAsync();
 
         return NoContent();
+    }
+    
+    /// <summary>
+    /// Upload a cover image for a track
+    /// </summary>
+    /// <param name="file">Image file</param>
+    /// <returns>Relative path to the uploaded image</returns>
+    [HttpPost]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    public async Task<IActionResult> UploadCover(IFormFile file)
+    {
+        if (file == null)
+        {
+            return BadRequest("No file uploaded.");
+        }
+
+
+
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "covers");
+        Directory.CreateDirectory(uploadsFolder);
+
+        var uniqueFileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+        await using var stream = new FileStream(filePath, FileMode.Create);
+        await file.CopyToAsync(stream);
+
+        var relativePath = $"covers/{uniqueFileName}";
+
+
+        return Ok(new { path = relativePath });
+    }
+    
+    [HttpPost]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    public async Task<IActionResult> UploadTrackFile([FromForm] IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest("No file uploaded.");
+
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+        Directory.CreateDirectory(uploadsFolder);
+
+        var uniqueFileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+        await using var stream = new FileStream(filePath, FileMode.Create);
+        await file.CopyToAsync(stream);
+
+        var relativePath = $"uploads/{uniqueFileName}";
+        return Ok(new { path = relativePath });
     }
 
 
