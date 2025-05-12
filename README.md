@@ -2,11 +2,10 @@ Marc Täll
 232696IADB
 
 # MusicApp
-## Uow and Repository pattern is currently only used in a few controllers, because there are so many scaffolded CRUD controllers and many of them will be deleted.
+
 
 ### FIX:
-- Rating controller is broken 
-- custom services umbes tund pool 25. aprill loengus
+
 
 ~~~sh
 
