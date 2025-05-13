@@ -1,4 +1,5 @@
 ﻿using App.BLL.Interfaces;
+using App.DTO.v1;
 using Asp.Versioning;
 using Base.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -176,10 +177,13 @@ public class TrackController : ControllerBase
     /// <param name="file">Image file</param>
     /// <returns>Relative path to the uploaded image</returns>
     [HttpPost]
+    [Consumes("multipart/form-data")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
-    public async Task<IActionResult> UploadCover(IFormFile file)
+    public async Task<IActionResult> UploadCover([FromForm] FileUploadDto dto)
     {
+        var file = dto.File;
+        
         if (file == null)
         {
             return BadRequest("No file uploaded.");
@@ -203,10 +207,13 @@ public class TrackController : ControllerBase
     }
     
     [HttpPost]
+    [Consumes("multipart/form-data")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
-    public async Task<IActionResult> UploadTrackFile([FromForm] IFormFile file)
+    public async Task<IActionResult> UploadTrackFile([FromForm] FileUploadDto dto)
     {
+        var file = dto.File;
+        
         if (file == null || file.Length == 0)
             return BadRequest("No file uploaded.");
 

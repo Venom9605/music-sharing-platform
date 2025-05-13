@@ -6,4 +6,5 @@ namespace App.BLL.Interfaces;
 public interface IArtistService : IBaseService<App.BLL.DTO.Artist, string>, IArtistRepositoryCustom
 {
     
+    Task<Domain.Artist?> FindTrackedAsync(string id);
 }

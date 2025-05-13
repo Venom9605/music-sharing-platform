@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Artist = App.DTO.v1.Artist;
 
 namespace WebApp.Areas.Identity.Pages.Account
 {

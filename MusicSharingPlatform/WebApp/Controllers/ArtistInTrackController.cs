@@ -9,6 +9,7 @@ using Base.Helpers;
 using App.BLL.DTO;
 using Microsoft.AspNetCore.Authorization;
 using WebApp.ViewModels;
+using Artist = App.DTO.v1.Artist;
 
 
 namespace WebApp.Controllers;

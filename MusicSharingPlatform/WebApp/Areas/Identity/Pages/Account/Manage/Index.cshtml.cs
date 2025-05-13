@@ -10,6 +10,7 @@ using Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Artist = App.DTO.v1.Artist;
 
 namespace WebApp.Areas.Identity.Pages.Account.Manage
 {

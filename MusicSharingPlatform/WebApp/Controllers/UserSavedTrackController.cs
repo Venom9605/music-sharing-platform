@@ -13,6 +13,7 @@ using App.BLL.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Identity.Client;
 using WebApp.ViewModels;
+using Artist = App.DTO.v1.Artist;
 
 namespace WebApp.Controllers;
 

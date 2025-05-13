@@ -26,4 +26,10 @@ public class ArtistService : BaseService<App.BLL.DTO.Artist, App.DAL.DTO.Artist,
         
         return res;
     }
+    
+    public async Task<Domain.Artist?> FindTrackedAsync(string id)
+    {
+        return await ServiceRepository.FindTrackedDomainAsync(id);
+    }
+
 }

@@ -49,9 +49,19 @@ public class ArtistRepository : BaseRepository<DTO.Artist, Domain.Artist, string
         
         return _iuowMapper.Map(res);
     }
+    
+    public async Task<Domain.Artist?> FindTrackedDomainAsync(string id)
+    {
+        return await RepositoryDbSet
+            .IgnoreQueryFilters()
+            .AsTracking()
+            .FirstOrDefaultAsync(a => a.Id == id);
+    }
+    
 
     public void CustomMethodTest()
     {
         Console.WriteLine("Custom test Artist method called.");
     }
+    
 }

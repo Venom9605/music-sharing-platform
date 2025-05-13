@@ -54,17 +54,4 @@ public class RatingMapper : IMapper<App.DTO.v1.Rating, App.BLL.DTO.Rating>
         return res;
     }
     
-    public BLL.DTO.Rating? Map(RatingEdit? entity)
-    {
-        if (entity == null) return null;
-        
-        var res = new BLL.DTO.Rating()
-        {
-            Id = entity.Id,
-            Score = entity.Score,
-            Comment = entity.Comment,
-        };
-        
-        return res;
-    }
 }

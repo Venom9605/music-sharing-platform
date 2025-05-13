@@ -9,7 +9,6 @@ public class ArtistBLLMapper : IBLLMapper<App.BLL.DTO.Artist, App.DAL.DTO.Artist
     {
         if (entity == null) return null;
         
-        
         var res = new Artist()
         {
             Id = entity.Id,
@@ -17,6 +16,7 @@ public class ArtistBLLMapper : IBLLMapper<App.BLL.DTO.Artist, App.DAL.DTO.Artist
             Bio = entity.Bio,
             ProfilePicture = entity.ProfilePicture,
             JoinDate = entity.JoinDate,
+            
             ArtistInTracks = null,
             Ratings = null,
             SavedTracks = null,
