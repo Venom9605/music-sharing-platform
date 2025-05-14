@@ -8,4 +8,6 @@ public interface ITrackService : IBaseService<App.BLL.DTO.Track>
     Task UpdateTrackWithRelationsAsync(App.BLL.DTO.Track track);
     
     Task<App.BLL.DTO.Track?> GetRandomTrackAsync();
+    
+    Task<bool> IncrementPlayCountAsync(Guid trackId);
 }

@@ -64,4 +64,26 @@ public class ArtistRepository : BaseRepository<DTO.Artist, Domain.Artist, string
         Console.WriteLine("Custom test Artist method called.");
     }
     
+    public async Task<DTO.Artist?> GetMostPopularArtistAsync()
+    {
+        var artist = await RepositoryDbSet
+            .Include(a => a.ArtistInTracks!) // join table
+            .ThenInclude(ait => ait.Track)
+            .Where(a => a.ArtistInTracks!.Any())
+            .Select(a => new
+            {
+                Artist = a,
+                PopularityScore = a.ArtistInTracks!
+                    .Where(ait => ait.Track != null)
+                    .Sum(ait => (ait.Track!.TimesPlayed + ait.Track.TimesSaved))
+            })
+            .OrderByDescending(x => x.PopularityScore)
+            .Select(x => x.Artist)
+            .FirstOrDefaultAsync();
+
+        return artist == null ? null : _iuowMapper.Map(artist);
+    }
+    
+    
+    
 }

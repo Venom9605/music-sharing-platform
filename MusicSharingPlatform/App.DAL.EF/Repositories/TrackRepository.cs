@@ -3,6 +3,7 @@ using App.DAL.Interfaces;
 using Base.Dal.EF;
 using Domain;
 using Microsoft.EntityFrameworkCore;
+using Artist = App.DAL.DTO.Artist;
 using Track = App.DAL.DTO.Track;
 
 namespace App.DAL.EF.Repositories;
@@ -156,5 +157,13 @@ public class TrackRepository : BaseRepository<DTO.Track, Domain.Track>, ITrackRe
 
         var entity = await query.FirstOrDefaultAsync();
         return _iuowMapper.Map(entity);
+    }
+    
+
+    public async Task<Domain.Track?> FindTrackedDomainAsync(Guid id)
+    {
+        return await RepositoryDbSet
+            .AsTracking()
+            .FirstOrDefaultAsync(t => t.Id == id);
     }
 }

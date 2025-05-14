@@ -27,4 +27,14 @@ public class TrackService : BaseService<App.BLL.DTO.Track, App.DAL.DTO.Track, Ap
         
         return BLLMapper.Map(track);
     }
+    
+    public async Task<bool> IncrementPlayCountAsync(Guid trackId)
+    {
+        var track = await ServiceRepository.FindTrackedDomainAsync(trackId);
+        if (track == null) return false;
+
+        track.TimesPlayed += 1;
+        return true;
+    }
+    
 }

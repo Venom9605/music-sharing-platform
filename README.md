@@ -4,7 +4,34 @@ Marc Täll
 # MusicApp
 
 
-### FIX:
+### TODO:
+
+User links?
+
+Moods and tags song searching and filtering
+Search bar for tracks and artists
+Admin crud for types
+
+
+Styling
+
+UNIT TESTS?
+documentation
+
+host
+
+
+MVC SAME THING!
+
+
+react crud 
+
+## OPTIONAL TODO:
+Fix files duplicating
+Autoplay option
+Average rating
+Too many ratings wont fit on page
+Localization
 
 
 ~~~sh

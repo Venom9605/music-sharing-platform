@@ -62,11 +62,50 @@ public class UserSavedTracksRepository : BaseRepository<DTO.UserSavedTracks, Dom
     {
         var entity = await RepositoryDbContext
             .Set<Domain.UserSavedTracks>()
+            .Include(e => e.Track)
+            .AsTracking()  
             .FirstOrDefaultAsync(x => x.TrackId == trackId && x.UserId == userId);
 
         if (entity != null)
         {
+            if (entity.Track != null)
+            {
+                entity.Track.TimesSaved = Math.Max(0, entity.Track.TimesSaved - 1);
+            }
+
             RepositoryDbContext.Remove(entity);
+        }
+    }
+    
+    public override void Add(DTO.UserSavedTracks entity)
+    {
+        base.Add(entity);
+
+        var track = RepositoryDbContext
+            .Set<Domain.Track>()
+            .AsTracking()
+            .FirstOrDefault(t => t.Id == entity.TrackId);
+        if (track != null)
+        {
+            track.TimesSaved += 1;
+        }
+    }
+    
+    public override async Task RemoveAsync(Guid id, string? userId)
+    {
+        var entity = await RepositoryDbSet
+            .Include(s => s.Track)
+            .AsTracking()  
+            .FirstOrDefaultAsync(e => e.Id == id && (userId == null || e.UserId == userId));
+
+        if (entity != null)
+        {
+            if (entity.Track != null)
+            {
+                entity.Track.TimesSaved = Math.Max(0, entity.Track.TimesSaved - 1);
+            }
+
+            RepositoryDbSet.Remove(entity);
         }
     }
 }

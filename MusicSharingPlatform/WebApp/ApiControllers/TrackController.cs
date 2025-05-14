@@ -49,6 +49,19 @@ public class TrackController : ControllerBase
         return res;
     }
     
+    [HttpGet("{userId}")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(IEnumerable<App.DTO.v1.Track>), 200)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult<IEnumerable<App.DTO.v1.Track>>> GetTracksByUserId(string userId)
+    {
+        var data = (await _bll.TrackService.AllAsync(userId)).ToList();
+        
+        var res = data.Select(t => _mapper.Map(t)!).ToList();
+    
+        return res;
+    }
+    
     /// <summary>
     /// Get a specific track by ID for the currently logged-in user
     /// </summary>
@@ -168,6 +181,23 @@ public class TrackController : ControllerBase
         await _bll.TrackService.RemoveAsync(id, User.GetUserId());
         await _bll.SaveChangesAsync();
 
+        return NoContent();
+    }
+    
+    /// <summary>
+    /// Increase play count for a track
+    /// </summary>
+    /// <param name="trackId">ID of the track</param>
+    /// <returns>NoContent if successful</returns>
+    [HttpPost("{trackId}")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> IncrementPlayCount(Guid trackId)
+    {
+        var updated = await _bll.TrackService.IncrementPlayCountAsync(trackId);
+        if (!updated) return NotFound();
+
+        await _bll.SaveChangesAsync();
         return NoContent();
     }
     

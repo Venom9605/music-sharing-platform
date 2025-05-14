@@ -6,6 +6,8 @@ namespace App.DAL.Interfaces;
 public interface IArtistRepository : IRepository<DTO.Artist, string>, IArtistRepositoryCustom
 {
     Task<Domain.Artist?> FindTrackedDomainAsync(string id);
+    
+    Task<DTO.Artist?> GetMostPopularArtistAsync();
 }
 
 public interface IArtistRepositoryCustom
@@ -14,5 +16,4 @@ public interface IArtistRepositoryCustom
     
     Task<Artist?> FindByNormalizedUserNameAsync(string normalizedUserName);
     
-
 }

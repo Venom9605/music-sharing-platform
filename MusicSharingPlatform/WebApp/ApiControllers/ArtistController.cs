@@ -35,6 +35,30 @@ public class ArtistController : ControllerBase
         return Ok(artist);
     }
     
+    [HttpGet("{userId}")]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(App.DTO.v1.Artist), 200)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult<App.DTO.v1.Artist>> GetUserInfoById(string userId)
+    {
+        var artist = await _bll.ArtistService.FindAsync(userId);
+
+        return Ok(artist);
+    }
+    
+    [HttpGet]
+    [AllowAnonymous]
+    [Produces("application/json")]
+    [ProducesResponseType(typeof(App.DTO.v1.Artist), 200)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult<App.DTO.v1.Artist>> GetMostPopular()
+    {
+        var artist = await _bll.ArtistService.GetMostPopularArtistAsync();
+        if (artist == null) return NotFound();
+
+        return Ok(_mapper.Map(artist));
+    }
+    
     [HttpPut]
     public async Task<IActionResult> Edit(App.DTO.v1.ArtistEdit dto)
     {
