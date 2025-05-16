@@ -21,12 +21,12 @@ public class TrackService : BaseService<App.BLL.DTO.Track, App.DAL.DTO.Track, Ap
         await ServiceRepository.UpdateTrackWithRelationsAsync(dalTrack);
     }
 
-    public async Task<DTO.Track?> GetRandomTrackAsync()
+    public async Task<DTO.Track?> GetRandomTrackFilteredAsync(IEnumerable<Guid> tagIds, IEnumerable<Guid> moodIds)
     {
-        var track = await ServiceRepository.GetRandomTrackAsync();
-        
+        var track = await ServiceRepository.GetRandomTrackFilteredAsync(tagIds, moodIds);
         return BLLMapper.Map(track);
     }
+
     
     public async Task<bool> IncrementPlayCountAsync(Guid trackId)
     {
@@ -35,6 +35,12 @@ public class TrackService : BaseService<App.BLL.DTO.Track, App.DAL.DTO.Track, Ap
 
         track.TimesPlayed += 1;
         return true;
+    }
+    
+    public async Task<List<DTO.Track>> SearchTracksAsync(string query)
+    {
+        var res = await ServiceRepository.SearchTracksAsync(query);
+        return res.Select(BLLMapper.Map).ToList()!;
     }
     
 }

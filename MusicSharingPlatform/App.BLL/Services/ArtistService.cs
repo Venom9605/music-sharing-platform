@@ -37,5 +37,11 @@ public class ArtistService : BaseService<App.BLL.DTO.Artist, App.DAL.DTO.Artist,
         var dalArtist = await ServiceRepository.GetMostPopularArtistAsync();
         return BLLMapper.Map(dalArtist);
     }
+    
+    public async Task<List<App.BLL.DTO.Artist>> SearchArtistsAsync(string query)
+    {
+        var res = await ServiceRepository.SearchArtistsAsync(query);
+        return res.Select(BLLMapper.Map).ToList()!;
+    }
 
 }

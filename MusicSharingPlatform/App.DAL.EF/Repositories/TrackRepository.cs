@@ -137,27 +137,33 @@ public class TrackRepository : BaseRepository<DTO.Track, Domain.Track>, ITrackRe
         }
     }
 
-    public async Task<Track?> GetRandomTrackAsync()
+    public async Task<Track?> GetRandomTrackFilteredAsync(IEnumerable<Guid> tagIds, IEnumerable<Guid> moodIds)
     {
         var query = RepositoryDbSet
-            .AsNoTracking()
-            .Include(t => t.ArtistInTracks!)
-            .ThenInclude(ait => ait.User)
-            .Include(t => t.ArtistInTracks!)
-            .ThenInclude(ait => ait.ArtistRole)
-            .Include(t => t.Rating!)
-            .ThenInclude(r => r.User)
-            .Include(t => t.TrackLinks!)
-            .ThenInclude(tl => tl.LinkType)
-            .Include(t => t.TagsInTracks!)
-            .ThenInclude(tag => tag.Tag)
-            .Include(t => t.MoodsInTracks!)
-            .ThenInclude(mood => mood.Mood)
-            .OrderBy(x => Guid.NewGuid());
+            .Include(t => t.ArtistInTracks)!.ThenInclude(ait => ait.User)
+            .Include(t => t.ArtistInTracks)!.ThenInclude(ait => ait.ArtistRole)
+            .Include(t => t.Rating)!.ThenInclude(r => r.User)
+            .Include(t => t.TrackLinks)!.ThenInclude(tl => tl.LinkType)
+            .Include(t => t.TagsInTracks)!.ThenInclude(tit => tit.Tag)
+            .Include(t => t.MoodsInTracks)!.ThenInclude(mit => mit.Mood)
+            .AsQueryable();
 
-        var entity = await query.FirstOrDefaultAsync();
-        return _iuowMapper.Map(entity);
+        if (tagIds.Any())
+        {
+            query = query.Where(t => tagIds.All(tagId => 
+                t.TagsInTracks!.Any(tit => tit.TagId == tagId)));
+        }
+
+        if (moodIds.Any())
+        {
+            query = query.Where(t => moodIds.All(moodId =>
+                t.MoodsInTracks!.Any(mit => mit.MoodId == moodId)));
+        }
+
+        var filtered = await query.OrderBy(t => Guid.NewGuid()).FirstOrDefaultAsync();
+        return _iuowMapper.Map(filtered);
     }
+
     
 
     public async Task<Domain.Track?> FindTrackedDomainAsync(Guid id)
@@ -165,5 +171,17 @@ public class TrackRepository : BaseRepository<DTO.Track, Domain.Track>, ITrackRe
         return await RepositoryDbSet
             .AsTracking()
             .FirstOrDefaultAsync(t => t.Id == id);
+    }
+    
+    public async Task<List<Track>> SearchTracksAsync(string query)
+    {
+        return await RepositoryDbSet
+            .Where(t => t.Title.ToLower().Contains(query.ToLower()))
+            .Include(t => t.ArtistInTracks)!.ThenInclude(a => a.User)
+            .Include(t => t.TrackLinks)!.ThenInclude(tl => tl.LinkType)
+            .Include(t => t.TagsInTracks)!.ThenInclude(tt => tt.Tag)
+            .Include(t => t.MoodsInTracks)!.ThenInclude(mt => mt.Mood)
+            .Select(t => _iuowMapper.Map(t)!)
+            .ToListAsync();
     }
 }

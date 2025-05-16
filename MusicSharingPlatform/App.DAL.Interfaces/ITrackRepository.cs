@@ -14,6 +14,7 @@ public interface ITrackRepositoryCustom
     
     Task UpdateTrackWithRelationsAsync(DTO.Track track);
     
-    Task<DTO.Track?> GetRandomTrackAsync();
-    
+    Task<DTO.Track?> GetRandomTrackFilteredAsync(IEnumerable<Guid> tagIds, IEnumerable<Guid> moodIds);
+
+    Task<List<DTO.Track>> SearchTracksAsync(string query);
 }

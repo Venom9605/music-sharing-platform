@@ -53,6 +53,7 @@ public class TrackController : ControllerBase
     [Produces("application/json")]
     [ProducesResponseType(typeof(IEnumerable<App.DTO.v1.Track>), 200)]
     [ProducesResponseType(404)]
+    [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<App.DTO.v1.Track>>> GetTracksByUserId(string userId)
     {
         var data = (await _bll.TrackService.AllAsync(userId)).ToList();
@@ -84,25 +85,23 @@ public class TrackController : ControllerBase
     }
     
     
-    /// <summary>
-    /// Get a random track.
-    /// </summary>
-    /// <returns>The requested track if found, or a 404 error if not.</returns>
-    [HttpGet]
+    [HttpPost]
     [Produces("application/json")]
     [ProducesResponseType(typeof(App.DTO.v1.Track), 200)]
     [ProducesResponseType(404)]
-    public async Task<ActionResult<App.DTO.v1.Track>> GetRandomTrack()
+    [AllowAnonymous]
+    public async Task<ActionResult<App.DTO.v1.Track>> GetFilteredRandomTrack([FromBody] TrackFilterDto filter)
     {
-        var track = await _bll.TrackService.GetRandomTrackAsync();
-        
+        var track = await _bll.TrackService.GetRandomTrackFilteredAsync(filter.TagIds, filter.MoodIds);
+
         if (track == null)
         {
             return NotFound();
         }
-        
+
         return Ok(_mapper.Map(track));
     }
+
     
     
     
@@ -192,6 +191,7 @@ public class TrackController : ControllerBase
     [HttpPost("{trackId}")]
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
+    [AllowAnonymous]
     public async Task<IActionResult> IncrementPlayCount(Guid trackId)
     {
         var updated = await _bll.TrackService.IncrementPlayCountAsync(trackId);
@@ -218,9 +218,7 @@ public class TrackController : ControllerBase
         {
             return BadRequest("No file uploaded.");
         }
-
-
-
+        
         var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "covers");
         Directory.CreateDirectory(uploadsFolder);
 

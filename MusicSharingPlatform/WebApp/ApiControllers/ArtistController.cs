@@ -39,6 +39,7 @@ public class ArtistController : ControllerBase
     [Produces("application/json")]
     [ProducesResponseType(typeof(App.DTO.v1.Artist), 200)]
     [ProducesResponseType(404)]
+    [AllowAnonymous]
     public async Task<ActionResult<App.DTO.v1.Artist>> GetUserInfoById(string userId)
     {
         var artist = await _bll.ArtistService.FindAsync(userId);

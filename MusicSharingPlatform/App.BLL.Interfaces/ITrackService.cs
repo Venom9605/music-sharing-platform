@@ -7,7 +7,9 @@ public interface ITrackService : IBaseService<App.BLL.DTO.Track>
 {
     Task UpdateTrackWithRelationsAsync(App.BLL.DTO.Track track);
     
-    Task<App.BLL.DTO.Track?> GetRandomTrackAsync();
+    Task<DTO.Track?> GetRandomTrackFilteredAsync(IEnumerable<Guid> tagIds, IEnumerable<Guid> moodIds);
     
     Task<bool> IncrementPlayCountAsync(Guid trackId);
+    
+    Task<List<App.BLL.DTO.Track>> SearchTracksAsync(string query);
 }

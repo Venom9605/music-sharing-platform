@@ -9,4 +9,6 @@ public interface IArtistService : IBaseService<App.BLL.DTO.Artist, string>, IArt
     Task<Domain.Artist?> FindTrackedAsync(string id);
     
     Task<App.BLL.DTO.Artist?> GetMostPopularArtistAsync();
+    
+    Task<List<App.BLL.DTO.Artist>> SearchArtistsAsync(string query);
 }

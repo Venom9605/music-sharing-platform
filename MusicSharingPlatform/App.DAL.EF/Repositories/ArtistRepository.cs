@@ -84,6 +84,12 @@ public class ArtistRepository : BaseRepository<DTO.Artist, Domain.Artist, string
         return artist == null ? null : _iuowMapper.Map(artist);
     }
     
-    
+    public async Task<List<DTO.Artist>> SearchArtistsAsync(string query)
+    {
+        return await RepositoryDbSet
+            .Where(a => a.DisplayName.ToLower().Contains(query.ToLower()))
+            .Select(a => _iuowMapper.Map(a)!)
+            .ToListAsync();
+    }
     
 }

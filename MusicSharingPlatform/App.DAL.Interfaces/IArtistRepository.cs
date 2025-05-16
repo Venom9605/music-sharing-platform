@@ -8,6 +8,8 @@ public interface IArtistRepository : IRepository<DTO.Artist, string>, IArtistRep
     Task<Domain.Artist?> FindTrackedDomainAsync(string id);
     
     Task<DTO.Artist?> GetMostPopularArtistAsync();
+    
+    Task<List<Artist>> SearchArtistsAsync(string query);
 }
 
 public interface IArtistRepositoryCustom
