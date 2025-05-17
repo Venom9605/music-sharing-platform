@@ -4,12 +4,14 @@ using System.Text;
 using App.BLL;
 using App.BLL.Interfaces;
 using App.DAL.EF;
+using App.DAL.EF.DataSeeding;
 using App.DAL.EF.Repositories;
 using App.DAL.Interfaces;
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
 using Domain;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -217,4 +219,16 @@ app.MapControllerRoute(
 app.MapRazorPages()
     .WithStaticAssets();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Artist>>();
+
+    db.Database.Migrate(); // ⬅️ Required to apply schema
+    AppDataInit.SeedIdentity(userManager); // optional
+    AppDataInit.SeedAppData(db); // ⬅️ this is where ArtistRoles are inserted
+}
+
 app.Run();
+
+public partial class Program { }
