@@ -27,44 +27,55 @@ public static class AppDataInit
         context.Database.EnsureDeleted();
     }
 
-    public static void SeedIdentity(UserManager<Artist> userManager)
+    public static void SeedIdentity(UserManager<Artist> userManager, RoleManager<IdentityRole> roleManager)
     {
+        // Ensure admin role exists
+        var adminRole = roleManager.FindByNameAsync(InitialData.AdminRoleName).Result;
+        if (adminRole == null)
+        {
+            var roleResult = roleManager.CreateAsync(new IdentityRole(InitialData.AdminRoleName)).Result;
+            if (!roleResult.Succeeded)
+            {
+                throw new ApplicationException("Failed to create admin role");
+            }
+        }
+
         foreach (var userInfo in InitialData.Users)
         {
+            var isAdmin = userInfo.GetType().GetField("isAdmin") != null && (bool)userInfo.GetType().GetField("isAdmin")!.GetValue(userInfo)!;
             var user = userManager.FindByEmailAsync(userInfo.email).Result;
             if (user == null)
             {
-                user = new Artist()
+                user = new Artist
                 {
                     Id = (userInfo.id ?? Guid.NewGuid()).ToString(),
                     Email = userInfo.email,
                     UserName = userInfo.email,
                     DisplayName = userInfo.displayName,
-                    ProfilePicture = null,
-                    Bio = null,
-                    JoinDate = DateTime.UtcNow,
+                    JoinDate = DateTime.UtcNow
                 };
+
                 var result = userManager.CreateAsync(user, userInfo.password).Result;
-                
                 if (!result.Succeeded)
                 {
                     throw new ApplicationException("User creation failed!");
                 }
 
-                result = userManager.AddClaimAsync(user, new Claim(ClaimTypes.GivenName, user.DisplayName)).Result;
-                if (!result.Succeeded)
-                {
-                    throw new ApplicationException("GivenName claim adding failed!");
-                }
+                userManager.AddClaimAsync(user, new Claim(ClaimTypes.GivenName, user.DisplayName)).Wait();
+                userManager.AddClaimAsync(user, new Claim(ClaimTypes.Surname, "-")).Wait();
+            }
 
-                result = userManager.AddClaimAsync(user, new Claim(ClaimTypes.Surname, "-")).Result;
-                if (!result.Succeeded)
+            // Assign to admin role
+            if (userInfo.email == InitialData.AdminEmail)
+            {
+                if (!userManager.IsInRoleAsync(user, InitialData.AdminRoleName).Result)
                 {
-                    throw new ApplicationException("Surname claim adding failed!");
+                    userManager.AddToRoleAsync(user, InitialData.AdminRoleName).Wait();
                 }
             }
         }
     }
+
     
     private static void SeedArtistRoles(AppDbContext context)
     {

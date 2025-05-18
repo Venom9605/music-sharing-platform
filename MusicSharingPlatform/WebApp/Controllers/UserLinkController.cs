@@ -12,7 +12,7 @@ using Artist = App.DTO.v1.Artist;
 
 namespace WebApp.Controllers;
 
-[Authorize]
+[Authorize(Roles = "admin")]
 
 public class UserLinkController : Controller
 {
@@ -26,7 +26,7 @@ public class UserLinkController : Controller
     // GET: UserLink
     public async Task<IActionResult> Index()
     {
-        var userLink = await _bll.UserLinkService.AllAsync(User.GetUserId());
+        var userLink = await _bll.UserLinkService.AllAsync();
         
         return View(userLink);
     }
@@ -39,7 +39,7 @@ public class UserLinkController : Controller
             return NotFound();
         }
 
-        var userLink = await _bll.UserLinkService.FindAsync(id.Value, User.GetUserId());
+        var userLink = await _bll.UserLinkService.FindAsync(id.Value);
         
         
         if (userLink == null)
@@ -85,7 +85,7 @@ public class UserLinkController : Controller
         {
             return NotFound();
         }
-        var userLink = await _bll.UserLinkService.FindAsync(id.Value, User.GetUserId());
+        var userLink = await _bll.UserLinkService.FindAsync(id.Value);
         
         if (userLink == null)
         {
@@ -126,7 +126,7 @@ public class UserLinkController : Controller
             return NotFound();
         }
 
-        var userLink = await _bll.UserLinkService.FindAsync(id.Value, User.GetUserId());
+        var userLink = await _bll.UserLinkService.FindAsync(id.Value);
         
         if (userLink == null)
         {
@@ -140,24 +140,24 @@ public class UserLinkController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _bll.UserLinkService.RemoveAsync(id, User.GetUserId());
+        await _bll.UserLinkService.RemoveAsync(id);
         await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
     private async Task PopulateSelectListsAsync(UserLinkViewModel vm)
     {
-        var userId = User.GetUserId();
+        
 
         vm.UsersList = new SelectList(
-            await _bll.ArtistService.AllAsync(userId),
+            await _bll.ArtistService.AllAsync(),
             nameof(Artist.Id),
             nameof(Artist.DisplayName),
             vm.UserLink.UserId
         );
         
         vm.LinkTypesList = new SelectList(
-            await _bll.LinkTypeService.AllAsync(userId),
+            await _bll.LinkTypeService.AllAsync(),
             nameof(LinkType.Id),
             nameof(LinkType.Name),
             vm.UserLink.LinkTypeId

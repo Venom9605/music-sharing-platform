@@ -15,7 +15,7 @@ using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
-[Authorize]
+[Authorize(Roles = "admin")]
 
 public class ArtistRoleController : Controller
 {
@@ -31,7 +31,7 @@ public class ArtistRoleController : Controller
     public async Task<IActionResult> Index()
     {
         _bll.ArtistRoleService.CustomMethodTest();
-        return View(await _bll.ArtistRoleService.AllAsync(User.GetUserId()));
+        return View(await _bll.ArtistRoleService.AllAsync());
     }
 
     // GET: ArtistRole/Details/5
@@ -42,7 +42,7 @@ public class ArtistRoleController : Controller
             return NotFound();
         }
 
-        var artistRole = await _bll.ArtistRoleService.FindAsync(id.Value, User.GetUserId());
+        var artistRole = await _bll.ArtistRoleService.FindAsync(id.Value);
         
         if (artistRole == null)
         {
@@ -88,7 +88,7 @@ public class ArtistRoleController : Controller
             return NotFound();
         }
 
-        var artistRole = await _bll.ArtistRoleService.FindAsync(id.Value, User.GetUserId());
+        var artistRole = await _bll.ArtistRoleService.FindAsync(id.Value);
         
         if (artistRole == null)
         {
@@ -118,7 +118,7 @@ public class ArtistRoleController : Controller
 
         if (ModelState.IsValid)
         {
-            var artistRole = await _bll.ArtistRoleService.FindAsync(vm.Id, User.GetUserId());
+            var artistRole = await _bll.ArtistRoleService.FindAsync(vm.Id);
             
             if (artistRole == null)
             {
@@ -143,7 +143,7 @@ public class ArtistRoleController : Controller
             return NotFound();
         }
 
-        var artistRole = await _bll.ArtistRoleService.FindAsync(id.Value, User.GetUserId());
+        var artistRole = await _bll.ArtistRoleService.FindAsync(id.Value);
         
         if (artistRole == null)
         {
@@ -158,7 +158,7 @@ public class ArtistRoleController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _bll.ArtistRoleService.RemoveAsync(id, User.GetUserId());
+        await _bll.ArtistRoleService.RemoveAsync(id);
         await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }

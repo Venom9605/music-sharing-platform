@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebApp.ApiControllers;
 
 
+/// <summary>
+/// Rating/feedback API controller.
+/// </summary>
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]/[action]")]
 [ApiController]
@@ -19,11 +22,20 @@ public class RatingController : ControllerBase
     private readonly App.DTO.v1.Mappers.RatingMapper _mapper =
         new App.DTO.v1.Mappers.RatingMapper();
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="bll"></param>
     public RatingController(IAppBLL bll)
     {
         _bll = bll;
     }
-    
+
+    /// <summary>
+    /// Creates a new rating entity for a specific track.
+    /// </summary>
+    /// <param name="dto">The DTO containing the rating information.</param>
+    /// <returns>A response indicating the success or failure of the creation operation.</returns>
     [HttpPost]
     public async Task<IActionResult> Create(App.DTO.v1.RatingCreate dto)
     {
@@ -41,7 +53,13 @@ public class RatingController : ControllerBase
 
         return Ok(_mapper.Map(bllEntity));
     }
-    
+
+    /// <summary>
+    /// Updates an existing rating.
+    /// </summary>
+    /// <param name="id">The ID of the rating to be updated.</param>
+    /// <param name="dto">The updated rating DTO containing the new values.</param>
+    /// <returns>No content</returns>
     [HttpPut("{id}")]
     public async Task<IActionResult> Edit(Guid id, App.DTO.v1.RatingEdit dto)
     {
@@ -66,6 +84,11 @@ public class RatingController : ControllerBase
         return NoContent();
     }
     
+    /// <summary>
+    /// Gets the average rating for a specific track.
+    /// </summary>
+    /// <param name="trackId"></param>
+    /// <returns>Average rating double</returns>
     [HttpGet("{trackId}")]
     public async Task<ActionResult<double>> GetAverage(Guid trackId)
     {
@@ -74,6 +97,11 @@ public class RatingController : ControllerBase
         return Ok(res);
     }
     
+    /// <summary>
+    /// Delete a rating by its ID.
+    /// </summary>
+    /// <param name="id">id of the rating to delete</param>
+    /// <returns>No content</returns>
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {

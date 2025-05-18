@@ -8,25 +8,32 @@
 
 <table class="table">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.DisplayName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Bio)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProfilePicture)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.JoinDate)
-            </th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DisplayName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Bio)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ProfilePicture)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.JoinDate)
+        </th>
+        <th>Admin</th>
+        <th></th>
+    </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model) {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.DisplayName)
             </td>
@@ -40,9 +47,18 @@
                 @Html.DisplayFor(modelItem => item.JoinDate)
             </td>
             <td>
+                @if (item.IsAdmin)
+                {
+                    <span class="badge bg-success">Admin</span>
+                }
+            </td>
+            <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <form asp-action="ToggleAdmin" asp-route-id="@item.Id" method="post" style="display:inline">
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">Toggle Admin</button>
+                </form>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>

@@ -15,7 +15,7 @@ using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
-[Authorize]
+[Authorize(Roles = "admin")]
 
 public class MoodsInTrackController : Controller
 {
@@ -29,7 +29,7 @@ public class MoodsInTrackController : Controller
     // GET: MoodsInTrack
     public async Task<IActionResult> Index()
     {
-        var moodsInTracks = await _bll.MoodsInTrackService.AllAsync(User.GetUserId());
+        var moodsInTracks = await _bll.MoodsInTrackService.AllAsync();
         
         return View(moodsInTracks);
     }
@@ -42,7 +42,7 @@ public class MoodsInTrackController : Controller
             return NotFound();
         }
 
-        var moodsInTrack = await _bll.MoodsInTrackService.FindAsync(id.Value, User.GetUserId());
+        var moodsInTrack = await _bll.MoodsInTrackService.FindAsync(id.Value);
         
         if (moodsInTrack == null)
         {
@@ -89,7 +89,7 @@ public class MoodsInTrackController : Controller
             return NotFound();
         }
 
-        var moodsInTrack = await _bll.MoodsInTrackService.FindAsync(id.Value, User.GetUserId());
+        var moodsInTrack = await _bll.MoodsInTrackService.FindAsync(id.Value);
         
         if (moodsInTrack == null)
         {
@@ -132,7 +132,7 @@ public class MoodsInTrackController : Controller
             return NotFound();
         }
 
-        var moodsInTrack = await _bll.MoodsInTrackService.FindAsync(id.Value, User.GetUserId());
+        var moodsInTrack = await _bll.MoodsInTrackService.FindAsync(id.Value);
         
         if (moodsInTrack == null)
         {
@@ -146,24 +146,24 @@ public class MoodsInTrackController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _bll.MoodsInTrackService.RemoveAsync(id, User.GetUserId());
+        await _bll.MoodsInTrackService.RemoveAsync(id);
         await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
     private async Task PopulateSelectListsAsync(MoodsInTrackViewModel vm)
     {
-        var userId = User.GetUserId();
+        
 
         vm.MoodsList = new SelectList(
-            await _bll.MoodService.AllAsync(userId),
+            await _bll.MoodService.AllAsync(),
             nameof(Mood.Id),
             nameof(Mood.Name),
             vm.MoodsInTrack.MoodId
         );
 
         vm.TracksList = new SelectList(
-            await _bll.TrackService.AllAsync(userId),
+            await _bll.TrackService.AllAsync(),
             nameof(Track.Id),
             nameof(Track.Title),
             vm.MoodsInTrack.TrackId

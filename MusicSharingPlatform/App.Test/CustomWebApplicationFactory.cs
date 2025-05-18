@@ -19,7 +19,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
     {
         builder.ConfigureServices(services =>
         {
-            // Remove the existing DbContextOptions
+            // remove the existing DbContextOptions
             services.RemoveAll(typeof(DbContextOptions<AppDbContext>));
             
             var connectionString = "Host=localhost;Port=5432;Database=TEST;Username=postgres;Password=postgres";
@@ -50,10 +50,11 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
                 .GetRequiredService<ILogger<CustomWebApplicationFactory<TStartup>>>();
 
             using var userManager = scopedServices.GetRequiredService<UserManager<Artist>>();
+            using var roleManager = scopedServices.GetRequiredService<RoleManager<IdentityRole>>();
 
             try
             {
-                AppDataInit.SeedIdentity(userManager);
+                AppDataInit.SeedIdentity(userManager, roleManager);
                 AppDataInit.SeedAppData(db);
             }
             catch (Exception ex)

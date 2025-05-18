@@ -15,7 +15,7 @@ using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
-[Authorize]
+[Authorize(Roles = "admin")]
 
 public class MoodController : Controller
 {
@@ -29,7 +29,7 @@ public class MoodController : Controller
     // GET: Mood
     public async Task<IActionResult> Index()
     {
-        return View(await _bll.MoodService.AllAsync(User.GetUserId()));
+        return View(await _bll.MoodService.AllAsync());
     }
 
     // GET: Mood/Details/5
@@ -40,7 +40,7 @@ public class MoodController : Controller
             return NotFound();
         }
 
-        var mood = await _bll.MoodService.FindAsync(id.Value, User.GetUserId());
+        var mood = await _bll.MoodService.FindAsync(id.Value);
         
         if (mood == null)
         {
@@ -86,7 +86,7 @@ public class MoodController : Controller
             return NotFound();
         }
 
-        var mood = await _bll.MoodService.FindAsync(id.Value, User.GetUserId());
+        var mood = await _bll.MoodService.FindAsync(id.Value);
         
         if (mood == null)
         {
@@ -116,7 +116,7 @@ public class MoodController : Controller
 
         if (ModelState.IsValid)
         {
-            var mood = await _bll.MoodService.FindAsync(vm.Id, User.GetUserId());
+            var mood = await _bll.MoodService.FindAsync(vm.Id);
             
             if (mood == null)
             {
@@ -140,7 +140,7 @@ public class MoodController : Controller
             return NotFound();
         }
 
-        var mood = await _bll.MoodService.FindAsync(id.Value, User.GetUserId());
+        var mood = await _bll.MoodService.FindAsync(id.Value);
         
         if (mood == null)
         {
@@ -155,7 +155,7 @@ public class MoodController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _bll.MoodService.RemoveAsync(id, User.GetUserId());
+        await _bll.MoodService.RemoveAsync(id);
         await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }

@@ -11,7 +11,7 @@ using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
-[Authorize]
+[Authorize(Roles = "admin")]
 
 public class TrackInPlaylistController : Controller
 {
@@ -25,7 +25,7 @@ public class TrackInPlaylistController : Controller
     // GET: TrackInPlaylist
     public async Task<IActionResult> Index()
     {
-        var tracksInPlaylist = await _bll.TrackInPlaylistService.AllAsync(User.GetUserId());
+        var tracksInPlaylist = await _bll.TrackInPlaylistService.AllAsync();
         
         return View(tracksInPlaylist);
     }
@@ -38,7 +38,7 @@ public class TrackInPlaylistController : Controller
             return NotFound();
         }
 
-        var trackInPlaylist = await _bll.TrackInPlaylistService.FindAsync(id.Value, User.GetUserId());
+        var trackInPlaylist = await _bll.TrackInPlaylistService.FindAsync(id.Value);
         
         
         if (trackInPlaylist == null)
@@ -84,7 +84,7 @@ public class TrackInPlaylistController : Controller
         {
             return NotFound();
         }
-        var trackInPlaylist = await _bll.TrackInPlaylistService.FindAsync(id.Value, User.GetUserId());
+        var trackInPlaylist = await _bll.TrackInPlaylistService.FindAsync(id.Value);
         
         if (trackInPlaylist == null)
         {
@@ -126,7 +126,7 @@ public class TrackInPlaylistController : Controller
             return NotFound();
         }
 
-        var trackInPlaylist = await _bll.TrackInPlaylistService.FindAsync(id.Value, User.GetUserId());
+        var trackInPlaylist = await _bll.TrackInPlaylistService.FindAsync(id.Value);
         
         if (trackInPlaylist == null)
         {
@@ -140,24 +140,24 @@ public class TrackInPlaylistController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _bll.TrackInPlaylistService.RemoveAsync(id, User.GetUserId());
+        await _bll.TrackInPlaylistService.RemoveAsync(id);
         await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
     private async Task PopulateSelectListsAsync(TrackInPlaylistViewModel vm)
     {
-        var userId = User.GetUserId();
+        
 
         vm.TracksList = new SelectList(
-            await _bll.TrackService.AllAsync(userId),
+            await _bll.TrackService.AllAsync(),
             nameof(Track.Id),
             nameof(Track.Title),
             vm.TrackInPlaylist.TrackId
         );
         
         vm.PlaylistsList = new SelectList(
-            await _bll.PlaylistService.AllAsync(userId),
+            await _bll.PlaylistService.AllAsync(),
             nameof(Playlist.Id),
             nameof(Playlist.Name),
             vm.TrackInPlaylist.PlaylistId

@@ -8,8 +8,6 @@ Marc Täll
 
 Styling
 
-
-UNIT TESTS?
 documentation
 host
 react crud 

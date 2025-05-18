@@ -15,7 +15,7 @@ using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
-[Authorize]
+[Authorize(Roles = "admin")]
 
 public class TagsInPlaylistController : Controller
 {
@@ -29,7 +29,7 @@ public class TagsInPlaylistController : Controller
     // GET: TagsInPlaylist
     public async Task<IActionResult> Index()
     {
-        var tagsInPlaylists = await _bll.TagsInPlaylistService.AllAsync(User.GetUserId());
+        var tagsInPlaylists = await _bll.TagsInPlaylistService.AllAsync();
         
         return View(tagsInPlaylists);
     }
@@ -42,7 +42,7 @@ public class TagsInPlaylistController : Controller
             return NotFound();
         }
 
-        var tagsInPlaylists = await _bll.TagsInPlaylistService.FindAsync(id.Value, User.GetUserId());
+        var tagsInPlaylists = await _bll.TagsInPlaylistService.FindAsync(id.Value);
         
         
         if (tagsInPlaylists == null)
@@ -89,7 +89,7 @@ public class TagsInPlaylistController : Controller
             return NotFound();
         }
         
-        var tagsInPlaylist = await _bll.TagsInPlaylistService.FindAsync(id.Value, User.GetUserId());
+        var tagsInPlaylist = await _bll.TagsInPlaylistService.FindAsync(id.Value);
         
         if (tagsInPlaylist == null)
         {
@@ -130,7 +130,7 @@ public class TagsInPlaylistController : Controller
             return NotFound();
         }
 
-        var tagsInPlaylist = await _bll.TagsInPlaylistService.FindAsync(id.Value, User.GetUserId());
+        var tagsInPlaylist = await _bll.TagsInPlaylistService.FindAsync(id.Value);
         
         if (tagsInPlaylist == null)
         {
@@ -144,24 +144,24 @@ public class TagsInPlaylistController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _bll.TagsInPlaylistService.RemoveAsync(id, User.GetUserId());
+        await _bll.TagsInPlaylistService.RemoveAsync(id);
         await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
     private async Task PopulateSelectListsAsync(TagsInPlaylistViewModel vm)
     {
-        var userId = User.GetUserId();
+        
 
         vm.TagsList = new SelectList(
-            await _bll.TagService.AllAsync(userId),
+            await _bll.TagService.AllAsync(),
             nameof(Tag.Id),
             nameof(Tag.Name),
             vm.TagsInPlaylist.TagId
         );
         
         vm.PlaylistsList = new SelectList(
-            await _bll.PlaylistService.AllAsync(userId),
+            await _bll.PlaylistService.AllAsync(),
             nameof(Playlist.Id),
             nameof(Playlist.Name),
             vm.TagsInPlaylist.PlaylistId

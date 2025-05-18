@@ -54,7 +54,7 @@ public class MainFlow : IClassFixture<CustomWebApplicationFactory<Program>>
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
 
 
-        var artistRoleId = await GetArtistRoleIdByName("Main");
+        var artistRoleId = await GetArtistRoleIdByName("Producer");
 
 
         var createDto = new TrackCreate
@@ -98,6 +98,106 @@ public class MainFlow : IClassFixture<CustomWebApplicationFactory<Program>>
         var artist = await response.Content.ReadFromJsonAsync<Artist>();
         Assert.NotNull(artist);
         Assert.False(string.IsNullOrWhiteSpace(artist.DisplayName));
+    }
+    
+    // create a track and find it in discover
+    
+    [Fact]
+    public async Task User_CanFind_TrackInDiscover()
+    {
+        await LoggedInUser_CanCreate_AndFetchTrack();
+        
+
+        var body = new
+        {
+            tagIds = Array.Empty<Guid>(),
+            moodIds = Array.Empty<Guid>()
+        };
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/v1.0/track/GetFilteredRandomTrack", body);
+
+        // Assert
+        response.EnsureSuccessStatusCode();
+        var track = await response.Content.ReadFromJsonAsync<Track>();
+        Assert.Equal("Test Track", track!.Title);
+    }
+    
+    
+    
+    // create track again and in discover, save the song, leave a rating and also view artist profile.  check feedback by making request to own songs, view saved songs
+
+    [Fact]
+    public async Task User_CanSaveTrack_And_CanGiveFeedback_And_ViewPublicProfile()
+    {
+        var jwt = await LoginAsync("artist1@example.com", "Test.123");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+        
+        await LoggedInUser_CanCreate_AndFetchTrack();
+        
+        var body = new
+        {
+            tagIds = Array.Empty<Guid>(),
+            moodIds = Array.Empty<Guid>()
+        };
+        
+        var response = await _client.PostAsJsonAsync("/api/v1.0/track/GetFilteredRandomTrack", body);
+        response.EnsureSuccessStatusCode();
+        
+        var track = await response.Content.ReadFromJsonAsync<Track>();
+        Assert.NotNull(track);
+        Assert.NotEmpty(track.ArtistInTracks!);
+
+        
+        
+        var userId = track.ArtistInTracks!.First().UserId;
+        
+        var profileResponse = await _client.GetAsync($"/api/v1.0/Artist/GetUserInfoById/{userId}");
+        profileResponse.EnsureSuccessStatusCode();
+        
+        var artist = await profileResponse.Content.ReadFromJsonAsync<Artist>();
+        Assert.NotNull(artist);
+        Assert.Equal(track.ArtistInTracks!.First().ArtistDisplayName, artist!.DisplayName);
+        
+        
+        
+        
+        var saveBody = new
+        {
+            trackId = track.Id
+        };
+        
+        var saveResponse = await _client.PostAsJsonAsync($"/api/v1.0/UserSavedTracks/AddSavedTrack", saveBody);
+        saveResponse.EnsureSuccessStatusCode();
+        
+        var savedTracksResponse = await _client.GetAsync($"/api/v1.0/UserSavedTracks/GetSavedTracks");
+        savedTracksResponse.EnsureSuccessStatusCode();
+        
+        var savedTracks = await savedTracksResponse.Content.ReadFromJsonAsync<List<Track>>();
+        Assert.NotNull(savedTracks);
+        
+        
+        
+        
+        var feedbackBody = new
+        {
+            trackId = track.Id,
+            score = 5,
+            comment = "Great track!"
+        };
+        
+        var feedbackResponse = await _client.PostAsJsonAsync($"/api/v1.0/Rating/Create", feedbackBody);
+        feedbackResponse.EnsureSuccessStatusCode();
+        
+        var userTracksResponse = await _client.GetAsync($"/api/v1.0/Track/GetTracks");
+        userTracksResponse.EnsureSuccessStatusCode();
+        
+        var userTracks = await userTracksResponse.Content.ReadFromJsonAsync<List<Track>>();
+        var ratedTrack = userTracks!.First(t => t.Id == track.Id);
+        var rating = ratedTrack.Rating!.First();
+        
+        Assert.Equal(5, rating.Score);
+        Assert.Equal("Great track!", rating.Comment);
     }
     
     [Fact]

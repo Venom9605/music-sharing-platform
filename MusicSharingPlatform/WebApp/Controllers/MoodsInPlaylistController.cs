@@ -15,7 +15,7 @@ using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
-[Authorize]
+[Authorize(Roles = "admin")]
 
 public class MoodsInPlaylistController : Controller
 {
@@ -30,7 +30,7 @@ public class MoodsInPlaylistController : Controller
     // GET: MoodsInPlaylist
     public async Task<IActionResult> Index()
     {
-        return View(await _bll.MoodsInPlaylistService.AllAsync(User.GetUserId()));
+        return View(await _bll.MoodsInPlaylistService.AllAsync());
     }
 
     // GET: MoodsInPlaylist/Details/5
@@ -41,7 +41,7 @@ public class MoodsInPlaylistController : Controller
             return NotFound();
         }
         
-        var moodsInPlaylist = await _bll.MoodsInPlaylistService.FindAsync(id.Value, User.GetUserId());
+        var moodsInPlaylist = await _bll.MoodsInPlaylistService.FindAsync(id.Value);
         
         if (moodsInPlaylist == null)
         {
@@ -86,7 +86,7 @@ public class MoodsInPlaylistController : Controller
             return NotFound();
         }
 
-        var moodsInPlaylist = await _bll.MoodsInPlaylistService.FindAsync(id.Value, User.GetUserId());
+        var moodsInPlaylist = await _bll.MoodsInPlaylistService.FindAsync(id.Value);
         
         if (moodsInPlaylist == null)
         {
@@ -132,7 +132,7 @@ public class MoodsInPlaylistController : Controller
             return NotFound();
         }
 
-        var moodsInPlaylist = await _bll.MoodsInPlaylistService.FindAsync(id.Value, User.GetUserId());
+        var moodsInPlaylist = await _bll.MoodsInPlaylistService.FindAsync(id.Value);
         
         if (moodsInPlaylist == null)
         {
@@ -147,7 +147,7 @@ public class MoodsInPlaylistController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _bll.MoodsInPlaylistService.RemoveAsync(id, User.GetUserId());
+        await _bll.MoodsInPlaylistService.RemoveAsync(id);
         await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
@@ -155,17 +155,17 @@ public class MoodsInPlaylistController : Controller
     
     private async Task PopulateSelectListsAsync(MoodsInPlaylistViewModel vm)
     {
-        var userId = User.GetUserId();
+        
 
         vm.MoodsList = new SelectList(
-            await _bll.MoodService.AllAsync(userId),
+            await _bll.MoodService.AllAsync(),
             nameof(Mood.Id),
             nameof(Mood.Name),
             vm.MoodsInPlaylist.MoodId
         );
 
         vm.PlaylistsList = new SelectList(
-            await _bll.PlaylistService.AllAsync(userId),
+            await _bll.PlaylistService.AllAsync(),
             nameof(Playlist.Id),
             nameof(Playlist.Name),
             vm.MoodsInPlaylist.PlaylistId

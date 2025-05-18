@@ -15,7 +15,7 @@ using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
-[Authorize]
+[Authorize(Roles = "admin")]
 
 public class LinkTypeController : Controller
 {
@@ -29,7 +29,7 @@ public class LinkTypeController : Controller
     // GET: LinkType
     public async Task<IActionResult> Index()
     {
-        return View(await _bll.LinkTypeService.AllAsync(User.GetUserId()));
+        return View(await _bll.LinkTypeService.AllAsync());
     }
 
     // GET: LinkType/Details/5
@@ -40,7 +40,7 @@ public class LinkTypeController : Controller
             return NotFound();
         }
 
-        var linkType = await _bll.LinkTypeService.FindAsync(id.Value, User.GetUserId());
+        var linkType = await _bll.LinkTypeService.FindAsync(id.Value);
         
         if (linkType == null)
         {
@@ -86,7 +86,7 @@ public class LinkTypeController : Controller
             return NotFound();
         }
 
-        var linkType = await _bll.LinkTypeService.FindAsync(id.Value, User.GetUserId());
+        var linkType = await _bll.LinkTypeService.FindAsync(id.Value);
         
         if (linkType == null)
         {
@@ -116,7 +116,7 @@ public class LinkTypeController : Controller
 
         if (ModelState.IsValid)
         {
-            var linkType = await _bll.LinkTypeService.FindAsync(vm.Id, User.GetUserId());
+            var linkType = await _bll.LinkTypeService.FindAsync(vm.Id);
             
             if (linkType == null)
             {
@@ -142,7 +142,7 @@ public class LinkTypeController : Controller
             return NotFound();
         }
 
-        var linkType = await _bll.LinkTypeService.FindAsync(id.Value, User.GetUserId());
+        var linkType = await _bll.LinkTypeService.FindAsync(id.Value);
         
         if (linkType == null)
         {
@@ -157,7 +157,7 @@ public class LinkTypeController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _bll.LinkTypeService.RemoveAsync(id, User.GetUserId());
+        await _bll.LinkTypeService.RemoveAsync(id);
         await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }

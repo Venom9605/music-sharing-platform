@@ -9,7 +9,7 @@ using Artist = App.DTO.v1.Artist;
 
 namespace WebApp.Controllers;
 
-[Authorize]
+[Authorize(Roles = "admin")]
 
 public class RatingController : Controller
 {
@@ -23,7 +23,7 @@ public class RatingController : Controller
     // GET: Rating
     public async Task<IActionResult> Index()
     {
-        return View(await _bll.RatingService.AllAsync(User.GetUserId()));
+        return View(await _bll.RatingService.AllAsync());
     }
 
     // GET: Rating/Details/5
@@ -34,7 +34,7 @@ public class RatingController : Controller
             return NotFound();
         }
 
-        var rating = await _bll.RatingService.FindAsync(id.Value, User.GetUserId());
+        var rating = await _bll.RatingService.FindAsync(id.Value);
         
         if (rating == null)
         {
@@ -82,7 +82,7 @@ public class RatingController : Controller
             return NotFound();
         }
 
-        var rating = await _bll.RatingService.FindAsync(id.Value, User.GetUserId());
+        var rating = await _bll.RatingService.FindAsync(id.Value);
         
         if (rating == null)
         {
@@ -128,7 +128,7 @@ public class RatingController : Controller
             return NotFound();
         }
 
-        var rating = await _bll.RatingService.FindAsync(id.Value, User.GetUserId());
+        var rating = await _bll.RatingService.FindAsync(id.Value);
         
         if (rating == null)
         {
@@ -143,7 +143,7 @@ public class RatingController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _bll.RatingService.RemoveAsync(id, User.GetUserId());
+        await _bll.RatingService.RemoveAsync(id);
         await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
@@ -151,17 +151,17 @@ public class RatingController : Controller
     
     private async Task PopulateSelectListsAsync(RatingsViewModel vm)
     {
-        var userId = User.GetUserId();
+        
 
         vm.TracksList = new SelectList(
-            await _bll.TrackService.AllAsync(userId),
+            await _bll.TrackService.AllAsync(),
             nameof(Track.Id),
             nameof(Track.Title),
             vm.Rating.TrackId
         );
         
         vm.ArtistsList = new SelectList(
-            await _bll.ArtistService.AllAsync(userId),
+            await _bll.ArtistService.AllAsync(),
             nameof(Artist.Id),
             nameof(Artist.DisplayName),
             vm.Rating.UserId

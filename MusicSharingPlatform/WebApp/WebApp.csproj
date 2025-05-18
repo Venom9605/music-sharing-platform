@@ -68,5 +68,10 @@
       <_ContentIncludedByDefault Remove="Views\UserSavedTrack\Index.cshtml" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="wwwroot\profile-pictures\" />
+      <Folder Include="wwwroot\uploads\" />
+    </ItemGroup>
+
 
 </Project>

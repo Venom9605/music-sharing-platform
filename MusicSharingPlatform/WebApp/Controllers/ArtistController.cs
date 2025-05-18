@@ -3,28 +3,42 @@ using Microsoft.AspNetCore.Mvc;
 using App.DAL.Interfaces;
 using Base.Helpers;
 using App.DAL.DTO;
+using App.DAL.EF.DataSeeding;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using WebApp.ViewModels;
+using Artist = Domain.Artist;
 
 namespace WebApp.Controllers;
 
 
-[Authorize]
+[Authorize(Roles = "admin")]
 public class ArtistController : Controller
 {
 
     private readonly IAppBLL _bll;
+    private readonly UserManager<Domain.Artist> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
-    public ArtistController(IAppBLL bll)
+    public ArtistController(IAppBLL bll, RoleManager<IdentityRole> roleManager, UserManager<Artist> userManager)
     {
         _bll = bll;
+        _roleManager = roleManager;
+        _userManager = userManager;
     }
 
     // GET: Artist
     public async Task<IActionResult> Index()
     {
-        _bll.ArtistService.CustomMethodTest();
-        return View(await _bll.ArtistService.AllAsync(User.GetUserId()));
+        var artists = (await _bll.ArtistService.AllAsync()).ToList();
+
+        foreach (var artist in artists)
+        {
+            artist.IsAdmin = await _userManager.IsInRoleAsync(
+                new Domain.Artist { Id = artist.Id }, InitialData.AdminRoleName);
+        }
+
+        return View(artists);
     }
 
     // GET: Artist/Edit/5
@@ -35,7 +49,7 @@ public class ArtistController : Controller
             return NotFound();
         }
 
-        var artist = await _bll.ArtistService.FindAsync(id, User.GetUserId());
+        var artist = await _bll.ArtistService.FindAsync(id);
         
         if (artist == null)
         {
@@ -67,7 +81,7 @@ public class ArtistController : Controller
 
         if (ModelState.IsValid)
         {
-            var artist = await _bll.ArtistService.FindAsync(vm.Id, User.GetUserId());
+            var artist = await _bll.ArtistService.FindAsync(vm.Id);
             
             if (artist == null)
             {
@@ -84,5 +98,24 @@ public class ArtistController : Controller
             return RedirectToAction(nameof(Index));
         }
         return View(vm);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> ToggleAdmin(string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null) return NotFound();
+
+        var isAdmin = await _userManager.IsInRoleAsync(user, InitialData.AdminRoleName);
+
+        IdentityResult result;
+        if (isAdmin)
+            result = await _userManager.RemoveFromRoleAsync(user, InitialData.AdminRoleName);
+        else
+            result = await _userManager.AddToRoleAsync(user, InitialData.AdminRoleName);
+
+        if (!result.Succeeded) return BadRequest("Role update failed");
+
+        return RedirectToAction(nameof(Index));
     }
 }

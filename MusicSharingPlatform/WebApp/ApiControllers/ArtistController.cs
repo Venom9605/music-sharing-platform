@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.ApiControllers;
 
+/// <summary>
+/// Artist API Controller
+/// </summary>
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]/[action]")]
 [ApiController]
@@ -19,11 +22,19 @@ public class ArtistController : ControllerBase
     private readonly IAppBLL _bll;
     private readonly ArtistMapper _mapper = new ArtistMapper();
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="bll"></param>
     public ArtistController(IAppBLL bll)
     {
         _bll = bll;
     }
-    
+
+    /// <summary>
+    /// Retrieves information about the currently authenticated user.
+    /// </summary>
+    /// <returns>The current artist's profile information.</returns>
     [HttpGet]
     [Produces("application/json")]
     [ProducesResponseType(typeof(App.DTO.v1.Artist), 200)]
@@ -35,6 +46,11 @@ public class ArtistController : ControllerBase
         return Ok(artist);
     }
     
+    /// <summary>
+    /// Retrieves information about a specific artist by their user ID.
+    /// </summary>
+    /// <param name="userId">The user ID of the artist.</param>
+    /// <returns>Artist profile information or 404 if not found.</returns>
     [HttpGet("{userId}")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(App.DTO.v1.Artist), 200)]
@@ -47,6 +63,10 @@ public class ArtistController : ControllerBase
         return Ok(artist);
     }
     
+    /// <summary>
+    /// Retrieves the most popular artist (based on ratings, saves, or play count).
+    /// </summary>
+    /// <returns>Most popular artist or 404 if none available.</returns>
     [HttpGet]
     [AllowAnonymous]
     [Produces("application/json")]
@@ -60,6 +80,11 @@ public class ArtistController : ControllerBase
         return Ok(_mapper.Map(artist));
     }
     
+    /// <summary>
+    /// Edits the current authenticated artist's profile.
+    /// </summary>
+    /// <param name="dto">DTO containing updated profile fields.</param>
+    /// <returns>NoContent if update is successful, or 404 if artist not found.</returns>
     [HttpPut]
     public async Task<IActionResult> Edit(App.DTO.v1.ArtistEdit dto)
     {
@@ -82,6 +107,11 @@ public class ArtistController : ControllerBase
         return NoContent();
     }
     
+    /// <summary>
+    /// Uploads a profile picture to the server and returns the relative file path.
+    /// </summary>
+    /// <param name="dto">File upload payload (multipart/form-data).</param>
+    /// <returns>Relative path to uploaded image or error message.</returns>
     [HttpPost]
     [AllowAnonymous] // Allow unauthenticated upload before account exists
     [Consumes("multipart/form-data")] 

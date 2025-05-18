@@ -60,8 +60,8 @@ builder.Services.AddScoped<IAppUOW, AppUOW>();
 builder.Services.AddScoped<IAppBLL, AppBLL>();
 
 
-builder.Services.AddDefaultIdentity<Artist>(
-        options => options.SignIn.RequireConfirmedAccount = false)
+builder.Services.AddDefaultIdentity<Artist>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddRoles<IdentityRole>() 
     .AddEntityFrameworkStores<AppDbContext>();
 
 // remove default claim mapping
@@ -223,10 +223,11 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Artist>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    db.Database.Migrate(); // ⬅️ Required to apply schema
-    AppDataInit.SeedIdentity(userManager); // optional
-    AppDataInit.SeedAppData(db); // ⬅️ this is where ArtistRoles are inserted
+    db.Database.Migrate();
+    AppDataInit.SeedIdentity(userManager, roleManager);
+    AppDataInit.SeedAppData(db);
 }
 
 app.Run();

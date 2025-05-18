@@ -48,7 +48,12 @@ public class TrackController : ControllerBase
     
         return res;
     }
-    
+
+    /// <summary>
+    /// Retrieves a collection of tracks associated with the specified user ID.
+    /// </summary>
+    /// <param name="userId">The id of the user whose tracks are to be retrieved.</param>
+    /// <returns>Collection of tracks belonging to user</returns>
     [HttpGet("{userId}")]
     [Produces("application/json")]
     [ProducesResponseType(typeof(IEnumerable<App.DTO.v1.Track>), 200)]
@@ -85,6 +90,11 @@ public class TrackController : ControllerBase
     }
     
     
+    /// <summary>
+    /// Gets a random track filtered by tags and moods
+    /// </summary>
+    /// <param name="filter">Filter DTO containing a list of TagIds and MoodIds.</param>
+    /// <returns>Returns random filtered track</returns>
     [HttpPost]
     [Produces("application/json")]
     [ProducesResponseType(typeof(App.DTO.v1.Track), 200)]
@@ -234,6 +244,11 @@ public class TrackController : ControllerBase
         return Ok(new { path = relativePath });
     }
     
+    /// <summary>
+    /// Upload a track file to the server
+    /// </summary>
+    /// <param name="dto">DTO containing a File object.</param>
+    /// <returns>Returns the path to the file</returns>
     [HttpPost]
     [Consumes("multipart/form-data")]
     [ProducesResponseType(200)]

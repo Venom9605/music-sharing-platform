@@ -26,7 +26,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
                 {
                     Title = $"API {description.ApiVersion}",
                     Version = description.ApiVersion.ToString(),
-                    // Description = , TermsOfService = , Contact = , License =
+
                 }
             );
         }

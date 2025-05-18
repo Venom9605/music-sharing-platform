@@ -10,7 +10,7 @@ using Artist = App.DTO.v1.Artist;
 
 namespace WebApp.Controllers;
 
-[Authorize]
+[Authorize(Roles = "admin")]
 
 public class PlaylistController : Controller
 {
@@ -24,7 +24,7 @@ public class PlaylistController : Controller
     // GET: Playlist
     public async Task<IActionResult> Index()
     {
-        var playlists = await _bll.PlaylistService.AllAsync(User.GetUserId());
+        var playlists = await _bll.PlaylistService.AllAsync();
         
         return View(playlists);
     }
@@ -37,7 +37,7 @@ public class PlaylistController : Controller
             return NotFound();
         }
 
-        var playlist = await _bll.PlaylistService.FindAsync(id.Value, User.GetUserId());
+        var playlist = await _bll.PlaylistService.FindAsync(id.Value);
         
         
         if (playlist == null)
@@ -84,7 +84,7 @@ public class PlaylistController : Controller
         {
             return NotFound();
         }
-        var playlist = await _bll.PlaylistService.FindAsync(id.Value, User.GetUserId());
+        var playlist = await _bll.PlaylistService.FindAsync(id.Value);
         
         if (playlist == null)
         {
@@ -126,7 +126,7 @@ public class PlaylistController : Controller
             return NotFound();
         }
 
-        var playlist = await _bll.PlaylistService.FindAsync(id.Value, User.GetUserId());
+        var playlist = await _bll.PlaylistService.FindAsync(id.Value);
         
         if (playlist == null)
         {
@@ -140,17 +140,17 @@ public class PlaylistController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _bll.PlaylistService.RemoveAsync(id, User.GetUserId());
+        await _bll.PlaylistService.RemoveAsync(id);
         await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
     private async Task PopulateSelectListsAsync(PlaylistViewModel vm)
     {
-        var userId = User.GetUserId();
+        
 
         vm.ArtistsList = new SelectList(
-            await _bll.ArtistService.AllAsync(userId),
+            await _bll.ArtistService.AllAsync(),
             nameof(Artist.Id),
             nameof(Artist.DisplayName),
             vm.Playlist.UserId

@@ -5,6 +5,9 @@ using App.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers;
 
+/// <summary>
+/// Tag API controller
+/// </summary>
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]/[action]")]
 [ApiController]
@@ -13,11 +16,19 @@ public class TagController : ControllerBase
     private readonly IAppBLL _bll;
     private readonly TagMapper _mapper = new TagMapper();
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="bll"></param>
     public TagController(IAppBLL bll)
     {
         _bll = bll;
     }
 
+    /// <summary>
+    /// Retrieve all tags
+    /// </summary>
+    /// <returns>All tags</returns>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<App.DTO.v1.Tag>>> GetAll()
     {

@@ -15,7 +15,7 @@ using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
-[Authorize]
+[Authorize(Roles = "admin")]
 
 public class TrackLinkController : Controller
 {
@@ -29,7 +29,7 @@ public class TrackLinkController : Controller
     // GET: TrackLink
     public async Task<IActionResult> Index()
     {
-        var trackLink = await _bll.TrackLinkService.AllAsync(User.GetUserId());
+        var trackLink = await _bll.TrackLinkService.AllAsync();
         
         return View(trackLink);
     }
@@ -42,7 +42,7 @@ public class TrackLinkController : Controller
             return NotFound();
         }
 
-        var trackLink = await _bll.TrackLinkService.FindAsync(id.Value, User.GetUserId());
+        var trackLink = await _bll.TrackLinkService.FindAsync(id.Value);
         
         
         if (trackLink == null)
@@ -93,7 +93,7 @@ public class TrackLinkController : Controller
         {
             return NotFound();
         }
-        var trackLink = await _bll.TrackLinkService.FindAsync(id.Value, User.GetUserId());
+        var trackLink = await _bll.TrackLinkService.FindAsync(id.Value);
         
         if (trackLink == null)
         {
@@ -134,7 +134,7 @@ public class TrackLinkController : Controller
             return NotFound();
         }
 
-        var trackLink = await _bll.TrackLinkService.FindAsync(id.Value, User.GetUserId());
+        var trackLink = await _bll.TrackLinkService.FindAsync(id.Value);
         
         if (trackLink == null)
         {
@@ -148,24 +148,24 @@ public class TrackLinkController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _bll.TrackLinkService.RemoveAsync(id, User.GetUserId());
+        await _bll.TrackLinkService.RemoveAsync(id);
         await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
     private async Task PopulateSelectListsAsync(TrackLinkViewModel vm)
     {
-        var userId = User.GetUserId();
+        
 
         vm.TracksList = new SelectList(
-            await _bll.TrackService.AllAsync(userId),
+            await _bll.TrackService.AllAsync(),
             nameof(Track.Id),
             nameof(Track.Title),
             vm.TrackLink.TrackId
         );
         
         vm.LinkTypesList = new SelectList(
-            await _bll.LinkTypeService.AllAsync(userId),
+            await _bll.LinkTypeService.AllAsync(),
             nameof(LinkType.Id),
             nameof(LinkType.Name),
             vm.TrackLink.LinkTypeId

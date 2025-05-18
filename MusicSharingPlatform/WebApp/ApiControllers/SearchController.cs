@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApp.ApiControllers;
 
+/// <summary>
+/// Search function API controller
+/// </summary>
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]/[action]")]
 [ApiController]
@@ -18,11 +21,20 @@ public class SearchController : ControllerBase
     private readonly ArtistMapper _artistMapper = new();
     private readonly TrackMapper _trackMapper = new();
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="bll"></param>
     public SearchController(IAppBLL bll)
     {
         _bll = bll;
     }
     
+    /// <summary>
+    /// Searches for tracks and artists by a given query
+    /// </summary>
+    /// <param name="query">Query top search</param>
+    /// <returns>Tracks and artists that match the query (not case-sensitive)</returns>
     [HttpGet("{query}")]
     [ProducesResponseType(typeof(SearchResultsDto), 200)]
     [AllowAnonymous]

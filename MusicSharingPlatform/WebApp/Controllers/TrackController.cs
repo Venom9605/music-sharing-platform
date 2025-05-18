@@ -8,7 +8,7 @@ using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
-[Authorize]
+[Authorize(Roles = "admin")]
 
 public class TrackController : Controller
 {
@@ -23,7 +23,7 @@ public class TrackController : Controller
     // GET: Track
     public async Task<IActionResult> Index()
     {
-        return View(await _bll.TrackService.AllAsync(User.GetUserId()));
+        return View(await _bll.TrackService.AllAsync());
     }
 
     // GET: Track/Details/5
@@ -34,7 +34,7 @@ public class TrackController : Controller
             return NotFound();
         }
 
-        var track = await _bll.TrackService.FindAsync(id.Value, User.GetUserId());
+        var track = await _bll.TrackService.FindAsync(id.Value);
 
         if (track == null)
         {
@@ -85,7 +85,7 @@ public class TrackController : Controller
             return NotFound();
         }
 
-        var track = await _bll.TrackService.FindAsync(id.Value, User.GetUserId());
+        var track = await _bll.TrackService.FindAsync(id.Value);
         
         if (track == null)
         {
@@ -118,7 +118,7 @@ public class TrackController : Controller
 
         if (ModelState.IsValid)
         {
-            var track = await _bll.TrackService.FindAsync(vm.Id, User.GetUserId());
+            var track = await _bll.TrackService.FindAsync(vm.Id);
             
             if (track == null)
             {
@@ -146,7 +146,7 @@ public class TrackController : Controller
             return NotFound();
         }
 
-        var track = await _bll.TrackService.FindAsync(id.Value, User.GetUserId());
+        var track = await _bll.TrackService.FindAsync(id.Value);
         
         if (track == null)
         {
@@ -161,7 +161,7 @@ public class TrackController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _bll.TrackService.RemoveAsync(id, User.GetUserId());
+        await _bll.TrackService.RemoveAsync(id);
         await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }

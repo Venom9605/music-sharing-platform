@@ -11,7 +11,7 @@ using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
-[Authorize]
+[Authorize(Roles = "admin")]
 
 public class TagsInTrackController : Controller
 {
@@ -25,7 +25,7 @@ public class TagsInTrackController : Controller
     // GET: TagsInTrack
     public async Task<IActionResult> Index()
     {
-        var tagsInTrack = await _bll.TagsInTrackService.AllAsync(User.GetUserId());
+        var tagsInTrack = await _bll.TagsInTrackService.AllAsync();
         
         return View(tagsInTrack);
     }
@@ -38,7 +38,7 @@ public class TagsInTrackController : Controller
             return NotFound();
         }
 
-        var tagsInTrack = await _bll.TagsInTrackService.FindAsync(id.Value, User.GetUserId());
+        var tagsInTrack = await _bll.TagsInTrackService.FindAsync(id.Value);
         
         
         if (tagsInTrack == null)
@@ -84,7 +84,7 @@ public class TagsInTrackController : Controller
         {
             return NotFound();
         }
-        var tagsInTrack = await _bll.TagsInTrackService.FindAsync(id.Value, User.GetUserId());
+        var tagsInTrack = await _bll.TagsInTrackService.FindAsync(id.Value);
         
         if (tagsInTrack == null)
         {
@@ -126,7 +126,7 @@ public class TagsInTrackController : Controller
             return NotFound();
         }
 
-        var tagsInTrack = await _bll.TagsInTrackService.FindAsync(id.Value, User.GetUserId());
+        var tagsInTrack = await _bll.TagsInTrackService.FindAsync(id.Value);
         
         if (tagsInTrack == null)
         {
@@ -140,24 +140,24 @@ public class TagsInTrackController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _bll.TagsInTrackService.RemoveAsync(id, User.GetUserId());
+        await _bll.TagsInTrackService.RemoveAsync(id);
         await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
     private async Task PopulateSelectListsAsync(TagsInTrackViewModel vm)
     {
-        var userId = User.GetUserId();
+        
 
         vm.TagsList = new SelectList(
-            await _bll.TagService.AllAsync(userId),
+            await _bll.TagService.AllAsync(),
             nameof(Tag.Id),
             nameof(Tag.Name),
             vm.TagsInTrack.TagId
         );
         
         vm.TracksList = new SelectList(
-            await _bll.TrackService.AllAsync(userId),
+            await _bll.TrackService.AllAsync(),
             nameof(Track.Id),
             nameof(Track.Title),
             vm.TagsInTrack.TrackId

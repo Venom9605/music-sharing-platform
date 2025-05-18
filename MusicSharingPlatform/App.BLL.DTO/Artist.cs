@@ -28,4 +28,7 @@ public class Artist : IBaseEntityId<string>
     public ICollection<UserLink>? UserLinks { get; set; }
     
     public ICollection<Playlist>? Playlists { get; set; }
+    
+    
+    public bool IsAdmin { get; set; }
 }

@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebApp.ApiControllers;
 
 
+/// <summary>
+/// User saved tracks API controller
+/// </summary>
 [ApiVersion( "1.0" )]
 [Route("api/v{version:apiVersion}/[controller]/[action]")]
 [ApiController]
@@ -32,6 +35,10 @@ public class UserSavedTracksController : ControllerBase
         _bll = bll;
     }
     
+    /// <summary>
+    /// Get all saved tracks for the current user
+    /// </summary>
+    /// <returns>Collection of tracks</returns>
     [HttpGet]
     [Produces("application/json")]
     [ProducesResponseType(typeof(IEnumerable<App.DTO.v1.Track>), 200)]
@@ -48,6 +55,11 @@ public class UserSavedTracksController : ControllerBase
     }
     
     
+    /// <summary>
+    /// Save a track for the current user.
+    /// </summary>
+    /// <param name="track">DTO for trackId to be saved.</param>
+    /// <returns>Saved entity</returns>
     [HttpPost]
     [Produces("application/json")]
     [ProducesResponseType(typeof(IEnumerable<App.DTO.v1.UserSavedTracks>), 201)]
@@ -78,6 +90,11 @@ public class UserSavedTracksController : ControllerBase
             _savedTracksMapper.Map(bllEntity));
     }
     
+    /// <summary>
+    /// Remove a saved track by the UserSavedTrack id.
+    /// </summary>
+    /// <param name="id">Id of the UserSavedTrack</param>
+    /// <returns>No content</returns>
     [HttpDelete("{id}")]
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
@@ -95,6 +112,11 @@ public class UserSavedTracksController : ControllerBase
         return NoContent();
     }
     
+    /// <summary>
+    /// Remove a saved track by the trackid.
+    /// </summary>
+    /// <param name="trackId">Id of the track to be removed.</param>
+    /// <returns>No content.</returns>
     [HttpDelete("{trackId}")]
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]

@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
-[Authorize]
+[Authorize(Roles = "admin")]
 
 public class TagController : Controller
 {
@@ -28,7 +28,7 @@ public class TagController : Controller
     // GET: Tag
     public async Task<IActionResult> Index()
     {
-        return View(await _bll.TagService.AllAsync(User.GetUserId()));
+        return View(await _bll.TagService.AllAsync());
     }
 
     // GET: Tag/Details/5
@@ -39,7 +39,7 @@ public class TagController : Controller
             return NotFound();
         }
 
-        var tag = await _bll.TagService.FindAsync(id.Value, User.GetUserId());
+        var tag = await _bll.TagService.FindAsync(id.Value);
         
         if (tag == null)
         {
@@ -84,7 +84,7 @@ public class TagController : Controller
             return NotFound();
         }
 
-        var tag = await _bll.TagService.FindAsync(id.Value, User.GetUserId());
+        var tag = await _bll.TagService.FindAsync(id.Value);
         
         if (tag == null)
         {
@@ -114,7 +114,7 @@ public class TagController : Controller
 
         if (ModelState.IsValid)
         {
-            var tag = await _bll.TagService.FindAsync(vm.Id, User.GetUserId());
+            var tag = await _bll.TagService.FindAsync(vm.Id);
             
             if (tag == null)
             {
@@ -139,7 +139,7 @@ public class TagController : Controller
             return NotFound();
         }
 
-        var tag = await _bll.TagService.FindAsync(id.Value, User.GetUserId());
+        var tag = await _bll.TagService.FindAsync(id.Value);
         
         if (tag == null)
         {
@@ -154,7 +154,7 @@ public class TagController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _bll.TagService.RemoveAsync(id, User.GetUserId());
+        await _bll.TagService.RemoveAsync(id);
         await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }

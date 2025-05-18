@@ -14,7 +14,7 @@ using Artist = App.DTO.v1.Artist;
 
 namespace WebApp.Controllers;
 
-[Authorize]
+[Authorize(Roles = "admin")]
 public class ArtistInTrackController : Controller
 {
     
@@ -29,7 +29,7 @@ public class ArtistInTrackController : Controller
     // GET: ArtistInTrack
     public async Task<IActionResult> Index()
     {
-        var artistInTracks = await _bll.ArtistInTrackService.AllAsync(User.GetUserId());
+        var artistInTracks = await _bll.ArtistInTrackService.AllAsync();
         
         return View(artistInTracks);
     }
@@ -44,7 +44,7 @@ public class ArtistInTrackController : Controller
             return NotFound();
         }
 
-        var artistInTrack = await _bll.ArtistInTrackService.FindAsync(id.Value, User.GetUserId());
+        var artistInTrack = await _bll.ArtistInTrackService.FindAsync(id.Value);
         
         if (artistInTrack == null)
         {
@@ -91,7 +91,7 @@ public class ArtistInTrackController : Controller
             return NotFound();
         }
 
-        var artistInTrack = await _bll.ArtistInTrackService.FindAsync(id.Value, User.GetUserId());
+        var artistInTrack = await _bll.ArtistInTrackService.FindAsync(id.Value);
         
         if (artistInTrack == null)
         {
@@ -136,7 +136,7 @@ public class ArtistInTrackController : Controller
             return NotFound();
         }
 
-        var artistInTrack = await _bll.ArtistInTrackService.FindAsync(id.Value, User.GetUserId());
+        var artistInTrack = await _bll.ArtistInTrackService.FindAsync(id.Value);
         
         if (artistInTrack == null)
         {
@@ -151,31 +151,29 @@ public class ArtistInTrackController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _bll.ArtistInTrackService.RemoveAsync(id, User.GetUserId());
+        await _bll.ArtistInTrackService.RemoveAsync(id);
         await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
     
     private async Task PopulateSelectListsAsync(ArtistInTrackViewModel vm)
     {
-        var userId = User.GetUserId();
-
         vm.TracksList = new SelectList(
-            await _bll.TrackService.AllAsync(userId),
+            await _bll.TrackService.AllAsync(),
             nameof(Track.Id),
             nameof(Track.Title),
             vm.ArtistInTrack.TrackId
         );
 
         vm.ArtistRolesList = new SelectList(
-            await _bll.ArtistRoleService.AllAsync(userId),
+            await _bll.ArtistRoleService.AllAsync(),
             nameof(ArtistRole.Id),
             nameof(ArtistRole.Name),
             vm.ArtistInTrack.ArtistRoleId
         );
 
         vm.ArtistsList = new SelectList(
-            await _bll.ArtistService.AllAsync(userId),
+            await _bll.ArtistService.AllAsync(),
             nameof(Artist.Id),
             nameof(Artist.DisplayName),
             vm.ArtistInTrack.UserId

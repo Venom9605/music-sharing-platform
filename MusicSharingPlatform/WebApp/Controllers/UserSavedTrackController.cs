@@ -17,7 +17,7 @@ using Artist = App.DTO.v1.Artist;
 
 namespace WebApp.Controllers;
 
-[Authorize]
+[Authorize(Roles = "admin")]
 
 public class UserSavedTrackController : Controller
 {
@@ -31,7 +31,7 @@ public class UserSavedTrackController : Controller
     // GET: UserSavedTrack
     public async Task<IActionResult> Index()
     {
-        var userSavedTracks = await _bll.UserSavedTracksService.AllAsync(User.GetUserId());
+        var userSavedTracks = await _bll.UserSavedTracksService.AllAsync();
         
         return View(userSavedTracks);
     }
@@ -44,7 +44,7 @@ public class UserSavedTrackController : Controller
             return NotFound();
         }
 
-        var userSavedTrack = await _bll.UserSavedTracksService.FindAsync(id.Value, User.GetUserId());
+        var userSavedTrack = await _bll.UserSavedTracksService.FindAsync(id.Value);
         
         
         if (userSavedTrack == null)
@@ -90,7 +90,7 @@ public class UserSavedTrackController : Controller
         {
             return NotFound();
         }
-        var userSavedTrack = await _bll.UserSavedTracksService.FindAsync(id.Value, User.GetUserId());
+        var userSavedTrack = await _bll.UserSavedTracksService.FindAsync(id.Value);
         
         if (userSavedTrack == null)
         {
@@ -131,7 +131,7 @@ public class UserSavedTrackController : Controller
             return NotFound();
         }
 
-        var userSavedTrack = await _bll.UserSavedTracksService.FindAsync(id.Value, User.GetUserId());
+        var userSavedTrack = await _bll.UserSavedTracksService.FindAsync(id.Value);
         
         if (userSavedTrack == null)
         {
@@ -145,24 +145,24 @@ public class UserSavedTrackController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
     {
-        await _bll.UserSavedTracksService.RemoveAsync(id, User.GetUserId());
+        await _bll.UserSavedTracksService.RemoveAsync(id);
         await _bll.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 
     private async Task PopulateSelectListsAsync(UserSavedTrackViewModel vm)
     {
-        var userId = User.GetUserId();
+        
 
         vm.UsersList = new SelectList(
-            await _bll.ArtistService.AllAsync(userId),
+            await _bll.ArtistService.AllAsync(),
             nameof(Artist.Id),
             nameof(Artist.DisplayName),
             vm.UserSavedTrack.UserId
         );
         
         vm.TracksList = new SelectList(
-            await _bll.TrackService.AllAsync(userId),
+            await _bll.TrackService.AllAsync(),
             nameof(Track.Id),
             nameof(Track.Title),
             vm.UserSavedTrack.TrackId
