@@ -23,4 +23,14 @@ public class TagMapper : IMapper<App.DTO.v1.Tag, App.BLL.DTO.Tag>
             Name = entity.Name
         };
     }
+    
+    public BLL.DTO.Tag? Map(TagCreate? entity)
+    {
+        if (entity == null) return null;
+        return new BLL.DTO.Tag
+        {
+            Id = Guid.NewGuid(),
+            Name = entity.Name
+        };
+    }
 }

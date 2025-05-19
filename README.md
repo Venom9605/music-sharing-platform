@@ -21,6 +21,10 @@ Localization
 
 ~~~sh
 
+docker build -t webapp .          
+docker run --name webapp_docker --rm -it -p 8888:8080 webapp
+
+
 dotnet ef migrations add --project App.DAL.EF --startup-project WebApp --context AppDbContext InitialCreate
 
 dotnet ef database --project App.DAL.EF --startup-project WebApp update

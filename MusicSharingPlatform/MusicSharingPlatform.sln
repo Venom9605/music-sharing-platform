@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!Solution Items", "!Solutio
 		Directory.Build.props = Directory.Build.props
 		..\README.md = ..\README.md
 		..\Cs projekt.pdf = ..\Cs projekt.pdf
+		Dockerfile = Dockerfile
+		.dockerignore = .dockerignore
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "APP", "APP", "{C779B1F1-61DC-4C61-95C8-BD375CCB1D90}"

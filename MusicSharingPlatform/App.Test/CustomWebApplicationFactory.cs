@@ -22,7 +22,7 @@ public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStar
             // remove the existing DbContextOptions
             services.RemoveAll(typeof(DbContextOptions<AppDbContext>));
             
-            var connectionString = "Host=localhost;Port=5432;Database=TEST;Username=postgres;Password=postgres";
+            var connectionString = "Host=host.docker.internal;Port=5432;Database=TEST;Username=postgres;Password=postgres";
             services.AddDbContext<AppDbContext>(options =>
                 options
                     .UseNpgsql(
