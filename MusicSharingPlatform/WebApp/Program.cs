@@ -221,11 +221,21 @@ app.MapRazorPages()
 
 using (var scope = app.Services.CreateScope())
 {
+    var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<Artist>>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    db.Database.Migrate();
+    if (config.GetValue<bool>("DataInitialization:DropDatabase"))
+    {
+        db.Database.EnsureDeleted();
+    }
+
+    if (config.GetValue<bool>("DataInitialization:MigrateDatabase"))
+    {
+        db.Database.Migrate();
+    }
+
     AppDataInit.SeedIdentity(userManager, roleManager);
     AppDataInit.SeedAppData(db);
 }
