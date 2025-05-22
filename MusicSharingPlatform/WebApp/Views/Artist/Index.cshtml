@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Profile page</h1>
+<h1>@Base.Resources.Header.Profile</h1>
 
 <table class="table">
     <thead>
@@ -53,9 +53,9 @@
                 }
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Edit" asp-route-id="@item.Id">@Base.Resources.Common.Edit</a> |
                 <form asp-action="ToggleAdmin" asp-route-id="@item.Id" method="post" style="display:inline">
-                    <button type="submit" class="btn btn-sm btn-outline-secondary">Toggle Admin</button>
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">@Base.Resources.Common.ToggleAdmin</button>
                 </form>
             </td>
         </tr>

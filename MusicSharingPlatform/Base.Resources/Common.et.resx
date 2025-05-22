@@ -11,4 +11,37 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
+    <data name="Hello" xml:space="preserve">
+        <value>Tere</value>
+    </data>
+    <data name="DeleteConfirm" xml:space="preserve">
+        <value>Kas sa oled kindel, et soovid seda kustutada?</value>
+    </data>
+    <data name="Delete" xml:space="preserve">
+        <value>Kustuta</value>
+    </data>
+    <data name="CreateNew" xml:space="preserve">
+        <value>Loo Uus</value>
+    </data>
+    <data name="Create" xml:space="preserve">
+        <value>Loo</value>
+    </data>
+    <data name="BackToList" xml:space="preserve">
+        <value>Tagasi</value>
+    </data>
+    <data name="Details" xml:space="preserve">
+        <value>Detailid</value>
+    </data>
+    <data name="Edit" xml:space="preserve">
+        <value>Muuda</value>
+    </data>
+    <data name="Index" xml:space="preserve">
+        <value>Indeks</value>
+    </data>
+    <data name="Save" xml:space="preserve">
+        <value>Salvesta</value>
+    </data>
+    <data name="ToggleAdmin" xml:space="preserve">
+        <value>Anna/võta admin</value>
+    </data>
 </root>

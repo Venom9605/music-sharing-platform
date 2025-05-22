@@ -183,4 +183,27 @@ public class TrackRepository : BaseRepository<DTO.Track, Domain.Track>, ITrackRe
             .Select(t => _iuowMapper.Map(t)!)
             .ToListAsync();
     }
+    
+    public override async Task RemoveAsync(Guid id, string? userId)
+    {
+        var track = await RepositoryDbSet
+            .Include(t => t.ArtistInTracks)
+            .FirstOrDefaultAsync(t => t.Id == id);
+
+        if (track == null) return;
+
+        if (userId != null)
+        {
+            var isAuthorized = track.ArtistInTracks!.Any(ait => ait.UserId == userId);
+            if (!isAuthorized)
+            {
+                // unauthorized – do nothing
+                return;
+            }
+        }
+
+        RepositoryDbSet.Remove(track);
+    }
+    
+
 }

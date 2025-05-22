@@ -22,7 +22,19 @@ Localization
 ~~~sh
 
 docker build -t webapp .          
-docker run --name webapp_docker --rm -it -p 8888:8080 webapp
+docker run --name webapp_docker -p 8888:8080 -v webapp_wwwroot:/app/wwwroot webapp
+
+docker create --name webapp_docker -p 8888:8080 webapp   
+docker start webapp_docker
+
+
+
+docker stop webapp_docker
+docker rm webapp_docker   
+docker build -t webapp .
+docker push matall19/webapp:latest 
+docker run --name webapp_docker -p 8888:8080 -v webapp_wwwroot:/app/wwwroot webapp
+
 
 docker push matall19/webapp:latest    
 

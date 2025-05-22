@@ -25,16 +25,15 @@ public class TrackServiceTests
     [Fact]
     public async Task IncrementPlayCountAsync_TrackExists_IncrementsAndReturnsTrue()
     {
-        // Arrange
+
         var id = Guid.NewGuid();
         var domainTrack = new Domain.Track { Id = id, TimesPlayed = 5 };
         _trackRepoMock.Setup(r => r.FindTrackedDomainAsync(id))
             .ReturnsAsync(domainTrack);
-
-        // Act
+        
         var result = await _trackService.IncrementPlayCountAsync(id);
 
-        // Assert
+
         Assert.True(result);
         Assert.Equal(6, domainTrack.TimesPlayed);
     }

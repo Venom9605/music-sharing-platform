@@ -53,7 +53,7 @@ public static class IdentityExtensions
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
 
-                ValidateLifetime = false // ❗️This ignores expiration for token validation
+                ValidateLifetime = false
             }, out SecurityToken validatedToken);
 
             return validatedToken is JwtSecurityToken;

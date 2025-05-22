@@ -68,4 +68,13 @@
     <data name="Profile" xml:space="preserve">
         <value>Profiil</value>
     </data>
+    <data name="Login" xml:space="preserve">
+        <value>Logi sisse</value>
+    </data>
+    <data name="Register" xml:space="preserve">
+        <value>Registreeri</value>
+    </data>
+    <data name="Logout" xml:space="preserve">
+        <value>Logi välja</value>
+    </data>
 </root>

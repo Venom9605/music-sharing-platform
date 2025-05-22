@@ -4,39 +4,39 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>@Base.Resources.Common.Edit</h1>
 
-<h4>Artist</h4>
+<h4>@Base.Resources.Header.Profile</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="All " class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="DisplayName" class="control-label"></label>
+                <label asp-for="DisplayName" class="control-label">@App.Resources.Domain.Artist.DisplayName</label>
                 <input asp-for="DisplayName" class="form-control" />
                 <span asp-validation-for="DisplayName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Bio" class="control-label"></label>
+                <label asp-for="Bio" class="control-label">@App.Resources.Domain.Artist.Bio</label>
                 <input asp-for="Bio" class="form-control" />
                 <span asp-validation-for="Bio" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ProfilePicture" class="control-label"></label>
+                <label asp-for="ProfilePicture" class="control-label">@App.Resources.Domain.Artist.ProfilePicture</label>
                 <input asp-for="ProfilePicture" class="form-control" />
                 <span asp-validation-for="ProfilePicture" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="@Base.Resources.Common.Save" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">@Base.Resources.Common.BackToList</a>
 </div>
 
 @section Scripts {

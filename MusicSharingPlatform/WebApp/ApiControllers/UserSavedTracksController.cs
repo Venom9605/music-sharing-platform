@@ -91,28 +91,6 @@ public class UserSavedTracksController : ControllerBase
     }
     
     /// <summary>
-    /// Remove a saved track by the UserSavedTrack id.
-    /// </summary>
-    /// <param name="id">Id of the UserSavedTrack</param>
-    /// <returns>No content</returns>
-    [HttpDelete("{id}")]
-    [ProducesResponseType(204)]
-    [ProducesResponseType(404)]
-    public async Task<IActionResult> RemoveSavedTrack(Guid id)
-    {
-        var trackExists = await _bll.UserSavedTracksService.ExistsAsync(id, User.GetUserId());
-        if (!trackExists)
-        {
-            return NotFound();
-        }
-        
-        await _bll.UserSavedTracksService.RemoveAsync(id, User.GetUserId());
-        await _bll.SaveChangesAsync();
-
-        return NoContent();
-    }
-    
-    /// <summary>
     /// Remove a saved track by the trackid.
     /// </summary>
     /// <param name="trackId">Id of the track to be removed.</param>
