@@ -6,11 +6,6 @@ Marc Täll
 
 ### TODO:
 
-Styling
-
-documentation
-host
-react crud 
 
 ## OPTIONAL TODO:
 Fix files duplicating
